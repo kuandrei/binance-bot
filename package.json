@@ -1,0 +1,31 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app/server.js",
+  "scripts": {
+    "pretest": "eslint .",
+    "test": "PORT=1000 NODE_ENV=test mocha tests/*.js --exit",
+    "start": "NODE_ENV=development DEBUG=1 pm2 start app/server.js --watch",
+    "db:migrate": "npm run gen:env && node_modules/.bin/sequelize db:migrate",
+    "db:migrate:undo": "node_modules/.bin/sequelize db:migrate:undo",
+    "db:seed": "npm run gen:env && node_modules/.bin/sequelize db:seed:all",
+    "db:unseed": "node_modules/.bin/sequelize db:seed:undo:all"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.4",
+    "express": "^4.17.1",
+    "mysql2": "^1.6.5",
+    "sequelize": "^5.8.7",
+    "sequelize-cli": "^5.4.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "mocha": "^6.1.4",
+    "pm2": "^3.5.1",
+    "supertest": "^4.0.2"
+  }
+}

@@ -1,0 +1,1 @@
+--reporter spec -c --timeout 15000
