@@ -6,18 +6,22 @@
   "scripts": {
     "pretest": "eslint .",
     "test": "PORT=1000 NODE_ENV=test mocha tests/*.js --exit",
-    "start": "NODE_ENV=development DEBUG=1 pm2 start app/server.js --watch",
-    "db:migrate": "npm run gen:env && node_modules/.bin/sequelize db:migrate",
+    "start": "NODE_ENV=development DEBUG=bnb:* pm2 start app/server.js --watch",
+    "db:migrate": "node_modules/.bin/sequelize db:migrate",
     "db:migrate:undo": "node_modules/.bin/sequelize db:migrate:undo",
-    "db:seed": "npm run gen:env && node_modules/.bin/sequelize db:seed:all",
+    "db:seed": "node_modules/.bin/sequelize db:seed:all",
     "db:unseed": "node_modules/.bin/sequelize db:seed:undo:all"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^3.0.1",
+    "binance-api-node": "^0.9.2",
     "cookie-parser": "^1.4.4",
+    "debug": "^4.1.1",
     "express": "^4.17.1",
     "mysql2": "^1.6.5",
+    "node-cron": "^2.0.3",
     "sequelize": "^5.8.7",
     "sequelize-cli": "^5.4.0"
   },

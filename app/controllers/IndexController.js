@@ -5,8 +5,7 @@ module.exports = {
 
     status: async (req, res, next) => {
         try {
-            await db.sequelize
-                .authenticate();
+            await db.sequelize.authenticate();
             res.json({
                 status: 'OK'
             })
