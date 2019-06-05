@@ -1,34 +1,26 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('TradePair', {
+    const TradePair = sequelize.define('TradePair', {
         symbol: {
             allowNull: false,
             type: DataTypes.STRING(16)
         },
-        firstCurrency: {
+        status: {
             allowNull: false,
-            type: DataTypes.STRING(8)
+            type: DataTypes.ENUM('ACTIVE', 'INACTIVE'),
+            defaultValue: 'ACTIVE'
         },
-        firstCurrencyPrecision: {
+        dealQty: {
             allowNull: false,
-            type: DataTypes.INTEGER(3).UNSIGNED
+            type: DataTypes.DECIMAL(16, 8)
         },
-        secondCurrency: {
+        additionPercentage: {
             allowNull: false,
-            type: DataTypes.STRING(8)
-        },
-        secondCurrencyPrecision: {
-            allowNull: false,
-            type: DataTypes.INTEGER(3).UNSIGNED
-        },
-        commission: {
-            allowNull: false,
-            type: DECIMAL(6, 4)
-        },
-        commissionType: {
-            allowNull: false,
-            type: DataTypes.ENUM('STANDARD', 'FIRST_CURRENCY', 'SECOND_CURRENCY'),
-            defaultValue: 'STANDARD'
+            type: DataTypes.DECIMAL(6, 4)
         }
     }, {});
+    TradePair.associate = function ({Client}) {
+        TradePair.belongsTo(Client, {as: 'client'});
+    };
+    return TradePair;
 };

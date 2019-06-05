@@ -14,7 +14,7 @@ before(function (done) {
 });
 
 
-describe.only('Binance connectivity', function () {
+describe('Binance helper', function () {
 
     it('Test public api - ping', async function () {
         const binanceApiClient = await binanceHelpers.initApiClient(testClientId);
@@ -27,6 +27,16 @@ describe.only('Binance connectivity', function () {
         const result = await binanceApiClient.accountInfo();
         result.should.include.keys(['canTrade', 'canWithdraw', 'balances']);
         result.canTrade.should.equal(true);
+    });
+
+    it.only('Test symbolMarketPrice helper', async function () {
+        const result = await binanceHelpers.symbolMarketPrice('BTCUSDT');
+
+        console.log('-----------------------------');
+        console.dir({'BTCUSDT': result}, {colors: true, depth: 5});
+        console.log('-----------------------------');
+        // result.should.include.keys(['canTrade', 'canWithdraw', 'balances']);
+        // result.canTrade.should.equal(true);
     });
 
 });

@@ -2,7 +2,7 @@
 
 module.exports = {
     up: (queryInterface) => {
-        return queryInterface.bulkInsert('TradePairs', [{
+        return queryInterface.bulkInsert('CurrencyPairs', [{
             symbol: 'BTCUSDT',
             firstCurrency: 'BTC',
             firstCurrencyPrecision: 8,
@@ -36,6 +36,6 @@ module.exports = {
     },
 
     down: (queryInterface) => {
-        return queryInterface.bulkDelete('TradePairs', null, {});
+        return queryInterface.bulkDelete('CurrencyPairs', null, {});
     }
 };

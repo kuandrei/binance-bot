@@ -9,13 +9,36 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.STRING(16)
         },
+        side: {
+            allowNull: false,
+            type: DataTypes.ENUM(
+                'BUY',
+                'SELL'
+            )
+        },
         type: {
             allowNull: false,
-            type: DataTypes.ENUM('BUY', 'SELL')
+            type: DataTypes.ENUM(
+                'LIMIT',
+                'MARKET',
+                'STOP_LOSS',
+                'STOP_LOSS_LIMIT',
+                'TAKE_PROFIT',
+                'TAKE_PROFIT_LIMIT',
+                'LIMIT_MAKER'
+            )
         },
         status: {
             allowNull: false,
-            type: DataTypes.ENUM('ACTIVE', 'FILLED', 'PARTIALLY_FILLED', 'CANCELED', 'ERROR')
+            type: DataTypes.ENUM(
+                'NEW',
+                'PARTIALLY_FILLED',
+                'FILLED',
+                'CANCELED',
+                'REJECTED',
+                'EXPIRED',
+                'ERROR'
+            )
         },
         price: {
             allowNull: false,
@@ -54,8 +77,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE
         }
     }, {});
-    Order.associate = function ({Client}) {
+    Order.associate = function ({Client, Deal}) {
         Order.belongsTo(Client, {as: 'client'});
+        Order.belongsTo(Deal, {as: 'deal'});
     };
     return Order;
 };

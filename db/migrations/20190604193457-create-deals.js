@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('ClientApiSettings', {
+        return queryInterface.createTable('Deals', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -9,20 +9,32 @@ module.exports = {
                 type: Sequelize.INTEGER(11).UNSIGNED
             },
             clientId: {
-                allowNull: false,
                 type: Sequelize.INTEGER(11).UNSIGNED,
                 references: {
-                    model: 'Client',
+                    model: 'Clients',
                     key: 'id'
                 },
             },
-            apiKey: {
+            symbol: {
                 allowNull: false,
-                type: Sequelize.STRING(128)
+                type: Sequelize.STRING(16)
             },
-            apiSecret: {
+            openPrice: {
                 allowNull: false,
-                type: Sequelize.STRING(128)
+                type: Sequelize.DECIMAL(16, 8)
+            },
+            quantity: {
+                allowNull: false,
+                type: Sequelize.DECIMAL(16, 8)
+            },
+            minProfitPrice: {
+                allowNull: false,
+                type: Sequelize.DECIMAL(16, 8)
+            },
+            status: {
+                allowNull: false,
+                type: Sequelize.ENUM('OPEN', 'CLOSED'),
+                defaultValue: 'OPEN'
             },
             createdAt: {
                 allowNull: false,
@@ -35,6 +47,6 @@ module.exports = {
         });
     },
     down: (queryInterface) => {
-        return queryInterface.dropTable('ClientApiSettings');
+        return queryInterface.dropTable('Deals');
     }
 };

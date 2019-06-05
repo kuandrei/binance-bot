@@ -12,8 +12,8 @@ app.use(cookieParser());
 // load routes
 require('./routes')(app);
 
-// load crons
-require('./crons')(app);
+// load workers
+require('./workers')(app);
 
 // set the port
 const port = process.env.PORT || 80;

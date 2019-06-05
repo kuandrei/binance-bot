@@ -12,7 +12,15 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.INTEGER(11).UNSIGNED,
                 references: {
-                    model: 'Client',
+                    model: 'Clients',
+                    key: 'id'
+                },
+            },
+            dealId: {
+                allowNull: false,
+                type: Sequelize.INTEGER(11).UNSIGNED,
+                references: {
+                    model: 'Deals',
                     key: 'id'
                 },
             },
@@ -24,13 +32,36 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.STRING(16)
             },
+            side: {
+                allowNull: false,
+                type: Sequelize.ENUM(
+                    'BUY',
+                    'SELL'
+                )
+            },
             type: {
                 allowNull: false,
-                type: Sequelize.ENUM('BUY', 'SELL')
+                type: Sequelize.ENUM(
+                    'LIMIT',
+                    'MARKET',
+                    'STOP_LOSS',
+                    'STOP_LOSS_LIMIT',
+                    'TAKE_PROFIT',
+                    'TAKE_PROFIT_LIMIT',
+                    'LIMIT_MAKER'
+                )
             },
             status: {
                 allowNull: false,
-                type: Sequelize.ENUM('ACTIVE', 'FILLED', 'PARTIALLY_FILLED', 'CANCELED', 'ERROR')
+                type: Sequelize.ENUM(
+                    'NEW',
+                    'PARTIALLY_FILLED',
+                    'FILLED',
+                    'CANCELED',
+                    'REJECTED',
+                    'EXPIRED',
+                    'ERROR'
+                )
             },
             price: {
                 allowNull: false,

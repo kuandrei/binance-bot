@@ -14,8 +14,16 @@ module.exports = {
             },
             status: {
                 allowNull: false,
-                type: Sequelize.ENUM('active', 'inactive', 'suspended'),
-                defaultValue: 'active'
+                type: Sequelize.ENUM('ACTIVE', 'INACTIVE'),
+                defaultValue: 'ACTIVE'
+            },
+            apiKey: {
+                allowNull: false,
+                type: Sequelize.STRING(128),
+            },
+            apiSecret: {
+                allowNull: false,
+                type: Sequelize.STRING(128)
             },
             createdAt: {
                 allowNull: false,

@@ -7,13 +7,22 @@ module.exports = (sequelize, DataTypes) => {
         },
         status: {
             allowNull: false,
-            type: DataTypes.ENUM('active', 'inactive'),
-            defaultValue: 'active'
+            type: DataTypes.ENUM('ACTIVE', 'INACTIVE'),
+            defaultValue: 'ACTIVE'
+        },
+        apiKey: {
+            allowNull: false,
+            type: DataTypes.STRING(128),
+        },
+        apiSecret: {
+            allowNull: false,
+            type: DataTypes.STRING(128)
         }
     }, {});
     Client.associate = function (models) {
         Client.hasMany(models.Order, {as: 'orders', foreignKey: 'clientId'});
-        Client.hasOne(models.ClientApiSettings, {as: 'api-settings', foreignKey: 'clientId'});
+        Client.hasMany(models.TradePair, {as: 'trade-pairs', foreignKey: 'clientId'});
+        Client.hasMany(models.Deal, {as: 'deals', foreignKey: 'clientId'});
     };
     return Client;
 };
