@@ -5,7 +5,7 @@
   "main": "app/server.js",
   "scripts": {
     "pretest": "eslint .",
-    "test": "PORT=1000 NODE_ENV=test mocha tests/*.js --exit",
+    "test": "PORT=1000 NODE_ENV=test mocha tests/**/*.js --exit --timeout 15000",
     "start": "NODE_ENV=development DEBUG=bnb:* pm2 start app/server.js --watch",
     "db:migrate": "node_modules/.bin/sequelize db:migrate",
     "db:migrate:undo": "node_modules/.bin/sequelize db:migrate:undo",
@@ -22,8 +22,10 @@
     "debug": "^4.1.1",
     "express": "^4.17.1",
     "mysql2": "^1.6.5",
+    "ramda": "^0.26.1",
     "sequelize": "^5.8.7",
-    "sequelize-cli": "^5.4.0"
+    "sequelize-cli": "^5.4.0",
+    "technicalindicators": "^2.0.8"
   },
   "devDependencies": {
     "chai": "^4.2.0",

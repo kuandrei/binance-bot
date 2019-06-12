@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
         apiSecret: {
             allowNull: false,
             type: DataTypes.STRING(128)
+        },
+        commission: {
+            allowNull: false,
+            type: DataTypes.DECIMAL(6, 6)
         }
     }, {});
     Client.associate = function (models) {

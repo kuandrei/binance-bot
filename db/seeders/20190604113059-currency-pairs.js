@@ -5,31 +5,25 @@ module.exports = {
         return queryInterface.bulkInsert('CurrencyPairs', [{
             symbol: 'BTCUSDT',
             firstCurrency: 'BTC',
-            firstCurrencyPrecision: 8,
+            firstCurrencyPrecision: 6,
             secondCurrency: 'USDT',
             secondCurrencyPrecision: 2,
-            commission: 0.0010,
-            commissionType: 'STANDARD',
             createdAt: new Date(),
             updatedAt: new Date()
         }, {
             symbol: 'BNBBTC',
             firstCurrency: 'BNB',
-            firstCurrencyPrecision: 8,
+            firstCurrencyPrecision: 6,
             secondCurrency: 'BTC',
-            secondCurrencyPrecision: 8,
-            commission: 0.0005,
-            commissionType: 'FIRST_CURRENCY',
+            secondCurrencyPrecision: 6,
             createdAt: new Date(),
             updatedAt: new Date()
         }, {
             symbol: 'BNBUSDT',
             firstCurrency: 'BNB',
-            firstCurrencyPrecision: 8,
+            firstCurrencyPrecision: 6,
             secondCurrency: 'USDT',
             secondCurrencyPrecision: 2,
-            commission: 0.0005,
-            commissionType: 'FIRST_CURRENCY',
             createdAt: new Date(),
             updatedAt: new Date()
         }], {});

@@ -1,5 +1,5 @@
 const should = require('chai').should();
-const server = require('./../app/server');
+const server = require('../../app/server');
 const request = require('supertest');
 
 // wait until server is started
@@ -9,7 +9,7 @@ before(function (done) {
     server.once('started', done);
 });
 
-describe('Public APIs', function () {
+describe('Index Controller', function () {
 
     it('(GET /status) - check test endpoint', function (done) {
 

@@ -25,6 +25,10 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.STRING(128)
             },
+            commission: {
+                allowNull: false,
+                type: Sequelize.DECIMAL(6, 6)
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,

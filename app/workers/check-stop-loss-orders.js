@@ -1,5 +1,5 @@
 const async = require('async');
-const debug = require('debug')('bnb:workers:check-open-orders');
+const debug = require('debug')('bnb:workers:check-stop-loss-orders');
 const binanceHelper = require('./../helpers/binance');
 const {Sequelize, Deal, Order} = require('./../models');
 
@@ -50,13 +50,11 @@ async function checkOrder(order) {
             order.closedAt = new Date();
             await order.save();
 
-            if (order.status === 'FILLED') {
-                // change deal from NEW to OPEN
-                const deal = await Deal.findByPk(order.dealId);
-                if (deal.status === 'NEW') {
-                    deal.status = 'OPEN';
-                    deal.save();
-                }
+            // change deal from NEW to OPEN
+            const deal = await Deal.findByPk(order.dealId);
+            if (deal.status === 'NEW') {
+                deal.status = 'OPEN';
+                deal.save();
             }
         }
     } catch (err) {

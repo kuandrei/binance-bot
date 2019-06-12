@@ -63,6 +63,9 @@ module.exports = {
                     'ERROR'
                 )
             },
+            error: {
+                type: Sequelize.JSON
+            },
             price: {
                 allowNull: false,
                 type: Sequelize.DECIMAL(16, 8)

@@ -28,15 +28,6 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.INTEGER(3).UNSIGNED
             },
-            commission: {
-                allowNull: false,
-                type: Sequelize.DECIMAL(6, 4)
-            },
-            commissionType: {
-                allowNull: false,
-                type: Sequelize.ENUM('STANDARD', 'FIRST_CURRENCY', 'SECOND_CURRENCY'),
-                defaultValue: 'STANDARD'
-            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE

@@ -2,13 +2,13 @@ const Queue = require('bull');
 
 const initWorkers = () => {
     /**
-     * Start trade queue
+     * Init trade queue
      * ----------------------------------------------------------------------------
      * Load all active trade pairs and add them to analyze trade-pair-queue
      */
-    const startTradeQueue = new Queue('start-trade', 'redis://redis:6379');
-    startTradeQueue.process(__dirname + '/start-trade.js');
-    startTradeQueue.add({}, {
+    const initTradeQueue = new Queue('init-trade', 'redis://redis:6379');
+    initTradeQueue.process(__dirname + '/init-trade.js');
+    initTradeQueue.add({}, {
         repeat: {
             cron: '* * * * *'
         },
@@ -24,6 +24,14 @@ const initWorkers = () => {
 
 
     /**
+     * Open deal queue
+     * ----------------------------------------------------------------------------
+     *
+     */
+    const openDealQueue = new Queue('open-deal', 'redis://redis:6379');
+    openDealQueue.process(__dirname + '/open-deal.js');
+
+    /**
      * Check open orders queue
      * ----------------------------------------------------------------------------
      * Runs every minute and checks the status of open (NEW) orders
@@ -31,6 +39,32 @@ const initWorkers = () => {
     const checkOpenOrdersQueue = new Queue('check-open-orders', 'redis://redis:6379');
     checkOpenOrdersQueue.process(__dirname + '/check-open-orders.js');
     checkOpenOrdersQueue.add({}, {
+        repeat: {
+            cron: '* * * * *'
+        },
+        removeOnComplete: true
+    });
+
+    /**
+     * Add STOP_LOSS orders queue
+     * ----------------------------------------------------------------------------
+     */
+    const addStopLossOrdersQueue = new Queue('add-stop-loss-orders', 'redis://redis:6379');
+    addStopLossOrdersQueue.process(__dirname + '/add-stop-loss-orders.js');
+    addStopLossOrdersQueue.add({}, {
+        repeat: {
+            cron: '* * * * *'
+        },
+        removeOnComplete: true
+    });
+
+    /**
+     * Check STOP_LOSS orders queue
+     * ----------------------------------------------------------------------------
+     */
+    const checkStopLossOrdersQueue = new Queue('check-stop-loss-orders', 'redis://redis:6379');
+    checkStopLossOrdersQueue.process(__dirname + '/check-stop-loss-orders.js');
+    checkStopLossOrdersQueue.add({}, {
         repeat: {
             cron: '* * * * *'
         },

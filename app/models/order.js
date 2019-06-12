@@ -40,6 +40,9 @@ module.exports = (sequelize, DataTypes) => {
                 'ERROR'
             )
         },
+        error: {
+            type: DataTypes.JSON
+        },
         price: {
             allowNull: false,
             type: DataTypes.DECIMAL(16, 8)
