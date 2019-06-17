@@ -37,6 +37,14 @@ async function cancelOrder(clientId, symbol, orderId) {
     });
 }
 
+async function getOrder(clientId, symbol, orderId) {
+    const authorizedApiClient = await initApiClient(clientId);
+    return authorizedApiClient.getOrder({
+        symbol,
+        orderId
+    });
+}
+
 async function allOrders(clientId, symbol) {
     const authorizedApiClient = await initApiClient(clientId);
     return authorizedApiClient.allOrders({
@@ -79,6 +87,7 @@ module.exports = {
     initApiClient,
     order,
     cancelOrder,
+    getOrder,
     allOrders,
     symbolMarketPrice,
     getClientBalances,

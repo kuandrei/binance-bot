@@ -48,6 +48,13 @@ describe('Binance helpers', function () {
         orders.should.be.an('array');
     });
 
+    it.only('Test getOrder helper', async function () {
+        const order = await binanceHelpers.getOrder(testClientId, 'BTCUSDT', 440652233);
+        console.log('-----------------------------');
+        console.dir(order, {colors: true, depth: 5});
+        console.log('-----------------------------');
+    });
+
     it('Test getCandles helper', async function () {
         const candles = await binanceHelpers.getCandles({
             symbol: 'BTCUSDT',

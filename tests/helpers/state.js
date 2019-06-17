@@ -11,15 +11,13 @@ before((done) => {
     server.once('started', done);
 });
 
-describe.only('State helpers', function () {
+describe('State helpers', function () {
 
     it('Generate state for BTCUSDT', async function () {
 
         const tradePair = await TradePair.findByPk(tradePairId);
         const result = await stateHelpers.tradePairState(tradePair);
-        console.log('-----------------------------');
-        console.dir(result, {colors: true, depth: 1});
-        console.log('-----------------------------');
+
         result.should.be.an('object');
         result.should.include.keys([
             'date',

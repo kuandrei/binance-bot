@@ -1,0 +1,60 @@
+version: "3"
+services:
+#  mongo:
+#    image: mongo
+#    restart: always
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: root
+#    volumes:
+#      - ./data/mongo:/data
+#  mongo-express:
+#    image: mongo-express
+#    restart: always
+#    ports:
+#      - 8081:8081
+#    environment:
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+#  db:
+#    image: mysql
+#    environment:
+#      - MYSQL_PASSWORD=secret
+#      - MYSQL_ROOT_PASSWORD=root
+#    volumes:
+#      - ./data/db:/var/lib/mysql
+#    ports:
+#      - "3306:3306"
+#  phpmyadmin:
+#    image: phpmyadmin/phpmyadmin
+#    environment:
+#      PMA_ARBITRARY: 1
+#      MYSQL_PASSWORD: secret
+#      MYSQL_ROOT_PASSWORD: root
+#    ports:
+#      - "8080:80"
+  redis:
+    image: redis
+    hostname: redis
+    container_name: redis
+    volumes:
+      - ./data/redis:/data/
+  redcom:
+    image: tenstartups/redis-commander
+    hostname: redcom
+    container_name: redcom
+    depends_on:
+      - redis
+    command: --redis-host redis
+    ports:
+      - "8082:8081"
+  bot:
+    hostname: bot
+    build: .
+    volumes:
+      - .:/usr/local/web/app/
+      - /usr/local/web/app/node_modules
+    ports:
+      - "80:80"
+#    command: sh -c 'NODE_ENV=development DEBUG=1 pm2-runtime start app/server.js --watch'
+    command: sh -c 'tail -f /dev/null'
