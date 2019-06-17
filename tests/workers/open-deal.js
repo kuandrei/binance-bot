@@ -114,4 +114,41 @@ describe('Open deal worker', function () {
         result.debitCurrency.should.equal('USDT');
     });
 
+    it('openDeal', async function () {
+        const results = await workerFunctions.openDeal({
+            data: {
+                clientId: 1,
+                client: {
+                    id: 1,
+                    commission: 0.00075
+                },
+                marketPrice: 8224.56,
+                tradePair: {
+                    id: 1,
+                    clientId: 1,
+                    symbol: 'BTCUSDT',
+                    dealQty: 0.002,
+                    additionPercentage: 0.03
+                },
+                currencyPair: {
+                    symbol: 'BTCUSDT',
+                    firstCurrency: 'BTC',
+                    secondCurrency: 'USDT',
+                    firstCurrencyPrecision: 6,
+                    secondCurrencyPrecision: 2
+                },
+                balances: {
+                    'USDT': 10000
+                }
+            }
+        });
+
+        results.should.contain.keys('binanceOrder', 'order', 'deal');
+
+        // clean the database
+        await results.order.destroy();
+        await results.deal.destroy();
+
+    });
+
 });

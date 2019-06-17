@@ -1,5 +1,5 @@
 const async = require('async');
-const {Deal, sequelize} = require('./../models');
+const {Deal, Order, sequelize} = require('./../models');
 
 const getActiveSymbols = async () => {
     const results = await sequelize.query(`
@@ -25,10 +25,28 @@ const findNewProfitDeals = async (symbol, marketPrice) => {
         replacements: {symbol, marketPrice}
     });
 
-    return await async.map(results, async item => await Deal.findByPk(item.id));
+    return await async.map(results, async d => await Deal.findByPk(d.id));
+};
+
+const findOpenStopLossOrder = async (symbol, marketPrice) => {
+    const results = await sequelize.query(`
+        SELECT Orders.id
+        FROM Orders
+        WHERE Orders.status='NEW'
+        AND Orders.side='SELL'
+        AND Orders.type='STOP_LOSS_LIMIT'
+        AND Orders.symbol=:symbol
+        AND Orders.price < :marketPrice
+    `, {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: {symbol, marketPrice}
+    });
+
+    return await async.map(results, async o => await Order.findByPk(o.id));
 };
 
 module.exports = {
     getActiveSymbols,
-    findNewProfitDeals
+    findNewProfitDeals,
+    findOpenStopLossOrder
 };

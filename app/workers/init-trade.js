@@ -3,6 +3,7 @@ const analyzeTradePairQueue = new Queue('analyze-trade-pair', 'redis://redis:637
 const async = require('async');
 const debug = require('debug')('bnb:workers:init-trade');
 const {TradePair} = require('./../models');
+const errorHandler = require('../helpers/error-handler');
 
 /**
  * Load all active trade pairs and add them to analyze trade-pair-queue
@@ -10,8 +11,6 @@ const {TradePair} = require('./../models');
  * @return {Promise.<void>}
  */
 module.exports = async () => {
-
-    debug('start init trade worker started');
 
     let filter = {
         where: {
@@ -21,20 +20,19 @@ module.exports = async () => {
     try {
         const tradePairs = await TradePair.findAll(filter);
 
-        if (tradePairs.length === 0)
-            debug('no trade pairs found');
-        else {
-            debug(`found ${tradePairs.length} active trade pairs`);
+        if (tradePairs.length > 0)
             async.each(tradePairs, addToQueue);
-        }
+
     } catch (err) {
-        debug('Unexpected error', err);
+        errorHandler(err, {
+            filter
+        });
+        debug(`ERROR: ${err.message}`);
     }
 
 };
 
 async function addToQueue(tradePair) {
-    debug(`add trade-pair# ${tradePair.id} to analyze-trade-pair queue`);
     analyzeTradePairQueue.add(tradePair, {
         removeOnComplete: true
     });

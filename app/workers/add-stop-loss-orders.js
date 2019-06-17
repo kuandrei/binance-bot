@@ -1,5 +1,6 @@
 const async = require('async');
 const debug = require('debug')('bnb:workers:add-stop-loss-orders');
+const errorHandler = require('../helpers/error-handler');
 const dbHelpers = require('../helpers/db');
 const binanceHelpers = require('../helpers/binance');
 const {Client, Order, CurrencyPair} = require('../models');
@@ -12,25 +13,14 @@ const {Client, Order, CurrencyPair} = require('../models');
  */
 async function main() {
 
-    debug('check open orders worker started');
-
     const symbols = await dbHelpers.getActiveSymbols();
-    const symbolsWithMarketPrice = await getSymbolsWithMarketPrice(symbols);
+    const symbolsWithMarketPrice = await binanceHelpers.symbolMarketPrice(symbols);
 
     async.eachSeries(symbolsWithMarketPrice, async item => {
         const deals = await dbHelpers.findNewProfitDeals(item.symbol, item.marketPrice);
         async.eachSeries(deals, async deal => {
             await addStopLossOrder({deal, symbol: item.symbol, marketPrice: item.marketPrice})
         })
-    });
-}
-
-async function getSymbolsWithMarketPrice(symbols) {
-    return async.map(symbols, async (symbol) => {
-        return {
-            symbol,
-            marketPrice: await binanceHelpers.symbolMarketPrice(symbol)
-        };
     });
 }
 
@@ -41,20 +31,30 @@ async function getSymbolsWithMarketPrice(symbols) {
  */
 async function addStopLossOrder(ctx) {
 
-    const {
-        placeOrderData,
-        orderCreationData
-    } = prepareSellOrderData(ctx);
+    try {
+        const {
+            binanceOrderData,
+            orderData
+        } = await prepareData(ctx);
 
-    // debug(`place binance stop_limit_order order: ${orderCreationData.quantity} ${placeOrderData.firstCurrency} for ${dealPrice} ${ctx.currencyPair.secondCurrency} (trade-pair#${ctx.tradePair.id})`);
-    const binanceOrder = await binanceHelpers.order(ctx.deal.clientId, placeOrderData);
+        debug(`ADD STOP_LOSS_LIMIT (SYMBOL:${orderData.symbol}/QTY:${orderData.quantity}/PRICE:${binanceOrderData.price}`);
 
-    orderCreationData.binanceOrderId = binanceOrder.id;
-    debug(`create new order (trade-pair#${ctx.tradePair.id})`);
-    await Order.create(orderCreationData);
+        const binanceOrder = await binanceHelpers.order(ctx.deal.clientId, binanceOrderData);
+
+        orderData.binanceOrderId = binanceOrder.orderId;
+        const order = await Order.create(orderData);
+
+        return {
+            binanceOrder,
+            order
+        };
+    } catch (err) {
+        errorHandler(err, ctx);
+        debug(`ERROR: ${err.message}`);
+    }
 }
 
-async function prepareSellOrderData({deal, symbol, marketPrice}) {
+async function prepareData({deal, symbol, marketPrice}) {
 
     // prepare context
     const client = await Client.findByPk(deal.clientId);
@@ -64,11 +64,11 @@ async function prepareSellOrderData({deal, symbol, marketPrice}) {
     });
     const maxPrecision = Math.pow(10, 8);
     const precision = Math.pow(10, currencyPair.secondCurrencyPrecision);
-    const quantity = deal.quantity;
-    const price = Math.round((deal.minProfitPrice + marketPrice) / 2 * precision) / precision;
+    const quantity = parseFloat(deal.quantity);
+    const price = Math.round((parseFloat(deal.minProfitPrice) + marketPrice) / 2 * precision) / precision;
 
     // place STOP_LOSS_LIMIT order in binance
-    const placeOrderData = {
+    const binanceOrderData = {
         symbol: symbol,
         side: 'SELL',
         type: 'STOP_LOSS_LIMIT',
@@ -81,7 +81,7 @@ async function prepareSellOrderData({deal, symbol, marketPrice}) {
     const feeCurrency = currencyPair.secondCurrency;
     // @todo - convert to BNB if feeCurrency is not BNB
 
-    const orderCreationData = {
+    const orderData = {
         clientId: deal.clientId,
         dealId: deal.id,
         symbol: symbol,
@@ -99,8 +99,8 @@ async function prepareSellOrderData({deal, symbol, marketPrice}) {
     };
 
     return {
-        placeOrderData,
-        orderCreationData
+        binanceOrderData,
+        orderData
     };
 }
 
@@ -109,9 +109,8 @@ if (process.env.NODE_ENV !== 'test') {
 } else {
     module.exports = {
         main,
-        getSymbolsWithMarketPrice,
         addStopLossOrder,
-        prepareSellOrderData
+        prepareData
     }
 }
 

@@ -16,7 +16,7 @@ const {
  * @param tradePair
  * @return {Promise.<void>}
  */
-module.exports = async (tradePair) => {
+async function tradePairState(tradePair) {
 
     try {
 
@@ -30,10 +30,18 @@ module.exports = async (tradePair) => {
             symbol: tradePair.symbol,
             client: (await Client.findByPk(tradePair.clientId)).toJSON(),
             marketPrice: marketCurrencyPairState.marketPrice,
-            tradePair: R.pick(['id', 'symbol', 'status', 'dealQty', 'additionPercentage'], tradePair),
+            tradePair: R.pick([
+                'id',
+                'clientId',
+                'symbol',
+                'status',
+                'dealQty',
+                'additionPercentage'
+            ], tradePair),
             currencyPair: (await CurrencyPair.findOne({
                 where: {symbol: tradePair.symbol},
                 attributes: [
+                    'symbol',
                     'firstCurrency',
                     'firstCurrencyPrecision',
                     'secondCurrency',
@@ -61,14 +69,15 @@ module.exports = async (tradePair) => {
         return state;
 
     } catch (err) {
+        // @todo log error
         console.log('-----------------------------');
-        console.dir(err.message, {colors: true, depth: 5});
+        console.dir(err, {colors: true, depth: 5});
         console.log('-----------------------------');
         debug(err.message);
     }
-};
+}
 
-const getCurrencyPairState = async (symbol) => {
+async function getCurrencyPairState(symbol) {
     // @todo - send requests in parallel
     const candles1m = await binanceHelper.getCandles({symbol, interval: '1m', limit: 30});
     const candles3m = await binanceHelper.getCandles({symbol, interval: '3m', limit: 30});
@@ -89,39 +98,74 @@ const getCurrencyPairState = async (symbol) => {
             '5m': indicators(candles5m)
         }
     };
-};
+}
 
-const countDeals = (type) => async ({clientId, symbol, marketPrice}) => {
-    const where = {
-        clientId: clientId,
-        symbol: symbol,
-        status: 'OPEN'
+function countDeals(type) {
+    return async ({clientId, symbol, marketPrice}) => {
+        const where = {
+            clientId: clientId,
+            symbol: symbol,
+            status: 'OPEN'
+        };
+        switch (type) {
+            case 'BelowMarketPrice':
+                where.openPrice = {
+                    [Sequelize.Op.gte]: marketPrice
+                };
+                break;
+            case 'AboveMarketPrice':
+                where.openPrice = {
+                    [Sequelize.Op.lt]: marketPrice
+                };
+                break;
+            case 'InProfit':
+                where.minProfitPrice = {
+                    [Sequelize.Op.lt]: marketPrice
+                };
+                break;
+            case 'New':
+                where.status = 'NEW';
+                break;
+        }
+        return await Deal.count({where});
     };
-    switch (type) {
-        case 'BelowMarketPrice':
-            where.openPrice = {
-                [Sequelize.Op.gte]: marketPrice
-            };
-            break;
-        case 'AboveMarketPrice':
-            where.openPrice = {
-                [Sequelize.Op.lt]: marketPrice
-            };
-            break;
-        case 'InProfit':
-            where.minProfitPrice = {
-                [Sequelize.Op.lt]: marketPrice
-            };
-            break;
-        case 'New':
-            where.status = 'NEW';
-            break;
+}
+
+/**
+ * If current trend is upward (check last 3m MACD) - then stop loss price is 0.05% less than last SMA 1m indicator
+ * Else find the last support value (lowest SMA value)
+ * @param symbol
+ * @return {Promise.<*>}
+ */
+async function calculateStopLossPrice(symbol) {
+    let stopLossPrice;
+
+    const currencyPair = (await CurrencyPair.findOne({
+        where: {symbol},
+        attributes: ['secondCurrencyPrecision']
+    })).toJSON();
+    const precision = Math.pow(10, currencyPair.secondCurrencyPrecision);
+    // get current state
+    const state = await getCurrencyPairState(symbol);
+
+    const lastMacd3m = state.indicators['1m'].MACD[state.indicators['1m'].MACD.length - 1];
+    const lastSmaValue3m = state.indicators['3m'].SMA[state.indicators['3m'].SMA.length - 1];
+    const lowestSmaValue = R.min(
+        R.reduce(R.min, Infinity, state.indicators['1m'].SMA),
+        R.reduce(R.min, Infinity, state.indicators['3m'].SMA),
+        R.reduce(R.min, Infinity, state.indicators['5m'].SMA)
+    );
+
+    if (lastMacd3m.MACD > 0) {
+        stopLossPrice = parseFloat(lastSmaValue3m - lastSmaValue3m * 0.01 / 100);
+    } else {
+        stopLossPrice = parseFloat(lowestSmaValue - lowestSmaValue * 0.01 / 100);
     }
-    return Deal.count({where});
-};
 
+    return Math.round(stopLossPrice * precision) / precision;
+}
 
-const getBalances = async ({currencyPair, clientId}) => {
+async function getBalances({currencyPair, clientId}) {
     const balances = (await binanceHelper.getClientBalances(clientId)).filter(item => {
         return item.asset === currencyPair.firstCurrency || item.asset === currencyPair.secondCurrency;
     });
@@ -133,4 +177,9 @@ const getBalances = async ({currencyPair, clientId}) => {
         };
     });
     return result;
+}
+
+module.exports = {
+    tradePairState,
+    calculateStopLossPrice
 };

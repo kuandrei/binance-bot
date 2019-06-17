@@ -2,20 +2,17 @@ const R = require('ramda');
 const debug = require('debug')('bnb:workers:open-deal');
 const {Deal, Order} = require('./../models');
 const binanceHelper = require('./../helpers/binance');
+const errorHandler = require('../helpers/error-handler');
 
 // 0. prepare context
 // 1. validate balance
 // 2. create new deal
 // 3. place buy order in binance
 // 4. create new buy orders
-async function main(task) {
+async function openDeal(task) {
     const ctx = task.data;
 
-    console.log('-----------------------------');
-    console.dir(ctx, {colors: true, depth: 1});
-    console.log('-----------------------------');
-
-    debug(`open-order worker (trade-pair#${ctx.tradePair.id})`);
+    debug(`OPEN-ORDER WORKER (TRADE-PAIR#${ctx.tradePair.id})`);
 
     // 0. prepare context
     // 1. validate balance
@@ -24,18 +21,6 @@ async function main(task) {
     // 4. create new buy order
 
     try {
-
-        // validate balance
-        //
-        // const buyQty = ctx.tradePair.dealQty + ctx.tradePair.dealQty * ctx.tradePair.additionPercentage;
-        // let precision = Math.pow(10, ctx.currencyPair.secondCurrencyPrecision);
-        // const dealPrice = Math.round(ctx.marketPrice * buyQty * precision) / precision;
-        //
-        //
-        // if (ctx.balances[dealCurrency] < dealPrice) {
-        //     debug('Not enough funds for opening new deal (trade-pair#${ctx.tradePair.id})');
-        //     return;
-        // }
 
         // prepare data
         const dealData = prepareDealData(ctx);
@@ -47,27 +32,37 @@ async function main(task) {
         // validate balance
         const dealCurrency = ctx.currencyPair.secondCurrency;
         if (ctx.balances[dealCurrency] < binanceOrderData.price * binanceOrderData.quantity) {
-            debug('Not enough funds for opening new deal (trade-pair#${ctx.tradePair.id})');
+            debug('NOT ENOUGH FUNDS FOR OPENING NEW DEAL (TRADE-PAIR#${ctx.tradePair.id})');
             return;
         }
 
         // open/create new deal
-        debug(`add new deal (trade-pair#${ctx.tradePair.id})`);
+        debug(`ADD NEW DEAL (TRADE-PAIR#${ctx.tradePair.id})`);
         const deal = await Deal.create(dealData);
 
         // place buy order in binance
+        debug(`ADD BUY ORDER (SYMBOL:${orderData.symbol}/QTY:${orderData.quantity}/PRICE:${binanceOrderData.price}/TRADE-PAIR#${ctx.tradePair.id})`);
+
         // debug(`place binance buy order: ${buyQty} ${ctx.currencyPair.firstCurrency} for ${dealPrice} ${ctx.currencyPair.secondCurrency} (trade-pair#${ctx.tradePair.id})`);
         const binanceOrder = await binanceHelper.order(ctx.clientId, binanceOrderData);
-
+        console.log('-----------------------------');
+        console.dir(binanceOrder, {colors: true, depth: 5});
+        console.log('-----------------------------');
         // create new buy order
-        orderData.binanceOrderId = binanceOrder.id;
+        orderData.binanceOrderId = binanceOrder.orderId;
         orderData.dealId = deal.id;
 
-        debug(`create new order (trade-pair#${ctx.tradePair.id})`);
-        await Order.create(orderData);
+        const order = await Order.create(orderData);
+
+        return {
+            binanceOrder,
+            order,
+            deal
+        };
 
     } catch (err) {
-        debug(`new order worker failed with error '${err.message}' (trade-pair#${ctx.tradePair.id})`);
+        errorHandler(err, task.data);
+        debug(`ERROR: ${err.message}`);
     }
 }
 
@@ -117,10 +112,10 @@ function prepareOrderData({client, currencyPair, binanceOrder}) {
 }
 
 if (process.env.NODE_ENV !== 'test') {
-    module.exports = main;
+    module.exports = openDeal;
 } else {
     module.exports = {
-        main,
+        openDeal,
         prepareDealData,
         prepareBinanceOrderData,
         prepareOrderData

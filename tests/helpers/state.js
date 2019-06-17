@@ -1,7 +1,7 @@
 require('chai').should();
 
 const server = require('../../app/server');
-const stateHelper = require('../../app/helpers/state');
+const stateHelpers = require('../../app/helpers/state');
 const tradePairId = 1;
 const {TradePair} = require('../../app/models');
 
@@ -11,12 +11,15 @@ before((done) => {
     server.once('started', done);
 });
 
-describe('State helper', function () {
+describe.only('State helpers', function () {
 
     it('Generate state for BTCUSDT', async function () {
 
         const tradePair = await TradePair.findByPk(tradePairId);
-        const result = await stateHelper(tradePair);
+        const result = await stateHelpers.tradePairState(tradePair);
+        console.log('-----------------------------');
+        console.dir(result, {colors: true, depth: 1});
+        console.log('-----------------------------');
         result.should.be.an('object');
         result.should.include.keys([
             'date',
@@ -36,12 +39,14 @@ describe('State helper', function () {
         ]);
         result.tradePair.should.include.keys([
             'id',
+            'clientId',
             'symbol',
             'status',
             'dealQty',
             'additionPercentage'
         ]);
         result.currencyPair.should.include.keys([
+            'symbol',
             'firstCurrency',
             'firstCurrencyPrecision',
             'secondCurrency',
@@ -52,5 +57,11 @@ describe('State helper', function () {
         result.indicators['1m'].should.include.keys(['MACD']);
 
     });
+
+    it('calculateStopLossPrice', async function () {
+        const price = await stateHelpers.calculateStopLossPrice('BTCUSDT');
+        price.should.be.a('number');
+    });
+
 
 });

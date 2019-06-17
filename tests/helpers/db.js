@@ -21,4 +21,9 @@ describe('DB helpers', function () {
         deals.should.be.an('array');
     });
 
+    it('findOpenStopLossOrder', async function () {
+        const deals = await dbHelpers.findOpenStopLossOrder('BTCUSDT', 20000);
+        deals.should.be.an('array');
+    });
+
 });

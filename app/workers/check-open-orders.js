@@ -2,33 +2,30 @@ const async = require('async');
 const debug = require('debug')('bnb:workers:check-open-orders');
 const binanceHelper = require('./../helpers/binance');
 const {Sequelize, Deal, Order} = require('./../models');
+const errorHandler = require('../helpers/error-handler');
 
 /**
  * Checks open order statuses and updates their status
  */
 module.exports = async () => {
 
-    debug('check open orders worker started');
-
     let filter = {
         where: {
             status: {
                 [Sequelize.Op.in]: ['NEW', 'ACTIVE']
             }
-        },
-        limit: 100
+        }
     };
     try {
         const orders = await Order.findAll(filter);
 
-        if (orders.length === 0)
-            debug('no orders found');
-        else {
-            debug(`found ${orders.length} open orders`);
+        if (orders.length > 0)
             async.each(orders, checkOrder);
-        }
     } catch (err) {
-        debug('Unexpected error', err.message);
+        errorHandler(err, {
+            filter
+        });
+        debug(`ERROR: ${err.message}`);
     }
 
 };
@@ -56,10 +53,18 @@ async function checkOrder(order) {
                 if (deal.status === 'NEW') {
                     deal.status = 'OPEN';
                     deal.save();
+                } else if (deal.status === 'OPEN' && order.side === 'SELL') {
+                    deal.status = 'CLOSED';
+                    deal.save();
                 }
             }
         }
     } catch (err) {
+        errorHandler(err, {
+            order: order.toJSON(),
+            deal: deal.toJSON()
+        });
+
         order.status = 'ERROR';
         order.error = err;
         await order.save();

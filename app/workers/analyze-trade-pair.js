@@ -1,7 +1,8 @@
 const debug = require('debug')('bnb:workers:analyze-trade-pair');
-const stateHelper = require('./../helpers/state');
+const stateHelpers = require('./../helpers/state');
 const Queue = require('bull');
 const openDealQueue = new Queue('open-deal', 'redis://redis:6379');
+const errorHandler = require('../helpers/error-handler');
 
 /**
  * Prepares TradePairState with list of KPIs
@@ -11,9 +12,7 @@ const openDealQueue = new Queue('open-deal', 'redis://redis:6379');
 module.exports = async (task) => {
 
     try {
-        debug('analyze trade pair worker');
-
-        const state = await stateHelper(task.data);
+        const state = await stateHelpers.tradePairState(task.data);
 
         /**
          * Algorithm 1
@@ -30,15 +29,18 @@ module.exports = async (task) => {
         // }, {colors: true, depth: 2});
         // console.log('-----------------------------');
 
-        const openDeal = state.newDeals === 0 && state.openDeals === 0;
+            // @todo implement
+
+        const openDeal = false && state.newDeals <= 1 && state.openDeals <= 1;
 
         if (openDeal) {
-            debug(`add open-deal task for tradePair#${task.data.id}`);
+            debug(`ADD open-deal task for tradePair#${task.data.id}`);
             openDealQueue.add(state);
         }
 
     } catch (err) {
-        debug(err.message);
+        errorHandler(err, task.data);
+        debug(`ERROR: ${err.message}`);
     }
 
 };

@@ -25,9 +25,15 @@ describe('Binance helpers', function () {
         result.canTrade.should.equal(true);
     });
 
-    it('Test symbolMarketPrice helper', async function () {
+    it('Test symbolMarketPrice helper with one symbol', async function () {
         const result = await binanceHelpers.symbolMarketPrice('BTCUSDT');
         result.should.be.a('number');
+    });
+
+    it('Test symbolMarketPrice helper with array of symbols', async function () {
+        const results = await binanceHelpers.symbolMarketPrice(['BTCUSDT', 'BNBBTC', 'BNBUSDT']);
+        results.should.be.an('array');
+        results[0].should.include.keys('symbol', 'marketPrice');
     });
 
     it('Test getClientBalances helper', async function () {
@@ -35,6 +41,11 @@ describe('Binance helpers', function () {
         balances.should.be.an('array');
         balances.length.should.be.gt(1);
         balances[0].should.include.keys(['asset', 'free', 'locked']);
+    });
+
+    it('Test allOredrs helper', async function () {
+        const orders = await binanceHelpers.allOrders(testClientId, 'BTCUSDT');
+        orders.should.be.an('array');
     });
 
     it('Test getCandles helper', async function () {

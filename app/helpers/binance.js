@@ -1,6 +1,8 @@
+const async = require('async');
 const {Client} = require('./../models');
 const Binance = require('binance-api-node').default;
 const publicClient = Binance();
+const testMode = (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development');
 
 async function initApiClient(clientId) {
 
@@ -16,17 +18,42 @@ async function initApiClient(clientId) {
 
 async function order(clientId, data) {
     const authorizedApiClient = await initApiClient(clientId);
-    if (process.env.NODE_ENV === 'test') {
-        const order = authorizedApiClient.orderTest(data);
-        order.id = Date.now();
+    if (testMode) {
+        const order = await authorizedApiClient.orderTest(data);
+        order.orderId = Date.now();
         return order;
     }
     return authorizedApiClient.order(data);
 }
 
+async function cancelOrder(clientId, symbol, orderId) {
+    const authorizedApiClient = await initApiClient(clientId);
+    if (testMode) {
+        return true;
+    }
+    return authorizedApiClient.cancelOrder({
+        symbol,
+        orderId
+    });
+}
+
+async function allOrders(clientId, symbol) {
+    const authorizedApiClient = await initApiClient(clientId);
+    return authorizedApiClient.allOrders({
+        symbol
+    });
+}
+
 async function symbolMarketPrice(symbol) {
     const prices = await publicClient.prices();
-    return parseFloat(prices[symbol]);
+    if (Array.isArray(symbol)) {
+        return async.map(symbol, async s => ({
+            symbol: s,
+            marketPrice: parseFloat(prices[s])
+        }));
+    } else {
+        return parseFloat(prices[symbol]);
+    }
 }
 
 async function getClientBalances(clientId) {
@@ -39,6 +66,11 @@ async function getClientBalances(clientId) {
     }));
 }
 
+/**
+ *
+ * @param args
+ * @return {Promise.<*>}
+ */
 async function getCandles(args) {
     return publicClient.candles(args);
 }
@@ -46,6 +78,8 @@ async function getCandles(args) {
 module.exports = {
     initApiClient,
     order,
+    cancelOrder,
+    allOrders,
     symbolMarketPrice,
     getClientBalances,
     getCandles
