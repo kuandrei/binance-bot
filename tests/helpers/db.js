@@ -19,4 +19,9 @@ describe('DB helpers', function () {
         deals.should.be.an('array');
     });
 
+    it('getMinProfitPriceBySymbol', async function () {
+        const results = await dbHelpers.getMinProfitPriceBySymbol();
+        results.should.be.an('array');
+    });
+
 });

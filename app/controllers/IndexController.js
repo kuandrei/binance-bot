@@ -7,7 +7,7 @@ module.exports = {
             await sequelize.authenticate();
             res.json({
                 status: 'OK'
-            })
+            });
         } catch (err) {
             console.log('Unable to connect to the database:', err);
             next(err);

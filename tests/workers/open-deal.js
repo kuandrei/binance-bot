@@ -42,6 +42,10 @@ describe('Open deal worker', function () {
                 symbol: 'BTCUSDT',
                 dealQty: 0.002,
                 additionPercentage: 0.03
+            },
+            currencyPair: {
+                firstCurrencyPrecision: 6,
+                secondCurrencyPrecision: 2
             }
 
         });
