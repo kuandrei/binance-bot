@@ -1,14 +1,7 @@
 require('chai').should();
 
-const server = require('../../app/server');
 const binanceHelpers = require('../../app/helpers/binance');
 const testClientId = 1;
-
-before((done) => {
-    if (server.started)
-        return done();
-    server.once('started', done);
-});
 
 describe('Binance helpers', function () {
 
@@ -48,11 +41,10 @@ describe('Binance helpers', function () {
         orders.should.be.an('array');
     });
 
-    it.only('Test getOrder helper', async function () {
+    it('Test getOrder helper', async function () {
         const order = await binanceHelpers.getOrder(testClientId, 'BTCUSDT', 440652233);
-        console.log('-----------------------------');
-        console.dir(order, {colors: true, depth: 5});
-        console.log('-----------------------------');
+        order.should.be.an('object');
+        order.should.include.keys('symbol', 'orderId');
     });
 
     it('Test getCandles helper', async function () {

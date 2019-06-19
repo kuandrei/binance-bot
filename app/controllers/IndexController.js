@@ -1,11 +1,10 @@
-const db = require('../models');
-// const {Template} = db;
+const {sequelize} = require('../models');
 
 module.exports = {
 
     status: async (req, res, next) => {
         try {
-            await db.sequelize.authenticate();
+            await sequelize.authenticate();
             res.json({
                 status: 'OK'
             })

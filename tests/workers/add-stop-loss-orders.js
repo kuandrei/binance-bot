@@ -1,14 +1,7 @@
 require('chai').should();
 
-const server = require('../../app/server');
 const {Deal} = require('../../app/models');
 const workerFunctions = require('./../../app/workers/add-stop-loss-orders');
-
-before((done) => {
-    if (server.started)
-        return done();
-    server.once('started', done);
-});
 
 describe('Add stop loss worker', function () {
 

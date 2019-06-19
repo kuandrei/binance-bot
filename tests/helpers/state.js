@@ -1,15 +1,8 @@
 require('chai').should();
 
-const server = require('../../app/server');
 const stateHelpers = require('../../app/helpers/state');
-const tradePairId = 1;
+const tradePairId = 3;
 const {TradePair} = require('../../app/models');
-
-before((done) => {
-    if (server.started)
-        return done();
-    server.once('started', done);
-});
 
 describe('State helpers', function () {
 
@@ -32,9 +25,11 @@ describe('State helpers', function () {
             'openDealsBelowMarketPrice',
             'openDealsAboveMarketPrice',
             'openDealsInProfit',
+            'openDealsInRange',
             'candlePatterns',
             'indicators'
         ]);
+        result.openDealsInRange.should.include.keys('0.25%', '0.5%', '0.75%', '1.0%');
         result.tradePair.should.include.keys([
             'id',
             'clientId',
@@ -60,6 +55,5 @@ describe('State helpers', function () {
         const price = await stateHelpers.calculateStopLossPrice('BTCUSDT');
         price.should.be.a('number');
     });
-
 
 });

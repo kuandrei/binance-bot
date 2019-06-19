@@ -19,8 +19,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         status: {
             allowNull: false,
-            type: DataTypes.ENUM('NEW', 'OPEN', 'CLOSED', 'ERROR'),
+            type: DataTypes.ENUM('NEW', 'OPEN', 'CLOSED', 'CANCELED', 'ERROR'),
             defaultValue: 'NEW'
+        },
+        algorithm: {
+            type: DataTypes.STRING(512),
+            defaultValue: 'MANUAL'
         }
     }, {});
     Deal.associate = function ({Client, Order}) {

@@ -1,13 +1,6 @@
 require('chai').should();
 
-const server = require('../../app/server');
 const workerFunctions = require('./../../app/workers/open-deal');
-
-before((done) => {
-    if (server.started)
-        return done();
-    server.once('started', done);
-});
 
 describe('Open deal worker', function () {
 

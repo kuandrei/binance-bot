@@ -33,8 +33,12 @@ module.exports = {
             },
             status: {
                 allowNull: false,
-                type: Sequelize.ENUM('NEW', 'OPEN', 'CLOSED', 'ERROR'),
+                type: Sequelize.ENUM('NEW', 'OPEN', 'CLOSED', 'CANCELED', 'ERROR'),
                 defaultValue: 'NEW'
+            },
+            algorithm: {
+                type: Sequelize.STRING(512),
+                defaultValue: 'MANUAL'
             },
             createdAt: {
                 allowNull: false,

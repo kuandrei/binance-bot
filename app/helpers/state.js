@@ -57,6 +57,12 @@ async function tradePairState(tradePair) {
                 openDeals: await countDeals('Open')(ctx),
                 openDealsBelowMarketPrice: await countDeals('BelowMarketPrice')(ctx),
                 openDealsAboveMarketPrice: await countDeals('AboveMarketPrice')(ctx),
+                openDealsInRange: {
+                    '0.25%': await countDeals('InRange', 0.25)(ctx),
+                    '0.5%': await countDeals('InRange', 0.5)(ctx),
+                    '0.75%': await countDeals('InRange', 0.75)(ctx),
+                    '1.0%': await countDeals('InRange', 1)(ctx)
+                },
                 openDealsInProfit: await countDeals('InProfit')(ctx)
             }
         );
@@ -64,7 +70,6 @@ async function tradePairState(tradePair) {
         state.client.commission = parseFloat(state.client.commission);
         state.tradePair.dealQty = parseFloat(state.tradePair.dealQty);
         state.tradePair.additionPercentage = parseFloat(state.tradePair.additionPercentage);
-        state.currencyPair.commission = parseFloat(state.currencyPair.commission);
 
         return state;
 
@@ -78,10 +83,14 @@ async function tradePairState(tradePair) {
 }
 
 async function getCurrencyPairState(symbol) {
-    // @todo - send requests in parallel
-    const candles1m = await binanceHelper.getCandles({symbol, interval: '1m', limit: 30});
-    const candles3m = await binanceHelper.getCandles({symbol, interval: '3m', limit: 30});
-    const candles5m = await binanceHelper.getCandles({symbol, interval: '5m', limit: 30});
+    const results = await Promise.all([
+        binanceHelper.getCandles({symbol, interval: '1m', limit: 30}),
+        binanceHelper.getCandles({symbol, interval: '3m', limit: 30}),
+        binanceHelper.getCandles({symbol, interval: '5m', limit: 30})
+    ]);
+    const candles1m = results[0];
+    const candles3m = results[1];
+    const candles5m = results[2];
 
     return {
         symbol: symbol,
@@ -90,7 +99,6 @@ async function getCurrencyPairState(symbol) {
             '1m': candlePatterns(candles1m),
             '3m': candlePatterns(candles3m),
             '5m': candlePatterns(candles5m)
-            // trend: 'uptrend' // 'uptrend-peak', 'downtrend', 'downtrend-curve', 'sideways'
         },
         indicators: {
             '1m': indicators(candles1m),
@@ -100,7 +108,7 @@ async function getCurrencyPairState(symbol) {
     };
 }
 
-function countDeals(type) {
+function countDeals(type, range) {
     return async ({clientId, symbol, marketPrice}) => {
         const where = {
             clientId: clientId,
@@ -125,6 +133,14 @@ function countDeals(type) {
                 break;
             case 'New':
                 where.status = 'NEW';
+                break;
+            case 'InRange':
+                where.openPrice = {
+                    [Sequelize.Op.between]: [
+                        marketPrice - marketPrice * (range / 100),
+                        marketPrice + marketPrice * (range / 100)
+                    ]
+                };
                 break;
         }
         return await Deal.count({where});

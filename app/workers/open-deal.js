@@ -12,27 +12,27 @@ const errorHandler = require('../helpers/error-handler');
 async function openDeal(task) {
     const ctx = task.data;
 
-    debug(`OPEN-ORDER WORKER (TRADE-PAIR#${ctx.tradePair.id})`);
-
     // 0. prepare context
     // 1. validate balance
     // 2. create new deal
     // 3. place buy order in binance
     // 4. create new buy order
 
+    let dealData, binanceOrderData, orderData;
+
     try {
 
         // prepare data
-        const dealData = prepareDealData(ctx);
-        const binanceOrderData = prepareBinanceOrderData(ctx);
-        const orderData = prepareOrderData(R.merge({
+        dealData = prepareDealData(ctx);
+        binanceOrderData = prepareBinanceOrderData(ctx);
+        orderData = prepareOrderData(R.merge({
             binanceOrder: binanceOrderData
         }, ctx));
 
         // validate balance
         const dealCurrency = ctx.currencyPair.secondCurrency;
-        if (ctx.balances[dealCurrency] < binanceOrderData.price * binanceOrderData.quantity) {
-            debug('NOT ENOUGH FUNDS FOR OPENING NEW DEAL (TRADE-PAIR#${ctx.tradePair.id})');
+        if (ctx.balances[dealCurrency].free < binanceOrderData.price * binanceOrderData.quantity) {
+            //debug('NOT ENOUGH FUNDS FOR OPENING NEW DEAL (TRADE-PAIR#${ctx.tradePair.id})');
             return;
         }
 
@@ -45,9 +45,6 @@ async function openDeal(task) {
 
         // debug(`place binance buy order: ${buyQty} ${ctx.currencyPair.firstCurrency} for ${dealPrice} ${ctx.currencyPair.secondCurrency} (trade-pair#${ctx.tradePair.id})`);
         const binanceOrder = await binanceHelper.order(ctx.clientId, binanceOrderData);
-        console.log('-----------------------------');
-        console.dir(binanceOrder, {colors: true, depth: 5});
-        console.log('-----------------------------');
         // create new buy order
         orderData.binanceOrderId = binanceOrder.orderId;
         orderData.dealId = deal.id;
@@ -61,34 +58,38 @@ async function openDeal(task) {
         };
 
     } catch (err) {
-        errorHandler(err, task.data);
+        errorHandler(err, {taskData: task.data, dealData, binanceOrderData, orderData});
         debug(`ERROR: ${err.message}`);
     }
 }
 
-function prepareDealData({marketPrice, tradePair, currencyPair}) {
-    let minProfitPrice = marketPrice + marketPrice * tradePair.additionPercentage;
+function prepareDealData({marketPrice, tradePair, currencyPair, algorithm}) {
     const precision = Math.pow(10, currencyPair.secondCurrencyPrecision);
+    const openPrice = Math.round(marketPrice * precision) / precision;
+    let minProfitPrice = marketPrice + marketPrice * tradePair.additionPercentage;
     minProfitPrice = Math.round(minProfitPrice * precision) / precision;
 
     return {
         clientId: tradePair.clientId,
         symbol: tradePair.symbol,
-        openPrice: marketPrice,
+        openPrice: openPrice,
         quantity: tradePair.dealQty,
         minProfitPrice,
-        status: 'NEW'
+        status: 'NEW',
+        algorithm: algorithm
     };
 }
 
-function prepareBinanceOrderData({marketPrice, tradePair}) {
+function prepareBinanceOrderData({marketPrice, tradePair, currencyPair}) {
     const buyQty = tradePair.dealQty + tradePair.dealQty * tradePair.additionPercentage;
+    const precision = Math.pow(10, currencyPair.secondCurrencyPrecision);
+    const price = Math.round(marketPrice * precision) / precision;
     return {
         symbol: tradePair.symbol,
         side: 'BUY',
         type: 'LIMIT',
         quantity: buyQty,
-        price: marketPrice
+        price: price
     };
 }
 
