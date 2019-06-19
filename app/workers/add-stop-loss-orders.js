@@ -19,7 +19,9 @@ async function main() {
     async.eachSeries(symbolsWithMarketPrice, async item => {
         const deals = await dbHelpers.findNewProfitDeals(item.symbol, item.marketPrice);
         async.eachSeries(deals, async deal => {
-            await addStopLossOrder({deal, symbol: item.symbol, marketPrice: item.marketPrice})
+            // add 0.1 % to marketPrice to lower th chance the stop loss order will be triggered just after was added
+            const priceToCompareTo = item.marketPrice + item.marketPrice * 0.001;
+            await addStopLossOrder({deal, symbol: item.symbol, marketPrice: priceToCompareTo})
         })
     });
 }
