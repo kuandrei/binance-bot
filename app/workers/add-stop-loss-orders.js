@@ -54,7 +54,7 @@ async function addStopLossOrder(ctx) {
     }
 }
 
-async function prepareData({deal, symbol, marketPrice}) {
+async function prepareData({deal, symbol}) {
 
     // prepare context
     const client = await Client.findByPk(deal.clientId);
@@ -65,7 +65,7 @@ async function prepareData({deal, symbol, marketPrice}) {
     const maxPrecision = Math.pow(10, 8);
     const precision = Math.pow(10, currencyPair.secondCurrencyPrecision);
     const quantity = parseFloat(deal.quantity);
-    const price = Math.round((parseFloat(deal.minProfitPrice) + marketPrice) / 2 * precision) / precision;
+    const price = Math.round(deal.minProfitPrice * precision) / precision;
 
     // place STOP_LOSS_LIMIT order in binance
     const binanceOrderData = {

@@ -32,8 +32,8 @@ describe('Add stop loss worker', function () {
         result.binanceOrderData.side.should.equal('SELL');
         result.binanceOrderData.type.should.equal('STOP_LOSS_LIMIT');
         result.binanceOrderData.quantity.should.equal(0.002);
-        result.binanceOrderData.price.should.equal(8224.55);
-        result.binanceOrderData.stopPrice.should.equal(8224.55);
+        result.binanceOrderData.price.should.equal(8224.54);
+        result.binanceOrderData.stopPrice.should.equal(8224.54);
         result.orderData.should.contain.keys([
             'clientId',
             'dealId',
