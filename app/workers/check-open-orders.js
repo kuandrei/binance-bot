@@ -32,8 +32,6 @@ module.exports = async () => {
 
 async function checkOrder(order) {
 
-    debug(`checks order# ${order.id}`);
-
     try {
         const binanceApiClient = await binanceHelper.initApiClient(order.clientId);
         const binanceOrder = await binanceApiClient.getOrder({
@@ -55,7 +53,9 @@ async function checkOrder(order) {
                     deal.save();
                 } else if (deal.status === 'OPEN' && order.side === 'SELL') {
                     deal.status = 'CLOSED';
+                    deal.closePrice = order.price;
                     deal.save();
+                    debug(`CHANGE DEAL #${deal.id} STATUS FROM 'OPEN' TO 'CLOSE'`);
                 }
             }
         }

@@ -45,19 +45,22 @@ const findOpenStopLossOrder = async (symbol, marketPrice) => {
     return await async.map(results, async o => await Order.findByPk(o.id));
 };
 
-const getMinProfitPriceBySymbol = async () => {
-    return await sequelize.query(`
-        SELECT symbol, MIN(minProfitPrice) AS minProfitPrice
-        FROM Deals WHERE status='OPEN' 
-        GROUP BY symbol
+const getMinProfitPrice = async (clientId, symbol) => {
+    const result = await sequelize.query(`
+        SELECT MIN(minProfitPrice) AS minProfitPrice
+        FROM Deals WHERE status='OPEN'
+        AND clientId=:clientId
+        AND symbol=:symbol
     `, {
-        type: sequelize.QueryTypes.SELECT
+        type: sequelize.QueryTypes.SELECT,
+        replacements: {clientId, symbol}
     });
+    return result[0].minProfitPrice;
 };
 
 module.exports = {
     getActiveSymbols,
     findNewProfitDeals,
     findOpenStopLossOrder,
-    getMinProfitPriceBySymbol
+    getMinProfitPrice
 };

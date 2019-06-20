@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.DECIMAL(16, 8)
         },
+        closePrice: {
+            type: DataTypes.DECIMAL(16, 8),
+            defaultValue: 0
+        },
         quantity: {
             allowNull: false,
             type: DataTypes.DECIMAL(16, 8)

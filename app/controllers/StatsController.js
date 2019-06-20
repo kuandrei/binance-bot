@@ -1,18 +1,30 @@
-const dbHelpers = require('./../helpers/db');
-const binanceHelpers = require('./../helpers/binance');
+const R = require('ramda');
+const stateHelpers = require('./../helpers/state');
+const {TradePair} = require('./../models');
 
 module.exports = {
 
     index: async (req, res, next) => {
         try {
-            const results = await dbHelpers.getMinProfitPriceBySymbol();
-            const promiseList = results.map(async (res) => {
-                res.marketPrice = await binanceHelpers.symbolMarketPrice(res.symbol);
-                return res;
-            });
-            res.json(await Promise.all(promiseList));
+            const tradePairs = await TradePair.findAll({where: {status: 'ACTIVE'}});
+            const response = await Promise.all(
+                tradePairs.map(async tradePair => {
+                    return R.pick([
+                        'clientId',
+                        'symbol',
+                        'marketPrice',
+                        'minProfitPrice',
+                        'newDeals',
+                        'openDeals',
+                        'openDealsBelowMarketPrice',
+                        'openDealsAboveMarketPrice',
+                        'openDealsInRange',
+                        'openDealsInProfit'
+                    ], await stateHelpers.tradePairState(tradePair));
+                }));
+            res.json(response);
+
         } catch (err) {
-            console.log('Unable to connect to the database:', err);
             next(err);
         }
     }

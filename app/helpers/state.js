@@ -1,5 +1,6 @@
 const debug = require('debug')('bnb:helpers:state');
-const binanceHelper = require('./../helpers/binance');
+const binanceHelpers = require('./../helpers/binance');
+const dbHelpers = require('./../helpers/db');
 const R = require('ramda');
 const candlePatterns = require('./technical-indicators/candle-patterns');
 const indicators = require('./technical-indicators/indicators');
@@ -30,6 +31,7 @@ async function tradePairState(tradePair) {
             symbol: tradePair.symbol,
             client: (await Client.findByPk(tradePair.clientId)).toJSON(),
             marketPrice: marketCurrencyPairState.marketPrice,
+            minProfitPrice: dbHelpers.getMinProfitPrice(tradePair.clientId, tradePair.symbol),
             tradePair: R.pick([
                 'id',
                 'clientId',
@@ -58,6 +60,7 @@ async function tradePairState(tradePair) {
                 openDealsBelowMarketPrice: await countDeals('BelowMarketPrice')(ctx),
                 openDealsAboveMarketPrice: await countDeals('AboveMarketPrice')(ctx),
                 openDealsInRange: {
+                    '0.125%': await countDeals('InRange', 0.125)(ctx),
                     '0.25%': await countDeals('InRange', 0.25)(ctx),
                     '0.5%': await countDeals('InRange', 0.5)(ctx),
                     '0.75%': await countDeals('InRange', 0.75)(ctx),
@@ -84,9 +87,9 @@ async function tradePairState(tradePair) {
 
 async function getCurrencyPairState(symbol) {
     const results = await Promise.all([
-        binanceHelper.getCandles({symbol, interval: '1m', limit: 30}),
-        binanceHelper.getCandles({symbol, interval: '3m', limit: 30}),
-        binanceHelper.getCandles({symbol, interval: '5m', limit: 30})
+        binanceHelpers.getCandles({symbol, interval: '1m', limit: 30}),
+        binanceHelpers.getCandles({symbol, interval: '3m', limit: 30}),
+        binanceHelpers.getCandles({symbol, interval: '5m', limit: 30})
     ]);
     const candles1m = results[0];
     const candles3m = results[1];
@@ -94,7 +97,7 @@ async function getCurrencyPairState(symbol) {
 
     return {
         symbol: symbol,
-        marketPrice: await binanceHelper.symbolMarketPrice(symbol),
+        marketPrice: await binanceHelpers.symbolMarketPrice(symbol),
         candlePatterns: {
             '1m': candlePatterns(candles1m),
             '3m': candlePatterns(candles3m),
@@ -182,7 +185,7 @@ async function calculateStopLossPrice(symbol) {
 }
 
 async function getBalances({currencyPair, clientId}) {
-    const balances = (await binanceHelper.getClientBalances(clientId)).filter(item => {
+    const balances = (await binanceHelpers.getClientBalances(clientId)).filter(item => {
         return item.asset === currencyPair.firstCurrency || item.asset === currencyPair.secondCurrency;
     });
     const result = {};
