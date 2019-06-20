@@ -31,7 +31,7 @@ async function tradePairState(tradePair) {
             symbol: tradePair.symbol,
             client: (await Client.findByPk(tradePair.clientId)).toJSON(),
             marketPrice: marketCurrencyPairState.marketPrice,
-            minProfitPrice: dbHelpers.getMinProfitPrice(tradePair.clientId, tradePair.symbol),
+            minProfitPrice: await dbHelpers.getMinProfitPrice(tradePair.clientId, tradePair.symbol),
             tradePair: R.pick([
                 'id',
                 'clientId',
@@ -60,11 +60,16 @@ async function tradePairState(tradePair) {
                 openDealsBelowMarketPrice: await countDeals('BelowMarketPrice')(ctx),
                 openDealsAboveMarketPrice: await countDeals('AboveMarketPrice')(ctx),
                 openDealsInRange: {
-                    '0.125%': await countDeals('InRange', 0.125)(ctx),
-                    '0.25%': await countDeals('InRange', 0.25)(ctx),
+                    '0.1%': await countDeals('InRange', 0.1)(ctx),
+                    '0.2%': await countDeals('InRange', 0.2)(ctx),
+                    '0.3%': await countDeals('InRange', 0.3)(ctx),
+                    '0.4%': await countDeals('InRange', 0.4)(ctx),
                     '0.5%': await countDeals('InRange', 0.5)(ctx),
-                    '0.75%': await countDeals('InRange', 0.75)(ctx),
-                    '1.0%': await countDeals('InRange', 1)(ctx)
+                    '0.6%': await countDeals('InRange', 0.6)(ctx),
+                    '0.7%': await countDeals('InRange', 0.7)(ctx),
+                    '0.8%': await countDeals('InRange', 0.8)(ctx),
+                    '0.9%': await countDeals('InRange', 0.9)(ctx),
+                    '1.0%': await countDeals('InRange', 1.0)(ctx)
                 },
                 openDealsInProfit: await countDeals('InProfit')(ctx)
             }

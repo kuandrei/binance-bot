@@ -34,7 +34,7 @@ describe('Analyze-trade-pair worker', function () {
             result.should.equal(false);
         });
 
-        it('max 2 open deals in 0.25% range - should return false', async function () {
+        it('max 3 open deals in 0.1% range - should return false', async function () {
             const state = {
                 newDeals: 0,
                 openDeals: 50,
@@ -42,7 +42,7 @@ describe('Analyze-trade-pair worker', function () {
                 openDealsAboveMarketPrice: 0,
                 openDealsInProfit: 0,
                 openDealsInRange: {
-                    '0.25%': 2
+                    '0.1%': 3
                 }
             };
             const result = await workerFunctions.checkRestrictions(state);
@@ -50,7 +50,7 @@ describe('Analyze-trade-pair worker', function () {
             result.should.equal(false);
         });
 
-        it('max 3 open deals in 0.5% range - should return false', async function () {
+        it('max 5 open deals in 0.2% range - should return false', async function () {
             const state = {
                 newDeals: 0,
                 openDeals: 50,
@@ -58,7 +58,7 @@ describe('Analyze-trade-pair worker', function () {
                 openDealsAboveMarketPrice: 0,
                 openDealsInProfit: 0,
                 openDealsInRange: {
-                    '0.5%': 3
+                    '0.2%': 5
                 }
             };
             const result = await workerFunctions.checkRestrictions(state);
@@ -66,7 +66,7 @@ describe('Analyze-trade-pair worker', function () {
             result.should.equal(false);
         });
 
-        it('max 4 open deals in 0.75% range - should return false', async function () {
+        it('max 7 open deals in 0.3% range - should return false', async function () {
             const state = {
                 newDeals: 0,
                 openDeals: 50,
@@ -74,7 +74,7 @@ describe('Analyze-trade-pair worker', function () {
                 openDealsAboveMarketPrice: 0,
                 openDealsInProfit: 0,
                 openDealsInRange: {
-                    '0.75%': 4
+                    '0.3%': 7
                 }
             };
             const result = await workerFunctions.checkRestrictions(state);
@@ -82,7 +82,7 @@ describe('Analyze-trade-pair worker', function () {
             result.should.equal(false);
         });
 
-        it('max 5 open deals in 1.0% range - should return false', async function () {
+        it('max 9 open deals in 0.4% range - should return false', async function () {
             const state = {
                 newDeals: 0,
                 openDeals: 50,
@@ -90,7 +90,23 @@ describe('Analyze-trade-pair worker', function () {
                 openDealsAboveMarketPrice: 0,
                 openDealsInProfit: 0,
                 openDealsInRange: {
-                    '1.0%': 5
+                    '0.4%': 9
+                }
+            };
+            const result = await workerFunctions.checkRestrictions(state);
+            result.should.be.a('boolean');
+            result.should.equal(false);
+        });
+
+        it('max 10 open deals in 0.5% range - should return false', async function () {
+            const state = {
+                newDeals: 0,
+                openDeals: 50,
+                openDealsBelowMarketPrice: 0,
+                openDealsAboveMarketPrice: 0,
+                openDealsInProfit: 0,
+                openDealsInRange: {
+                    '0.5%': 10
                 }
             };
             const result = await workerFunctions.checkRestrictions(state);

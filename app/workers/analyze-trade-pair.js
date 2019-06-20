@@ -44,23 +44,26 @@ function checkRestrictions(state) {
     if (lossOrders >= 5)
         return false;
 
-    // 2. maximum 2 open deals in 0.25%  range
-    if (state.openDealsInRange['0.25%'] >= 2)
-        return false;
+    const rangeRestrictions = [
+        {range: '0.1%', maxDealsInRange: 3},
+        {range: '0.2%', maxDealsInRange: 5},
+        {range: '0.3%', maxDealsInRange: 7},
+        {range: '0.4%', maxDealsInRange: 9},
+        {range: '0.5%', maxDealsInRange: 10},
+        // {range: '0.6%', maxDealsInRange: 10},
+        // {range: '0.7%', maxDealsInRange: 10},
+        // {range: '0.8%', maxDealsInRange: 10},
+        // {range: '0.9%', maxDealsInRange: 10},
+        // {range: '1.0%', maxDealsInRange: 10},
+    ];
 
-    // 3. maximum 3 open deals in 0.5%  range
-    if (state.openDealsInRange['0.5%'] >= 3)
+    if (rangeRestrictions.find(restriction => {
+        return state.openDealsInRange[restriction.range] >= restriction.maxDealsInRange;
+    })) {
         return false;
+    }
 
-    // 4. maximum 4 open deals in 0.75%  range
-    if (state.openDealsInRange['0.75%'] >= 4)
-        return false;
-
-    // 5. maximum 5 open deals in 1.0%  range
-    if (state.openDealsInRange['1.0%'] >= 5)
-        return false;
-
-    //
+    // more restrictions here
 
     return true;
 }
