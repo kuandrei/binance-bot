@@ -39,7 +39,7 @@ async function addStopLossOrder(ctx) {
             orderData
         } = await prepareData(ctx);
 
-        debug(`ADD STOP_LOSS_LIMIT (SYMBOL:${orderData.symbol}/QTY:${orderData.quantity}/PRICE:${binanceOrderData.price}`);
+        debug(`ADD STOP_LOSS_LIMIT (SYMBOL:${orderData.symbol}/QTY:${orderData.quantity}/PRICE:${binanceOrderData.price})`);
 
         const binanceOrder = await binanceHelpers.order(ctx.deal.clientId, binanceOrderData);
 

@@ -12,7 +12,7 @@ module.exports = async () => {
     let filter = {
         where: {
             status: {
-                [Sequelize.Op.in]: ['NEW', 'ACTIVE']
+                [Sequelize.Op.in]: ['NEW', 'ACTIVE', 'PARTIALLY_FILLED']
             }
         }
     };

@@ -48,7 +48,7 @@ async function placeNewStopLossOrder({order, stopLossPrice}) {
             orderData
         } = await prepareData({order, stopLossPrice});
 
-        debug(`REPLACE STOP_LOSS_LIMIT (ORDER#${order.id}/PREV-PRICE:${order.price}/NEW-PRICE:${stopLossPrice})`);
+        debug(`REPLACE STOP_LOSS_LIMIT (DEAL#${order.dealId}/ORDER#${order.id}/PREV-PRICE:${order.price}/NEW-PRICE:${stopLossPrice})`);
 
         const binanceOrder = await binanceHelpers.order(order.clientId, binanceOrderData);
 

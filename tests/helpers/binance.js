@@ -42,7 +42,7 @@ describe('Binance helpers', function () {
     });
 
     it('Test getOrder helper', async function () {
-        const order = await binanceHelpers.getOrder(testClientId, 'BTCUSDT', 440652233);
+        const order = await binanceHelpers.getOrder(testClientId, 'BNBUSDT', 169356944);
         order.should.be.an('object');
         order.should.include.keys('symbol', 'orderId');
     });

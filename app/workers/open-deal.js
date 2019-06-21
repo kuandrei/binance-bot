@@ -37,11 +37,8 @@ async function openDeal(task) {
         }
 
         // open/create new deal
-        debug(`ADD NEW DEAL (TRADE-PAIR#${ctx.tradePair.id})`);
+        debug(`ADD NEW DEAL (CLIENT ID#${ctx.tradePair.clientId}/SYMBOL:${orderData.symbol}/QTY:${orderData.quantity}/PRICE:${binanceOrderData.price})`);
         const deal = await Deal.create(dealData);
-
-        // place buy order in binance
-        debug(`ADD BUY ORDER (SYMBOL:${orderData.symbol}/QTY:${orderData.quantity}/PRICE:${binanceOrderData.price}/TRADE-PAIR#${ctx.tradePair.id})`);
 
         // debug(`place binance buy order: ${buyQty} ${ctx.currencyPair.firstCurrency} for ${dealPrice} ${ctx.currencyPair.secondCurrency} (trade-pair#${ctx.tradePair.id})`);
         const binanceOrder = await binanceHelper.order(ctx.clientId, binanceOrderData);
