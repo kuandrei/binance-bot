@@ -27,7 +27,29 @@ describe('Stats Controller', function () {
                     response = JSON.parse(res.text);
                 }, 'response is not a JSON');
                 response.should.be.an('object');
-                response.should.include.keys('performance', 'info')
+                response.should.include.keys('performance', 'info');
+
+                done();
+            });
+
+    });
+
+    it('(GET /stats/performance) - should return 200', function (done) {
+
+        request(server)
+            .get('/stats/performance?clientId=1')
+            .send()
+            .expect(200)
+            .end(function (err, res) {
+                if (err) {
+                    return done(err);
+                }
+
+                let response = {};
+                should.not.throw(function () {
+                    response = JSON.parse(res.text);
+                }, 'response is not a JSON');
+                response.should.be.an('object');
 
                 done();
             });
