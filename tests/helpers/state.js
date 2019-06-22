@@ -67,4 +67,10 @@ describe('State helpers', function () {
         price.should.be.a('number');
     });
 
+    it('performanceStats', async function () {
+        const stats = await stateHelpers.performanceStats(1);
+        stats.should.be.an('object');
+        stats.should.contain.keys('tradePairs', 'totals');
+    });
+
 });
