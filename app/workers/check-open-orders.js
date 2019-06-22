@@ -40,7 +40,7 @@ async function checkOrder(order) {
         });
 
         if (binanceOrder.status !== order.status) {
-            debug(`CHANGE ORDER #${order.id} STATUS FROM '${order.status}' TO '${binanceOrder.status} (DEAL#${order.dealId}/SYMBOL:${order.symbol})'`);
+            debug(`CHANGE ORDER#${order.id} STATUS FROM '${order.status}' TO '${binanceOrder.status} (DEAL#${order.dealId}/${order.symbol})'`);
             order.status = binanceOrder.status;
             order.closedAt = new Date();
             await order.save();
@@ -55,7 +55,7 @@ async function checkOrder(order) {
                     deal.status = 'CLOSED';
                     deal.closePrice = order.price;
                     deal.save();
-                    debug(`CHANGE DEAL #${deal.id} STATUS FROM 'OPEN' TO 'CLOSE (SYMBOL:${deal.symbol})'`);
+                    debug(`CHANGE DEAL #${deal.id} STATUS FROM 'OPEN' TO 'CLOSE (${deal.symbol})'`);
                 }
             }
         }

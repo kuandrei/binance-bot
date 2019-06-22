@@ -36,13 +36,13 @@ describe('Binance helpers', function () {
         balances[0].should.include.keys(['asset', 'free', 'locked']);
     });
 
-    it('Test allOredrs helper', async function () {
+    it('Test allOrders helper', async function () {
         const orders = await binanceHelpers.allOrders(testClientId, 'BTCUSDT');
         orders.should.be.an('array');
     });
 
     it('Test getOrder helper', async function () {
-        const order = await binanceHelpers.getOrder(testClientId, 'BNBUSDT', 169356944);
+        const order = await binanceHelpers.getOrder(testClientId, 'BNBBTC', 202532259);
         order.should.be.an('object');
         order.should.include.keys('symbol', 'orderId');
     });

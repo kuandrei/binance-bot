@@ -14,7 +14,7 @@ describe('Stats Controller', function () {
     it('(GET /stats) - should return 200', function (done) {
 
         request(server)
-            .get('/stats')
+            .get('/stats?clientId=1')
             .send()
             .expect(200)
             .end(function (err, res) {
@@ -26,7 +26,8 @@ describe('Stats Controller', function () {
                 should.not.throw(function () {
                     response = JSON.parse(res.text);
                 }, 'response is not a JSON');
-                response.should.be.an('array');
+                response.should.be.an('object');
+                response.should.include.keys('performance', 'info')
 
                 done();
             });
