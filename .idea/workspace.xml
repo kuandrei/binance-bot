@@ -2,8 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f07753e2-9bbb-4e58-bb31-78805a10b8d0" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db/migrations/20190623085111-create-exchange-info.js" afterPath="$PROJECT_DIR$/db/migrations/20190623085111-create-exchange-info.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/workers/update-exchange-info.js" afterPath="$PROJECT_DIR$/tests/workers/update-exchange-info.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/helpers/db.js" afterPath="$PROJECT_DIR$/app/helpers/db.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/order.js" afterPath="$PROJECT_DIR$/app/models/order.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/workers/add-stop-loss-orders.js" afterPath="$PROJECT_DIR$/app/workers/add-stop-loss-orders.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/workers/analyze-trade-pair.js" afterPath="$PROJECT_DIR$/app/workers/analyze-trade-pair.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/workers/check-stop-loss-orders.js" afterPath="$PROJECT_DIR$/app/workers/check-stop-loss-orders.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/workers/open-deal.js" afterPath="$PROJECT_DIR$/app/workers/open-deal.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/workers/add-stop-loss-orders.js" afterPath="$PROJECT_DIR$/tests/workers/add-stop-loss-orders.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/workers/check-stop-loss-orders.js" afterPath="$PROJECT_DIR$/tests/workers/check-stop-loss-orders.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/workers/open-deal.js" afterPath="$PROJECT_DIR$/tests/workers/open-deal.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -17,21 +25,79 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="open-deal.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/workers/open-deal.js">
+      <file leaf-file-name="analyze-trade-pair.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/tests/workers/analyze-trade-pair.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="812">
-              <caret line="102" column="21" lean-forward="true" selection-start-line="102" selection-start-column="21" selection-end-line="102" selection-end-column="21" />
+            <state relative-caret-position="357">
+              <caret line="52" column="19" lean-forward="false" selection-start-line="52" selection-start-column="19" selection-end-line="52" selection-end-column="19" />
+              <folding>
+                <element signature="e#441#646#0" expanded="false" />
+                <element signature="e#919#1321#0" expanded="false" />
+                <element signature="e#947#1152#0" expanded="false" />
+                <element signature="e#1410#1896#0" expanded="false" />
+                <element signature="e#1985#2471#0" expanded="false" />
+                <element signature="e#2560#3046#0" expanded="false" />
+                <element signature="e#3135#3621#0" expanded="false" />
+                <element signature="e#3711#4198#0" expanded="false" />
+                <element signature="e#4254#5193#0" expanded="false" />
+                <element signature="e#4314#4667#0" expanded="false" />
+                <element signature="e#4765#5184#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="state.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/helpers/state.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="102">
+              <caret line="6" column="8" lean-forward="false" selection-start-line="6" selection-start-column="8" selection-end-line="6" selection-end-column="8" />
+              <folding>
+                <element signature="e#253#1791#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="state.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/helpers/state.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="690">
+              <caret line="208" column="15" lean-forward="false" selection-start-line="208" selection-start-column="15" selection-end-line="208" selection-end-column="15" />
+              <folding>
+                <element signature="n#!!block;n#performanceStats#0" expanded="false" />
+                <element signature="n#!!block;n#countDeals#0" expanded="false" />
+                <element signature="n#!!block;n#getBalances#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="add-stop-loss-orders.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/workers/add-stop-loss-orders.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="97" column="14" lean-forward="false" selection-start-line="97" selection-start-column="14" selection-end-line="97" selection-end-column="14" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="20190623085111-create-exchange-info.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/db/migrations/20190623085111-create-exchange-info.js">
+      <file leaf-file-name="add-stop-loss-orders.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/workers/add-stop-loss-orders.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="642">
-              <caret line="58" column="14" lean-forward="false" selection-start-line="58" selection-start-column="14" selection-end-line="58" selection-end-column="14" />
+            <state relative-caret-position="112">
+              <caret line="23" column="73" lean-forward="false" selection-start-line="23" selection-start-column="63" selection-end-line="23" selection-end-column="76" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="db.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/helpers/db.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="17" column="33" lean-forward="true" selection-start-line="17" selection-start-column="33" selection-end-line="17" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -42,10 +108,17 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>balances</find>
+      <find>fee</find>
+      <find>getCurrencyPairState</find>
+      <find>marketP</find>
     </findStrings>
     <replaceStrings>
       <replace>tradePairs</replace>
+      <replace>getSymbolKpis</replace>
     </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/tests</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -54,21 +127,14 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/configs/database.json" />
-        <option value="$PROJECT_DIR$/tests/workers/add-stop-loss-orders.js" />
         <option value="$PROJECT_DIR$/docker-compose-dev.yml" />
         <option value="$PROJECT_DIR$/docker-compose.yml" />
         <option value="$PROJECT_DIR$/tests/workers/open-deal.js" />
         <option value="$PROJECT_DIR$/db/migrations/20190620185616-add-close-price-column-to-deals.js" />
         <option value="$PROJECT_DIR$/app/models/deal.js" />
-        <option value="$PROJECT_DIR$/app/workers/analyze-trade-pair.js" />
-        <option value="$PROJECT_DIR$/tests/workers/analyze-trade-pair.js" />
-        <option value="$PROJECT_DIR$/app/workers/add-stop-loss-orders.js" />
         <option value="$PROJECT_DIR$/app/workers/check-open-orders.js" />
         <option value="$PROJECT_DIR$/tests/helpers/binance.js" />
         <option value="$PROJECT_DIR$/app/routes.js" />
-        <option value="$PROJECT_DIR$/app/workers/check-stop-loss-orders.js" />
-        <option value="$PROJECT_DIR$/app/helpers/state.js" />
-        <option value="$PROJECT_DIR$/tests/helpers/state.js" />
         <option value="$PROJECT_DIR$/app/controllers/StatsController.js" />
         <option value="$PROJECT_DIR$/tests/controllers/StatsController.js" />
         <option value="$PROJECT_DIR$/.gitignore" />
@@ -76,6 +142,17 @@
         <option value="$PROJECT_DIR$/tests/workers/update-exchange-info.js" />
         <option value="$PROJECT_DIR$/db/migrations/20190623085111-create-exchange-info.js" />
         <option value="$PROJECT_DIR$/app/workers/open-deal.js" />
+        <option value="$PROJECT_DIR$/app/workers/check-stop-loss-orders.js" />
+        <option value="$PROJECT_DIR$/app/models/order.js" />
+        <option value="$PROJECT_DIR$/db/migrations/20190623182914-drop-fee-columns-in-orders-table.js" />
+        <option value="$PROJECT_DIR$/tests/workers/check-stop-loss-orders.js" />
+        <option value="$PROJECT_DIR$/app/workers/analyze-trade-pair.js" />
+        <option value="$PROJECT_DIR$/tests/workers/analyze-trade-pair.js" />
+        <option value="$PROJECT_DIR$/app/helpers/state.js" />
+        <option value="$PROJECT_DIR$/app/helpers/db.js" />
+        <option value="$PROJECT_DIR$/tests/helpers/state.js" />
+        <option value="$PROJECT_DIR$/app/workers/add-stop-loss-orders.js" />
+        <option value="$PROJECT_DIR$/tests/workers/add-stop-loss-orders.js" />
       </list>
     </option>
   </component>
@@ -135,12 +212,36 @@
               <item name="binance-bot-dev" type="b2602c69:ProjectViewProjectNode" />
               <item name="binance-bot-dev" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="helpers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="binance-bot-dev" type="b2602c69:ProjectViewProjectNode" />
+              <item name="binance-bot-dev" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="binance-bot-dev" type="b2602c69:ProjectViewProjectNode" />
+              <item name="binance-bot-dev" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
               <item name="workers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="binance-bot-dev" type="b2602c69:ProjectViewProjectNode" />
               <item name="binance-bot-dev" type="462c0819:PsiDirectoryNode" />
               <item name="tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="binance-bot-dev" type="b2602c69:ProjectViewProjectNode" />
+              <item name="binance-bot-dev" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+              <item name="helpers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="binance-bot-dev" type="b2602c69:ProjectViewProjectNode" />
+              <item name="binance-bot-dev" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+              <item name="workers" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -188,20 +289,20 @@
       <updated>1560941117870</updated>
       <workItem from="1560941119399" duration="3969000" />
       <workItem from="1561053861792" duration="17249000" />
-      <workItem from="1561313549267" duration="845000" />
+      <workItem from="1561313549267" duration="3549000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22063000" />
+    <option name="totallyTimeSpent" value="24767000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="0" width="1922" height="1053" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -214,7 +315,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -267,6 +367,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="833">
           <caret line="49" column="4" lean-forward="false" selection-start-line="49" selection-start-column="4" selection-end-line="49" selection-end-column="4" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -274,6 +375,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="595">
           <caret line="35" column="62" lean-forward="false" selection-start-line="35" selection-start-column="62" selection-end-line="35" selection-end-column="62" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -312,13 +414,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/workers/add-stop-loss-orders.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="595">
-          <caret line="35" column="62" lean-forward="false" selection-start-line="35" selection-start-column="62" selection-end-line="35" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/docker-compose-dev.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="595">
@@ -330,14 +425,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
           <caret line="3" column="48" lean-forward="false" selection-start-line="3" selection-start-column="43" selection-end-line="3" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/db/migrations/20190620185616-add-close-price-column-to-deals.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="29" lean-forward="false" selection-start-line="7" selection-start-column="29" selection-end-line="7" selection-end-column="29" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -357,13 +444,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/helpers/db.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="619">
-          <caret line="56" column="7" lean-forward="true" selection-start-line="56" selection-start-column="7" selection-end-line="56" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/controllers/IndexController.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -378,25 +458,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/workers/add-stop-loss-orders.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="697">
-          <caret line="41" column="62" lean-forward="false" selection-start-line="41" selection-start-column="62" selection-end-line="41" selection-end-column="62" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/workers/check-open-orders.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="55" column="9" lean-forward="true" selection-start-line="55" selection-start-column="9" selection-end-line="55" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/helpers/binance.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="585">
           <caret line="44" column="73" lean-forward="false" selection-start-line="44" selection-start-column="73" selection-end-line="44" selection-end-column="73" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -414,13 +480,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/workers/check-stop-loss-orders.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="619">
-          <caret line="50" column="95" lean-forward="false" selection-start-line="50" selection-start-column="95" selection-end-line="50" selection-end-column="95" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -428,27 +487,6 @@
             <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           </first_editor>
           <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/helpers/state.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="806">
-          <caret line="159" column="0" lean-forward="false" selection-start-line="159" selection-start-column="0" selection-end-line="159" selection-end-column="0" />
-          <folding>
-            <element signature="n#!!block;n#tradePairState#0" expanded="false" />
-            <element signature="n#!!block;n#getCurrencyPairState#0" expanded="false" />
-            <element signature="n#!!block;n#countDeals#0" expanded="false" />
-            <element signature="n#!!block;n#calculateStopLossPrice#0" expanded="false" />
-            <element signature="n#!!block;n#getBalances#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/helpers/state.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="69" column="6" lean-forward="false" selection-start-line="69" selection-start-column="6" selection-end-line="69" selection-end-column="6" />
         </state>
       </provider>
     </entry>
@@ -477,6 +515,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
           <caret line="2" column="16" lean-forward="false" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -499,13 +538,137 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/db/migrations/20190623085111-create-exchange-info.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="642">
+          <caret line="58" column="14" lean-forward="false" selection-start-line="58" selection-start-column="14" selection-end-line="58" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/workers/check-stop-loss-orders.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="795">
+          <caret line="96" column="0" lean-forward="false" selection-start-line="96" selection-start-column="0" selection-end-line="96" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models/order.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="302">
+          <caret line="53" column="8" lean-forward="false" selection-start-line="53" selection-start-column="8" selection-end-line="53" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/db/migrations/20190620185616-add-close-price-column-to-deals.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="22" lean-forward="true" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/workers/check-stop-loss-orders.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1462">
+          <caret line="86" column="0" lean-forward="false" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/db/migrations/20190623182914-drop-fee-columns-in-orders-table.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/workers/init-trade.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/workers/check-open-orders.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="319">
+          <caret line="47" column="44" lean-forward="true" selection-start-line="47" selection-start-column="44" selection-end-line="47" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/workers/analyze-trade-pair.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="0" lean-forward="true" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/workers/open-deal.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="697">
+          <caret line="41" column="0" lean-forward="true" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/helpers/db.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="33" lean-forward="true" selection-start-line="17" selection-start-column="33" selection-end-line="17" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/helpers/state.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="8" lean-forward="false" selection-start-line="6" selection-start-column="8" selection-end-line="6" selection-end-column="8" />
+          <folding>
+            <element signature="e#253#1791#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/helpers/state.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="690">
+          <caret line="208" column="15" lean-forward="false" selection-start-line="208" selection-start-column="15" selection-end-line="208" selection-end-column="15" />
+          <folding>
+            <element signature="n#!!block;n#performanceStats#0" expanded="false" />
+            <element signature="n#!!block;n#countDeals#0" expanded="false" />
+            <element signature="n#!!block;n#getBalances#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/workers/add-stop-loss-orders.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="23" column="73" lean-forward="false" selection-start-line="23" selection-start-column="63" selection-end-line="23" selection-end-column="76" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/workers/add-stop-loss-orders.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="97" column="14" lean-forward="false" selection-start-line="97" selection-start-column="14" selection-end-line="97" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests/workers/analyze-trade-pair.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="141" column="0" lean-forward="true" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
+        <state relative-caret-position="357">
+          <caret line="52" column="19" lean-forward="false" selection-start-line="52" selection-start-column="19" selection-end-line="52" selection-end-column="19" />
           <folding>
-            <element signature="e#310#4207#0" expanded="false" />
-            <element signature="e#413#815#0" expanded="false" />
             <element signature="e#441#646#0" expanded="false" />
             <element signature="e#919#1321#0" expanded="false" />
             <element signature="e#947#1152#0" expanded="false" />
@@ -518,30 +681,6 @@
             <element signature="e#4314#4667#0" expanded="false" />
             <element signature="e#4765#5184#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/workers/analyze-trade-pair.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="14" column="0" lean-forward="true" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/db/migrations/20190623085111-create-exchange-info.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="642">
-          <caret line="58" column="14" lean-forward="false" selection-start-line="58" selection-start-column="14" selection-end-line="58" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/workers/open-deal.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="812">
-          <caret line="102" column="21" lean-forward="true" selection-start-line="102" selection-start-column="21" selection-end-line="102" selection-end-column="21" />
-          <folding />
         </state>
       </provider>
     </entry>

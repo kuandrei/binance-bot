@@ -88,10 +88,7 @@ describe('Open deal worker', function () {
             'status',
             'price',
             'quantity',
-            'fee',
-            'feeCurrency',
             'credit',
-            'feeCurrency',
             'debit',
             'debitCurrency',
         ]);
@@ -103,8 +100,6 @@ describe('Open deal worker', function () {
         result.status.should.equal('NEW');
         result.price.should.equal(8224.56);
         result.quantity.should.equal(0.00206);
-        result.fee.should.equal(Math.round(0.00206 * 0.00075 * precision) / precision);
-        result.feeCurrency.should.equal('BTC');
         result.credit.should.equal(0.00206);
         result.creditCurrency.should.equal('BTC');
         result.debit.should.equal(Math.round(8224.56 * 0.00206 * precision) / precision);

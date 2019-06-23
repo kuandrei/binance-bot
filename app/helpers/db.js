@@ -10,19 +10,19 @@ const getActiveSymbols = async () => {
     return results.map(item => item.symbol);
 };
 
-const findNewProfitDeals = async (symbol, marketPrice) => {
+const findNewProfitDeals = async (symbol, price) => {
     const results = await sequelize.query(`
         SELECT Deals.id
         FROM Deals
         LEFT JOIN Orders ON Orders.dealId=Deals.id
         WHERE Deals.status='OPEN'
         AND Deals.symbol=:symbol
-        AND Deals.minProfitPrice < :marketPrice
+        AND Deals.minProfitPrice < :price
         GROUP BY Deals.id
         HAVING COUNT(1) = 1;
     `, {
         type: sequelize.QueryTypes.SELECT,
-        replacements: {symbol, marketPrice}
+        replacements: {symbol, price}
     });
 
     return await async.map(results, async d => await Deal.findByPk(d.id));

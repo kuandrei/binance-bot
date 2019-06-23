@@ -16,7 +16,7 @@ describe('Add stop loss worker', function () {
                 minProfitPrice: 8224.541
             },
             symbol: 'BTCUSDT',
-            marketPrice: 8224.559
+            stopLossPrice: 8224.559
         });
 
         result.should.contain.keys('binanceOrderData', 'orderData');
@@ -32,8 +32,8 @@ describe('Add stop loss worker', function () {
         result.binanceOrderData.side.should.equal('SELL');
         result.binanceOrderData.type.should.equal('STOP_LOSS_LIMIT');
         result.binanceOrderData.quantity.should.equal(0.002);
-        result.binanceOrderData.price.should.equal(8224.54);
-        result.binanceOrderData.stopPrice.should.equal(8224.54);
+        result.binanceOrderData.price.should.equal(8224.56);
+        result.binanceOrderData.stopPrice.should.equal(8224.56);
         result.orderData.should.contain.keys([
             'clientId',
             'dealId',
@@ -43,8 +43,6 @@ describe('Add stop loss worker', function () {
             'status',
             'price',
             'quantity',
-            'fee',
-            'feeCurrency',
             'credit',
             'creditCurrency',
             'debit',
@@ -63,7 +61,7 @@ describe('Add stop loss worker', function () {
                 minProfitPrice: 0.00182400
             },
             symbol: 'BNBBTC',
-            marketPrice: 0.00182400
+            stopLossPrice: 0.00182400
         });
         result.should.contain.keys('binanceOrderData', 'orderData');
         result.should.contain.keys('binanceOrderData', 'orderData');
@@ -90,8 +88,6 @@ describe('Add stop loss worker', function () {
             'status',
             'price',
             'quantity',
-            'fee',
-            'feeCurrency',
             'credit',
             'creditCurrency',
             'debit',
@@ -105,8 +101,6 @@ describe('Add stop loss worker', function () {
         result.orderData.status.should.equal('NEW');
         result.orderData.price.should.equal(0.001824);
         result.orderData.quantity.should.equal(1);
-        result.orderData.fee.should.equal(0.00000137);
-        result.orderData.feeCurrency.should.equal('BTC');
         result.orderData.credit.should.equal(0.001824);
         result.orderData.creditCurrency.should.equal('BTC');
         result.orderData.debit.should.equal(1);
@@ -129,7 +123,7 @@ describe('Add stop loss worker', function () {
         const results = await workerFunctions.addStopLossOrder({
             deal: deal.toJSON(),
             symbol: 'BTCUSDT',
-            marketPrice: 8224.559,
+            stopLossPrice: 8224.559,
             tradePair: {
                 id: 123
             }

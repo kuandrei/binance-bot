@@ -100,8 +100,6 @@ function prepareOrderData({client, currencyPair, binanceOrder}) {
         status: 'NEW',
         price: binanceOrder.price,
         quantity: binanceOrder.quantity,
-        fee: Math.round(binanceOrder.quantity * client.commission * precision) / precision,
-        feeCurrency: currencyPair.firstCurrency,
         credit: binanceOrder.quantity,
         creditCurrency: currencyPair.firstCurrency,
         debit: Math.round(binanceOrder.price * binanceOrder.quantity * precision) / precision,

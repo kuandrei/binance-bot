@@ -51,14 +51,6 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.DECIMAL(16, 8)
         },
-        fee: {
-            allowNull: false,
-            type: DataTypes.DECIMAL(16, 8)
-        },
-        feeCurrency: {
-            allowNull: false,
-            type: DataTypes.STRING(8)
-        },
         credit: {
             allowNull: false,
             type: DataTypes.DECIMAL(16, 8)

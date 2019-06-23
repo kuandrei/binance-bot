@@ -11,7 +11,9 @@ const errorHandler = require('../helpers/error-handler');
 async function main(task) {
 
     try {
-        const state = await stateHelpers.tradePairState(task.data);
+        const tradePair = task.data;
+
+        const state = await stateHelpers.tradePairState(tradePair);
 
         const passed = checkRestrictions(state);
         if (!passed)

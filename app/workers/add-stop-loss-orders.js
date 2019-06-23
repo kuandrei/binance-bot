@@ -17,11 +17,11 @@ async function main() {
     const symbolsWithMarketPrice = await binanceHelpers.symbolMarketPrice(symbols);
 
     async.eachSeries(symbolsWithMarketPrice, async item => {
-        const deals = await dbHelpers.findNewProfitDeals(item.symbol, item.marketPrice);
+        // add 0.1 % to marketPrice to lower the chance the stop loss order will be triggered just after was added
+        const priceToCompareTo = item.marketPrice + item.marketPrice * 0.001;
+        const deals = await dbHelpers.findNewProfitDeals(item.symbol, priceToCompareTo);
         async.eachSeries(deals, async deal => {
-            // add 0.1 % to marketPrice to lower th chance the stop loss order will be triggered just after was added
-            const priceToCompareTo = item.marketPrice + item.marketPrice * 0.001;
-            await addStopLossOrder({deal, symbol: item.symbol, marketPrice: priceToCompareTo})
+            await addStopLossOrder({deal, symbol: item.symbol, stopLossPrice: priceToCompareTo})
         })
     });
 }
@@ -56,7 +56,7 @@ async function addStopLossOrder(ctx) {
     }
 }
 
-async function prepareData({deal, symbol}) {
+async function prepareData({deal, symbol, stopLossPrice}) {
 
     // prepare context
     const client = await Client.findByPk(deal.clientId);
@@ -67,7 +67,7 @@ async function prepareData({deal, symbol}) {
     const maxPrecision = Math.pow(10, 8);
     const precision = Math.pow(10, currencyPair.secondCurrencyPrecision);
     const quantity = parseFloat(deal.quantity);
-    const price = Math.round(deal.minProfitPrice * precision) / precision;
+    const price = Math.round(stopLossPrice * precision) / precision;
 
     // place STOP_LOSS_LIMIT order in binance
     const binanceOrderData = {
@@ -79,8 +79,6 @@ async function prepareData({deal, symbol}) {
         stopPrice: price
     };
 
-    const fee = Math.round(client.commission * price * quantity * maxPrecision) / maxPrecision;
-    const feeCurrency = currencyPair.secondCurrency;
     // @todo - convert to BNB if feeCurrency is not BNB
 
     const orderData = {
@@ -92,8 +90,6 @@ async function prepareData({deal, symbol}) {
         status: 'NEW',
         price,
         quantity,
-        fee,
-        feeCurrency,
         credit: Math.round(price * quantity * maxPrecision) / maxPrecision,
         creditCurrency: currencyPair.secondCurrency,
         debit: quantity,

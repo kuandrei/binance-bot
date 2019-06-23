@@ -94,8 +94,6 @@ async function prepareData({order, stopLossPrice}) {
         stopPrice: price
     };
 
-    const fee = Math.round(client.commission * price * quantity * maxPrecision) / maxPrecision;
-    const feeCurrency = currencyPair.secondCurrency;
     // @todo - convert to BNB if feeCurrency is not BNB
 
     const orderData = {
@@ -107,8 +105,6 @@ async function prepareData({order, stopLossPrice}) {
         status: 'NEW',
         price,
         quantity,
-        fee,
-        feeCurrency,
         credit: Math.round(price * quantity * maxPrecision) / maxPrecision,
         creditCurrency: currencyPair.secondCurrency,
         debit: quantity,
