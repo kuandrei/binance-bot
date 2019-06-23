@@ -24,6 +24,8 @@
     "express": "^4.17.1",
     "mysql2": "^1.6.5",
     "ramda": "^0.26.1",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
     "sequelize": "^5.8.7",
     "sequelize-cli": "^5.4.0",
     "technicalindicators": "^2.0.8"

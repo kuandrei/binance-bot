@@ -15,6 +15,9 @@ require('./routes')(app);
 // load workers
 require('./workers')(app);
 
+// init cron jobs
+require('./crons')(app);
+
 // set the port
 const port = process.env.PORT || 80;
 
