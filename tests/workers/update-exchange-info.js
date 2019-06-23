@@ -1,7 +1,7 @@
 require('chai').should();
 
 const {ExchangeInfo} = require('../../app/models');
-const exchangeInfoWorker = require('./../../app/workers/update-exchage-info');
+const exchangeInfoWorker = require('../../app/workers/update-exchange-info');
 
 describe('Update exchange info worker', function () {
 
