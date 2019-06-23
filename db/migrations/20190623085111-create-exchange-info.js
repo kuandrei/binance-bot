@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('ExchangeInfo', {
+    up: async (queryInterface, Sequelize) => {
+        const ExchangeInfo = await queryInterface.createTable('ExchangeInfo', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -56,6 +56,8 @@ module.exports = {
                 type: Sequelize.DATE
             }
         });
+        await queryInterface.addIndex('ExchangeInfo', ['symbol']);
+        return ExchangeInfo;
     },
     down: (queryInterface) => {
         return queryInterface.dropTable('ExchangeInfo');
