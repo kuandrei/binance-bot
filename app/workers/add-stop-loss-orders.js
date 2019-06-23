@@ -17,8 +17,8 @@ async function main() {
     const symbolsWithMarketPrice = await binanceHelpers.symbolMarketPrice(symbols);
 
     async.eachSeries(symbolsWithMarketPrice, async item => {
-        //subtract 0.1 % from marketPrice to lower the chance the stop loss order will be triggered just after was added
-        const priceToCompareTo = item.marketPrice - item.marketPrice * 0.001;
+        //subtract 0.05 % from marketPrice to lower the chance the stop loss order will be triggered just after was added
+        const priceToCompareTo = item.marketPrice - item.marketPrice * 0.0005;
         const deals = await dbHelpers.findNewProfitDeals(item.symbol, priceToCompareTo);
         async.eachSeries(deals, async deal => {
             await addStopLossOrder({deal, symbol: item.symbol, stopLossPrice: priceToCompareTo})
