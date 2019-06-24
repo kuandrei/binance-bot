@@ -13,6 +13,6 @@ COPY ./ ./
 RUN /bin/bash -c 'npm install pm2 -g'
 
 # Install dependencies
-RUN /bin/bash -c 'npm install'
+RUN /bin/bash -c 'npm install -no-cache'
 
 CMD ["node", "app/server.js"]

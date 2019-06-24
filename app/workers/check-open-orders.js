@@ -31,7 +31,7 @@ module.exports = async () => {
 };
 
 async function checkOrder(order) {
-
+    const deal = await Deal.findByPk(order.dealId);
     try {
         const binanceApiClient = await binanceHelper.initApiClient(order.clientId);
         const binanceOrder = await binanceApiClient.getOrder({
@@ -47,7 +47,6 @@ async function checkOrder(order) {
 
             if (order.status === 'FILLED') {
                 // change deal from NEW to OPEN
-                const deal = await Deal.findByPk(order.dealId);
                 if (deal.status === 'NEW') {
                     deal.status = 'OPEN';
                     deal.save();
