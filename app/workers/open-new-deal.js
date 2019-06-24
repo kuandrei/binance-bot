@@ -71,13 +71,7 @@ async function main(task) {
 function prepareDealData({marketPrice, tradePair, exchangeInfo, algorithm}) {
 
     let buyQty, sellQty, minProfitPrice;
-
-    console.log('-----------------------------');
-    console.dir(exchangeInfo.toJSON(), {colors: true, depth: 5});
-    console.log('-----------------------------');
-
-    let stepSizePrecision = 1
-        , tickSizePrecision = 1;
+    let stepSizePrecision = 1, tickSizePrecision = 1;
 
     const priceFilter = exchangeInfo.filters.find(filter => filter.filterType === 'PRICE_FILTER');
     if (priceFilter && priceFilter.tickSize !== 0)
@@ -87,19 +81,12 @@ function prepareDealData({marketPrice, tradePair, exchangeInfo, algorithm}) {
     if (lotSizeFilter && lotSizeFilter.stepSize !== 0)
         stepSizePrecision = 1 / lotSizeFilter.stepSize;
 
-    console.log('-----------------------------');
-    console.dir({
-        priceFilter,
-        tickSizePrecision,
-        lotSizeFilter,
-        stepSizePrecision
-    }, {colors: true, depth: 5});
-    console.log('-----------------------------');
 
     switch (tradePair.profitOn) {
         case 'BASE_ASSET':
-            buyQty = tradePair.dealQty; //???
+            buyQty = Math.ceil((tradePair.dealQty + tradePair.dealQty * tradePair.minProfitRate) * stepSizePrecision) / stepSizePrecision;
             sellQty = tradePair.dealQty;
+            minProfitPrice = Math.ceil(marketPrice * buyQty / sellQty * tickSizePrecision) / tickSizePrecision;
             break;
         case 'QUOTE_ASSET':
             buyQty = tradePair.dealQty;
@@ -108,12 +95,6 @@ function prepareDealData({marketPrice, tradePair, exchangeInfo, algorithm}) {
         case 'BOTH':
             break;
     }
-
-
-    // const precision = Math.pow(10, currencyPair.secondCurrencyPrecision);
-    // const openPrice = Math.round(marketPrice * precision) / precision;
-    // minProfitPrice = marketPrice + marketPrice * tradePair.additionPercentage;
-    // minProfitPrice = Math.round(minProfitPrice * precision) / precision;
 
     return {
         clientId: tradePair.clientId,
