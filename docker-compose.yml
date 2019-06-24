@@ -23,9 +23,5 @@ services:
   bot:
     hostname: bot
     build: .
-    volumes:
-      - .:/usr/local/web/app/
-      - /usr/local/web/app/node_modules
     ports:
       - "80:80"
-    command: sh -c 'NODE_ENV=production DEBUG=bnb:* pm2-runtime start app/server.js --watch'
