@@ -11,7 +11,7 @@ describe('Open deal worker', function () {
                 clientId: 1,
                 symbol: 'BTCUSDT',
                 dealQty: 0.002,
-                additionPercentage: 0.03
+                minProfitRate: 0.03
             },
             currencyPair: {
                 firstCurrencyPrecision: 6,
@@ -41,7 +41,7 @@ describe('Open deal worker', function () {
             tradePair: {
                 symbol: 'BTCUSDT',
                 dealQty: 0.002,
-                additionPercentage: 0.03
+                minProfitRate: 0.03
             },
             currencyPair: {
                 firstCurrencyPrecision: 6,
@@ -120,7 +120,7 @@ describe('Open deal worker', function () {
                     clientId: 1,
                     symbol: 'BTCUSDT',
                     dealQty: 0.002,
-                    additionPercentage: 0.03
+                    minProfitRate: 0.03
                 },
                 currencyPair: {
                     symbol: 'BTCUSDT',

@@ -7,7 +7,8 @@ module.exports = {
             symbol: 'BTCUSDT',
             status: 'ACTIVE',
             dealQty: 0.002,
-            additionPercentage: 0.03, // 3%
+            minProfitRate: 0.05, // 5%
+            profitIn: 'BASE_ASSET',
             createdAt: new Date(),
             updatedAt: new Date()
         }, {
@@ -15,7 +16,8 @@ module.exports = {
             symbol: 'BNBBTC',
             status: 'INACTIVE',
             dealQty: 1,
-            additionPercentage: 0.03, // 3%
+            minProfitRate: 0.05, // 5%
+            profitIn: 'BASE_ASSET',
             createdAt: new Date(),
             updatedAt: new Date()
         }, {
@@ -23,7 +25,8 @@ module.exports = {
             symbol: 'BNBUSDT',
             status: 'INACTIVE',
             dealQty: 1,
-            additionPercentage: 0.03, // 3%
+            minProfitRate: 0.05, // 5%
+            profitIn: 'BASE_ASSET',
             createdAt: new Date(),
             updatedAt: new Date()
         }], {});

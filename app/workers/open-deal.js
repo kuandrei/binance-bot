@@ -63,7 +63,7 @@ async function openDeal(task) {
 function prepareDealData({marketPrice, tradePair, currencyPair, algorithm}) {
     const precision = Math.pow(10, currencyPair.secondCurrencyPrecision);
     const openPrice = Math.round(marketPrice * precision) / precision;
-    let minProfitPrice = marketPrice + marketPrice * tradePair.additionPercentage;
+    let minProfitPrice = marketPrice + marketPrice * tradePair.minProfitRate;
     minProfitPrice = Math.round(minProfitPrice * precision) / precision;
 
     return {
@@ -78,7 +78,7 @@ function prepareDealData({marketPrice, tradePair, currencyPair, algorithm}) {
 }
 
 function prepareBinanceOrderData({marketPrice, tradePair, currencyPair}) {
-    const buyQty = tradePair.dealQty + tradePair.dealQty * tradePair.additionPercentage;
+    const buyQty = tradePair.dealQty + tradePair.dealQty * tradePair.minProfitRate;
     const precision = Math.pow(10, currencyPair.secondCurrencyPrecision);
     const price = Math.round(marketPrice * precision) / precision;
     return {

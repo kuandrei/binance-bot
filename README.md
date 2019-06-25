@@ -14,25 +14,29 @@
   "symbol": "BNBUSDT",
   "dealQty": 2,
   "minProfitRate": 0.003,
-  "profitOn": "BASE_ASSET"
+  "profitIn": "BASE_ASSET"
 }
 ```
 
-LOT_SIZE.stepSize = 0.01       // stepSizePrecision: 100
+LOT_SIZE.stepSize = 0.01       // stepSizePrecision: 100<br>
 PRICE_FILTER.tickSize = 0.0001 // tickSizePrecision: 10000
 
 ```json
 {
   "symbol": "BNBUSDT",
-  "buyQty": 2.01,           // Math.ceil((2 + 2 * 0.003) * 100) / 100  
-  "sellQty": 2,             // tradePair.dealQty
-  "openPrice": 37.5147,     // MarketPrice
-  "minProfitPrice": 37.7023 // Math.ceil(37.5147 * 2.01 / 2 * 10000) / 10000
+  "buyQty": 2.01, 
+  "sellQty": 2,
+  "openPrice": 37.5147,
+  "minProfitPrice": 37.7023
 }
 ```
 
-buyQty:         Math.ceil((tradePair.dealQty + tradePair.dealQty * tradePair.minProfitRate ) * stepSizePrecision) / stepSizePrecision
-minProfitPrice: Math.ceil(deal.buyQty * deal.openPrice / deal.sellQty * tickSizePrecision) / tickSizePrecision
+buyQty: Math.ceil((2 + 2 * 0.003) * 100) / 100 <br>
+*Math.ceil((tradePair.dealQty + tradePair.dealQty * tradePair.minProfitRate ) * stepSizePrecision) / stepSizePrecision*<br>
+sellQty: tradePair.dealQty<br>
+openPrice: marketPrice<br>
+minProfitPrice: Math.ceil(37.5147 * 2.01 / 2 * 10000) / 10000<br>
+*Math.ceil(deal.buyQty * deal.openPrice / deal.sellQty * tickSizePrecision) / tickSizePrecision*
 
 2. Profit on **QUOTE_ASSET**
  
@@ -41,7 +45,7 @@ minProfitPrice: Math.ceil(deal.buyQty * deal.openPrice / deal.sellQty * tickSize
   "symbol": "BNBUSDT",
   "quantity": 2,
   "minProfitRate": 0.003,
-  "profitOn": "BASE_ASSET"
+  "profitIn": "BASE_ASSET"
 }
 ```
 
@@ -53,12 +57,15 @@ PRICE_FILTER.tickSize = 0.0001 // tickSizePrecision: 10000
   "buyQty": 2,    
   "sellQty": 2,
   "openPrice": 37.5147,
-  "minProfitPrice": 37.7023 // 
+  "minProfitPrice": 37.6273
 }
 ```
 
-buyQty:         ???
-minProfitPrice: ???
+buyQty: tradePair.dealQty<br>
+sellQty: tradePair.dealQty<br>
+openPrice: marketPrice<br>
+minProfitPrice: Math.ceil((37.5147 + 37.5147 * 0.003) * 10000) / 10000<br>
+*Math.ceil((deal.openPrice + deal.openPrice * tradePair.minProfitRate) * tickSizePrecision) / tickSizePrecision*
 
 
 ## Symbol filters

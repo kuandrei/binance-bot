@@ -3,7 +3,7 @@ require('chai').should();
 const {ExchangeInfo} = require('../../app/models');
 const workerFunctions = require('./../../app/workers/open-new-deal');
 
-describe('Open deal worker', function () {
+describe('Open new deal worker', function () {
 
     it('prepareDealData (BNBUSDT/BASE_ASSET/dealQty:2/minProfitRate:0.3%)', async function () {
         const exchangeInfo = await ExchangeInfo.findOne({where: {symbol: 'BNBUSDT'}});
@@ -14,7 +14,7 @@ describe('Open deal worker', function () {
                 symbol: 'BNBUSDT',
                 dealQty: 2,
                 minProfitRate: 0.003,
-                profitOn: 'BASE_ASSET'
+                profitIn: 'BASE_ASSET'
             },
             exchangeInfo,
             algorithm: 'MACD-SLC(5m)'
@@ -47,7 +47,7 @@ describe('Open deal worker', function () {
                 symbol: 'BTCUSDT',
                 dealQty: 0.01,
                 minProfitRate: 0.005,
-                profitOn: 'BASE_ASSET'
+                profitIn: 'BASE_ASSET'
             },
             exchangeInfo,
             algorithm: 'MACD-SLC(5m)'
@@ -71,16 +71,16 @@ describe('Open deal worker', function () {
         result.algorithm.should.equal('MACD-SLC(5m)');
     });
 
-    it.only('prepareDealData (BTCUSDT/QUOTE_ASSET/dealQty:0.01/minProfitRate:0.5%)', async function () {
-        const exchangeInfo = await ExchangeInfo.findOne({where: {symbol: 'BTCUSDT'}});
+    it('prepareDealData (BNBUSDT/QUOTE_ASSET/dealQty:2/minProfitRate:0.3%)', async function () {
+        const exchangeInfo = await ExchangeInfo.findOne({where: {symbol: 'BNBUSDT'}});
         const result = workerFunctions.prepareDealData({
-            marketPrice: 10986.82,
+            marketPrice: 37.5147,
             tradePair: {
                 clientId: 1,
-                symbol: 'BTCUSDT',
-                dealQty: 0.01,
-                minProfitRate: 0.005,
-                profitOn: 'QUOTE_ASSET'
+                symbol: 'BNBUSDT',
+                dealQty: 2,
+                minProfitRate: 0.003,
+                profitIn: 'QUOTE_ASSET'
             },
             exchangeInfo,
             algorithm: 'MACD-SLC(5m)'
@@ -95,29 +95,31 @@ describe('Open deal worker', function () {
             'algorithm'
         ]);
         result.clientId.should.equal(1);
-        result.symbol.should.equal('BTCUSDT');
-        result.buyQty.should.equal(0.01);
-        result.sellQty.should.equal(0.01);
-        result.openPrice.should.equal(10986.82);
-        result.minProfitPrice.should.equal(11041.76);
+        result.symbol.should.equal('BNBUSDT');
+        result.buyQty.should.equal(2);
+        result.sellQty.should.equal(2);
+        result.openPrice.should.equal(37.5147);
+        result.minProfitPrice.should.equal(37.6273);
         result.status.should.equal('NEW');
         result.algorithm.should.equal('MACD-SLC(5m)');
     });
 
-    it('prepareBinanceOrderData', async function () {
-        const result = workerFunctions.prepareBinanceOrderData({
-            marketPrice: 8224.56,
+    it('prepareBinanceOrderData (BNBUSDT/BASE_ASSET/dealQty:2/minProfitRate:0.3%)', async function () {
+        // from first test
+        const exchangeInfo = await ExchangeInfo.findOne({where: {symbol: 'BNBUSDT'}});
+        const deal = workerFunctions.prepareDealData({
+            marketPrice: 37.5147,
             tradePair: {
-                symbol: 'BTCUSDT',
-                dealQty: 0.002,
-                additionPercentage: 0.03
+                clientId: 1,
+                symbol: 'BNBUSDT',
+                dealQty: 2,
+                minProfitRate: 0.003,
+                profitIn: 'BASE_ASSET'
             },
-            currencyPair: {
-                firstCurrencyPrecision: 6,
-                secondCurrencyPrecision: 2
-            }
-
+            exchangeInfo,
+            algorithm: 'MACD-SLC(5m)'
         });
+        const result = workerFunctions.prepareBinanceOrderData({deal});
         result.should.contain.keys([
             'symbol',
             'side',
@@ -125,29 +127,31 @@ describe('Open deal worker', function () {
             'quantity',
             'price'
         ]);
-        result.symbol.should.equal('BTCUSDT');
+        result.symbol.should.equal('BNBUSDT');
         result.side.should.equal('BUY');
         result.type.should.equal('LIMIT');
-        result.quantity.should.equal(0.002 + 0.002 * 0.03);
-        result.price.should.equal(8224.56);
+        result.quantity.should.equal(2.01);
+        result.price.should.equal(37.5147);
     });
 
-    it('prepareOrderData', async function () {
-        const result = workerFunctions.prepareOrderData({
-            client: {
-                id: 1,
-                commission: 0.00075
-            },
-            marketPrice: 8224.56,
-            currencyPair: {
+    it('prepareOrderData (BTCUSDT/BASE_ASSET/dealQty:0.01/minProfitRate:0.5%)', async function () {
+        // from second test
+        const exchangeInfo = await ExchangeInfo.findOne({where: {symbol: 'BTCUSDT'}});
+        const deal = workerFunctions.prepareDealData({
+            marketPrice: 10986.82,
+            tradePair: {
+                clientId: 1,
                 symbol: 'BTCUSDT',
-                firstCurrency: 'BTC',
-                secondCurrency: 'USDT'
+                dealQty: 0.01,
+                minProfitRate: 0.005,
+                profitIn: 'BASE_ASSET'
             },
-            binanceOrder: {
-                price: 8224.56,
-                quantity: 0.00206
-            }
+            exchangeInfo,
+            algorithm: 'MACD-SLC(5m)'
+        });
+        const result = workerFunctions.prepareOrderData({
+            deal,
+            exchangeInfo
         });
         result.should.contain.keys([
             'clientId',
@@ -157,10 +161,8 @@ describe('Open deal worker', function () {
             'status',
             'price',
             'quantity',
-            'fee',
-            'feeCurrency',
             'credit',
-            'feeCurrency',
+            'creditCurrency',
             'debit',
             'debitCurrency',
         ]);
@@ -170,46 +172,33 @@ describe('Open deal worker', function () {
         result.side.should.equal('BUY');
         result.type.should.equal('LIMIT');
         result.status.should.equal('NEW');
-        result.price.should.equal(8224.56);
-        result.quantity.should.equal(0.00206);
-        result.fee.should.equal(Math.round(0.00206 * 0.00075 * precision) / precision);
-        result.feeCurrency.should.equal('BTC');
-        result.credit.should.equal(0.00206);
+        result.price.should.equal(10986.82);
+        result.quantity.should.equal(0.01005);
+        result.credit.should.equal(0.01005);
         result.creditCurrency.should.equal('BTC');
-        result.debit.should.equal(Math.round(8224.56 * 0.00206 * precision) / precision);
+        result.debit.should.equal(Math.round(10986.82 * 0.01005 * precision) / precision);
         result.debitCurrency.should.equal('USDT');
     });
 
-    it('openDeal', async function () {
-        const results = await workerFunctions.openDeal({
+    it('run worker/e2e test (BNBUSDT/QUOTE_ASSET/dealQty:2/minProfitRate:0.3%)', async function () {
+        const results = await workerFunctions.worker({
             data: {
-                clientId: 1,
-                client: {
-                    id: 1,
-                    commission: 0.00075
-                },
                 marketPrice: 8224.56,
                 tradePair: {
-                    id: 1,
                     clientId: 1,
-                    symbol: 'BTCUSDT',
-                    dealQty: 0.002,
-                    additionPercentage: 0.03
+                    symbol: 'BNBUSDT',
+                    dealQty: 2,
+                    minProfitRate: 0.003,
+                    profitIn: 'QUOTE_ASSET'
                 },
-                currencyPair: {
-                    symbol: 'BTCUSDT',
-                    firstCurrency: 'BTC',
-                    secondCurrency: 'USDT',
-                    firstCurrencyPrecision: 6,
-                    secondCurrencyPrecision: 2
-                },
-                balances: {
-                    'USDT': 10000
-                }
+                algorithm: 'MACD-SLC(15m)'
             }
         });
 
-        results.should.contain.keys('binanceOrder', 'order', 'deal');
+        console.log('-----------------------------');
+        console.dir(results, {colors: true, depth: 5});
+        console.log('-----------------------------');
+        // results.should.contain.keys('binanceOrder', 'order', 'deal');
 
         // clean the database
         await results.order.destroy();

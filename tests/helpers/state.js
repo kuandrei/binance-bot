@@ -47,7 +47,7 @@ describe('State helpers', function () {
             'symbol',
             'status',
             'dealQty',
-            'additionPercentage'
+            'minProfitRate'
         ]);
         result.currencyPair.should.include.keys([
             'symbol',

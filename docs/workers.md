@@ -1,5 +1,5 @@
+# Workers
 
-# Workers / crons
 
 ---
 
@@ -17,7 +17,7 @@ This worker is responsible for taking a decision whether to place or not a new b
 
 
 @todo - describe the algorithm
-
+tradepair
 Once the algorithm decides to put a new order the open-deal task is added. 
 
 ---

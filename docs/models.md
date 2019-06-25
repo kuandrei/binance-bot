@@ -1,5 +1,10 @@
 # Models
 
+- [TradePair](#tradepair)
+- [Deal](#deal)
+
+---
+
 ## TradePair
 
 Model that holds all exchange info rules for specific symbol
@@ -11,10 +16,16 @@ clientId      | The reference to client record
 symbol        | The symbol identifier (ex: BTCUSDT)
 dealQty       | Defines deal quantity (must meet LOT_SIZE restriction)
 minProfitRate | Defines minimum profit rate for deal (minimum: 0.2%)
-profitOn      | Enum(BASE_ASSET|QUOTE_ASSET|BOTH)
+profitIn      | Enum(BASE_ASSET, QUOTE_ASSET)
 
+---
 
 ## Deal
+
+Definition
+A contract between a currency trader and a market maker that indicates the currencies being bought and sold, the amount of currency involved, and the exchange rate that the two currencies will be traded at.
+
+Read more: http://www.investorwords.com/6524/forex_deal.html#ixzz5rtONutg4
 
 Property       | Description
 -------------- | -----------------------------------------------------

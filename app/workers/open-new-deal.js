@@ -1,6 +1,5 @@
-const R = require('ramda');
 const debug = require('debug')('bnb:workers:open-deal');
-const {Deal, Order} = require('./../models');
+const {Deal, Order, ExchangeInfo} = require('./../models');
 const binanceHelper = require('./../helpers/binance');
 const errorHandler = require('../helpers/error-handler');
 
@@ -9,8 +8,8 @@ const errorHandler = require('../helpers/error-handler');
  * @param task (task.data contains {tradePair, algorithm, marketPrice})
  * @return {Promise.<{binanceOrder: *, order: *, deal: *}>}
  */
-async function main(task) {
-    const ctx = task.data;
+async function worker(task) {
+    const {tradePair, algorithm, marketPrice} = task.data;
 
     // 0. prepare context
     // 1. validate balance
@@ -23,25 +22,26 @@ async function main(task) {
     try {
 
         // prepare data
-        dealData = prepareDealData(ctx);
-        binanceOrderData = prepareBinanceOrderData(ctx);
-        orderData = prepareOrderData(R.merge({
-            binanceOrder: binanceOrderData
-        }, ctx));
+        const exchangeInfo = await ExchangeInfo.findOne({
+            where: {symbol: tradePair.symbol}
+        });
+        dealData = prepareDealData({marketPrice, tradePair, exchangeInfo, algorithm});
+        binanceOrderData = prepareBinanceOrderData({deal: dealData});
+        orderData = prepareOrderData({deal: dealData, exchangeInfo});
 
         // validate balance
-        const dealCurrency = ctx.currencyPair.secondCurrency;
-        if (ctx.balances[dealCurrency].free < binanceOrderData.price * binanceOrderData.quantity) {
-            //debug('NOT ENOUGH FUNDS FOR OPENING NEW DEAL (TRADE-PAIR#${ctx.tradePair.id})');
-            return;
-        }
+        // const dealCurrency = exchangeInfo.quoteAsset;
+        // if (ctx.balances[dealCurrency].free < binanceOrderData.price * binanceOrderData.quantity) {
+        //     //debug('NOT ENOUGH FUNDS FOR OPENING NEW DEAL (TRADE-PAIR#${ctx.tradePair.id})');
+        //     return;
+        // }
 
         // open/create new deal
-        debug(`ADD NEW DEAL (CLIENT ID#${ctx.tradePair.clientId}/SYMBOL:${orderData.symbol}/QTY:${orderData.quantity}/PRICE:${binanceOrderData.price})`);
+        debug(`ADD NEW DEAL (CLIENT ID#${tradePair.clientId}/SYMBOL:${tradePair.symbol}/QTY:${dealData.buyQty}/PRICE:${marketPrice}/PROFIT:${dealData.minProfitPrice})`);
         const deal = await Deal.create(dealData);
 
         // debug(`place binance buy order: ${buyQty} ${ctx.currencyPair.firstCurrency} for ${dealPrice} ${ctx.currencyPair.secondCurrency} (trade-pair#${ctx.tradePair.id})`);
-        const binanceOrder = await binanceHelper.order(ctx.clientId, binanceOrderData);
+        const binanceOrder = await binanceHelper.order(tradePair.clientId, binanceOrderData);
         // create new buy order
         orderData.binanceOrderId = binanceOrder.orderId;
         orderData.dealId = deal.id;
@@ -82,7 +82,7 @@ function prepareDealData({marketPrice, tradePair, exchangeInfo, algorithm}) {
         stepSizePrecision = 1 / lotSizeFilter.stepSize;
 
 
-    switch (tradePair.profitOn) {
+    switch (tradePair.profitIn) {
         case 'BASE_ASSET':
             buyQty = Math.ceil((tradePair.dealQty + tradePair.dealQty * tradePair.minProfitRate) * stepSizePrecision) / stepSizePrecision;
             sellQty = tradePair.dealQty;
@@ -90,9 +90,8 @@ function prepareDealData({marketPrice, tradePair, exchangeInfo, algorithm}) {
             break;
         case 'QUOTE_ASSET':
             buyQty = tradePair.dealQty;
-            sellQty = tradePair.dealQty; // ???
-            break;
-        case 'BOTH':
+            sellQty = tradePair.dealQty;
+            minProfitPrice = Math.ceil((marketPrice + marketPrice * tradePair.minProfitRate) * tickSizePrecision) / tickSizePrecision;
             break;
     }
 
@@ -108,43 +107,38 @@ function prepareDealData({marketPrice, tradePair, exchangeInfo, algorithm}) {
     };
 }
 
-function prepareBinanceOrderData({marketPrice, tradePair, currencyPair}) {
-    const buyQty = tradePair.dealQty + tradePair.dealQty * tradePair.additionPercentage;
-    const precision = Math.pow(10, currencyPair.secondCurrencyPrecision);
-    const price = Math.round(marketPrice * precision) / precision;
+function prepareBinanceOrderData({deal}) {
     return {
-        symbol: tradePair.symbol,
+        symbol: deal.symbol,
         side: 'BUY',
         type: 'LIMIT',
-        quantity: buyQty,
-        price: price
+        quantity: deal.buyQty,
+        price: deal.openPrice
     };
 }
 
-function prepareOrderData({client, currencyPair, binanceOrder}) {
+function prepareOrderData({deal, exchangeInfo}) {
     const precision = Math.pow(10, 8);
     return {
-        clientId: client.id,
-        symbol: currencyPair.symbol,
+        clientId: deal.clientId,
+        symbol: deal.symbol,
         side: 'BUY',
         type: 'LIMIT',
         status: 'NEW',
-        price: binanceOrder.price,
-        quantity: binanceOrder.quantity,
-        fee: Math.round(binanceOrder.quantity * client.commission * precision) / precision,
-        feeCurrency: currencyPair.firstCurrency,
-        credit: binanceOrder.quantity,
-        creditCurrency: currencyPair.firstCurrency,
-        debit: Math.round(binanceOrder.price * binanceOrder.quantity * precision) / precision,
-        debitCurrency: currencyPair.secondCurrency,
+        price: deal.openPrice,
+        quantity: deal.buyQty,
+        credit: deal.buyQty,
+        creditCurrency: exchangeInfo.baseAsset,
+        debit: Math.round(deal.openPrice * deal.buyQty * precision) / precision,
+        debitCurrency: exchangeInfo.quoteAsset,
     };
 }
 
 if (process.env.NODE_ENV !== 'test') {
-    module.exports = main;
+    module.exports = worker;
 } else {
     module.exports = {
-        main,
+        worker,
         prepareDealData,
         prepareBinanceOrderData,
         prepareOrderData

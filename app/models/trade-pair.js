@@ -14,9 +14,14 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.DECIMAL(16, 8)
         },
-        additionPercentage: {
+        minProfitRate: {
             allowNull: false,
             type: DataTypes.DECIMAL(6, 4)
+        },
+        profitIn: {
+            allowNull: false,
+            type: DataTypes.ENUM('BASE_ASSET', 'QUOTE_ASSET'),
+            defaultValue: 'BASE_ASSET'
         }
     }, {});
     TradePair.associate = function ({Client}) {

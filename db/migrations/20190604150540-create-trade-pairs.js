@@ -28,9 +28,14 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.DECIMAL(16, 8)
             },
-            additionPercentage: {
+            minProfitRate: {
                 allowNull: false,
                 type: Sequelize.DECIMAL(6, 4)
+            },
+            profitIn: {
+                allowNull: false,
+                type: Sequelize.ENUM('BASE_ASSET', 'QUOTE_ASSET'),
+                defaultValue: 'BASE_ASSET'
             },
             createdAt: {
                 allowNull: false,

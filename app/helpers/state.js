@@ -38,7 +38,7 @@ async function tradePairState(tradePair) {
                 'symbol',
                 'status',
                 'dealQty',
-                'additionPercentage'
+                'minProfitRate'
             ], tradePair),
             currencyPair: (await CurrencyPair.findOne({
                 where: {symbol: tradePair.symbol},
@@ -77,7 +77,7 @@ async function tradePairState(tradePair) {
         // castings
         state.client.commission = parseFloat(state.client.commission);
         state.tradePair.dealQty = parseFloat(state.tradePair.dealQty);
-        state.tradePair.additionPercentage = parseFloat(state.tradePair.additionPercentage);
+        state.tradePair.minProfitRate = parseFloat(state.tradePair.minProfitRate);
 
         return state;
 
