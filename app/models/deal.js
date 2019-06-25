@@ -5,6 +5,14 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.STRING(16)
         },
+        buyQty: {
+            allowNull: false,
+            type: DataTypes.DECIMAL(16, 8)
+        },
+        sellQty: {
+            allowNull: false,
+            type: DataTypes.DECIMAL(16, 8)
+        },
         openPrice: {
             allowNull: false,
             type: DataTypes.DECIMAL(16, 8)
@@ -12,10 +20,6 @@ module.exports = (sequelize, DataTypes) => {
         closePrice: {
             type: DataTypes.DECIMAL(16, 8),
             defaultValue: 0
-        },
-        quantity: {
-            allowNull: false,
-            type: DataTypes.DECIMAL(16, 8)
         },
         minProfitPrice: {
             allowNull: false,

@@ -112,3 +112,19 @@ Used in add-stop-loss order worker.
 If the number of open stop loss order more than defined by filter, then SELL_LIMIT order added instead with price = marketPrice = 0.1%
 
 
+### PERCENT_PRICE
+
+The PERCENT_PRICE filter defines valid range for a price based on the average of the previous trades. avgPriceMins is the number of minutes the average price is calculated over. 0 means the last price is used.
+
+In order to pass the percent price, the following must be true for price:
+
+price <= weightedAveragePrice * multiplierUp
+price >= weightedAveragePrice * multiplierDown
+/exchangeInfo format:
+
+  {
+    "filterType": "PERCENT_PRICE",
+    "multiplierUp": "1.3000",
+    "multiplierDown": "0.7000",
+    "avgPriceMins": 5
+  }

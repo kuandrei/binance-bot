@@ -29,15 +29,8 @@ async function worker(task) {
         binanceOrderData = prepareBinanceOrderData({deal: dealData});
         orderData = prepareOrderData({deal: dealData, exchangeInfo});
 
-        // validate balance
-        // const dealCurrency = exchangeInfo.quoteAsset;
-        // if (ctx.balances[dealCurrency].free < binanceOrderData.price * binanceOrderData.quantity) {
-        //     //debug('NOT ENOUGH FUNDS FOR OPENING NEW DEAL (TRADE-PAIR#${ctx.tradePair.id})');
-        //     return;
-        // }
-
         // open/create new deal
-        debug(`ADD NEW DEAL (CLIENT ID#${tradePair.clientId}/SYMBOL:${tradePair.symbol}/QTY:${dealData.buyQty}/PRICE:${marketPrice}/PROFIT:${dealData.minProfitPrice})`);
+        debug(`ADD NEW DEAL (CLIENT#${tradePair.clientId}/${tradePair.symbol}/BUY:${dealData.buyQty}/SELL:${dealData.sellQty}/PRICE:${marketPrice}/PROFIT:${dealData.minProfitPrice})`);
         const deal = await Deal.create(dealData);
 
         // debug(`place binance buy order: ${buyQty} ${ctx.currencyPair.firstCurrency} for ${dealPrice} ${ctx.currencyPair.secondCurrency} (trade-pair#${ctx.tradePair.id})`);

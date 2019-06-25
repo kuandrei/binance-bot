@@ -3,7 +3,7 @@ require('chai').should();
 const {ExchangeInfo} = require('../../app/models');
 const workerFunctions = require('./../../app/workers/open-new-deal');
 
-describe('Open new deal worker', function () {
+describe.only('Open new deal worker', function () {
 
     it('prepareDealData (BNBUSDT/BASE_ASSET/dealQty:2/minProfitRate:0.3%)', async function () {
         const exchangeInfo = await ExchangeInfo.findOne({where: {symbol: 'BNBUSDT'}});
@@ -183,22 +183,19 @@ describe('Open new deal worker', function () {
     it('run worker/e2e test (BNBUSDT/QUOTE_ASSET/dealQty:2/minProfitRate:0.3%)', async function () {
         const results = await workerFunctions.worker({
             data: {
-                marketPrice: 8224.56,
+                marketPrice: 37.5147,
                 tradePair: {
                     clientId: 1,
                     symbol: 'BNBUSDT',
                     dealQty: 2,
                     minProfitRate: 0.003,
-                    profitIn: 'QUOTE_ASSET'
+                    profitIn: 'BASE_ASSET'
                 },
                 algorithm: 'MACD-SLC(15m)'
             }
         });
 
-        console.log('-----------------------------');
-        console.dir(results, {colors: true, depth: 5});
-        console.log('-----------------------------');
-        // results.should.contain.keys('binanceOrder', 'order', 'deal');
+        results.should.contain.keys('binanceOrder', 'order', 'deal');
 
         // clean the database
         await results.order.destroy();
