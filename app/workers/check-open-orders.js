@@ -68,7 +68,6 @@ async function checkOrder(order) {
         order.error = err;
         await order.save();
 
-        const deal = await Deal.findByPk(order.dealId);
         deal.status = 'ERROR';
         deal.save();
     }
