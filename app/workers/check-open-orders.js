@@ -54,7 +54,7 @@ async function checkOrder(order) {
                     deal.status = 'CLOSED';
                     deal.closePrice = order.price;
                     deal.save();
-                    debug(`CHANGE DEAL #${deal.id} STATUS FROM 'OPEN' TO 'CLOSE (${deal.symbol})'`);
+                    debug(`CHANGE DEAL #${deal.id} STATUS FROM 'OPEN' TO 'CLOSED' (${deal.symbol})'`);
                 }
             }
         }
