@@ -5,6 +5,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.STRING(16)
         },
+        type: {
+            allowNull: false,
+            type: DataTypes.ENUM('BULLISH', 'BEARISH'),
+            defaultValue: 'BULLISH'
+        },
         buyQty: {
             allowNull: false,
             type: DataTypes.DECIMAL(16, 8)
