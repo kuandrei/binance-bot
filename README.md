@@ -7,7 +7,9 @@
 
 ## Calculation rules
 
-1. Profit on **BASE_ASSET**
+### Bullish trend
+
+1. Profit in **BASE_ASSET**
  
 ```json
 {
@@ -24,6 +26,7 @@ PRICE_FILTER.tickSize = 0.0001 // tickSizePrecision: 10000
 ```json
 {
   "symbol": "BNBUSDT",
+  "type": "BULLISH",
   "buyQty": 2.01, 
   "sellQty": 2,
   "openPrice": 37.5147,
@@ -38,7 +41,7 @@ openPrice: marketPrice<br>
 minProfitPrice: Math.ceil(37.5147 * 2.01 / 2 * 10000) / 10000<br>
 *Math.ceil(deal.buyQty * deal.openPrice / deal.sellQty * tickSizePrecision) / tickSizePrecision*
 
-2. Profit on **QUOTE_ASSET**
+2. Profit in **QUOTE_ASSET**
  
 ```json
 {
@@ -54,6 +57,7 @@ PRICE_FILTER.tickSize = 0.0001 // tickSizePrecision: 10000
 ```json
 {
   "symbol": "BNBUSDT",
+  "type": "BULLISH",
   "buyQty": 2,    
   "sellQty": 2,
   "openPrice": 37.5147,
@@ -66,6 +70,70 @@ sellQty: tradePair.dealQty<br>
 openPrice: marketPrice<br>
 minProfitPrice: Math.ceil((37.5147 + 37.5147 * 0.003) * 10000) / 10000<br>
 *Math.ceil((deal.openPrice + deal.openPrice * tradePair.minProfitRate) * tickSizePrecision) / tickSizePrecision*
+
+### Bearish trend
+
+1. Profit in **BASE_ASSET**
+ 
+```json
+{
+  "symbol": "BNBUSDT",
+  "dealQty": 2,
+  "minProfitRate": 0.003,
+  "profitIn": "BASE_ASSET"
+}
+```
+
+LOT_SIZE.stepSize = 0.01       // stepSizePrecision: 100<br>
+PRICE_FILTER.tickSize = 0.0001 // tickSizePrecision: 10000
+
+```json
+{
+  "symbol": "BNBUSDT",
+  "type": "BEARISH",
+  "buyQty": 2.01, 
+  "sellQty": 2,
+  "openPrice": 37.5147,
+  "minProfitPrice": 37.3281
+}
+```
+
+buyQty: Math.ceil((2 + 2 * 0.003) * 100) / 100 <br>
+*Math.ceil((tradePair.dealQty + tradePair.dealQty * tradePair.minProfitRate ) * stepSizePrecision) / stepSizePrecision*<br>
+sellQty: tradePair.dealQty<br>
+openPrice: marketPrice<br>
+minProfitPrice: Math.ceil(37.5147 * 2 / 2.01 * 10000) / 10000<br>
+*Math.ceil(deal.buyQty * deal.sellQty / deal.openPrice * tickSizePrecision) / tickSizePrecision*
+
+2. Profit in **QUOTE_ASSET**
+ 
+```json
+{
+  "symbol": "BNBUSDT",
+  "quantity": 2,
+  "minProfitRate": 0.003,
+  "profitIn": "BASE_ASSET"
+}
+```
+
+PRICE_FILTER.tickSize = 0.0001 // tickSizePrecision: 10000
+
+```json
+{
+  "symbol": "BNBUSDT",
+  "type": "BEARISH",
+  "buyQty": 2,    
+  "sellQty": 2,
+  "openPrice": 37.5147,
+  "minProfitPrice": 37.4025
+}
+```
+
+buyQty: tradePair.dealQty<br>
+sellQty: tradePair.dealQty<br>
+openPrice: marketPrice<br>
+minProfitPrice: Math.ceil((37.5147 / 1 + 0.003) * 10000) / 10000<br>
+*Math.ceil(deal.openPrice / (1 + tradePair.minProfitRate) * tickSizePrecision) / tickSizePrecision*
 
 
 ## Symbol filters
