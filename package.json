@@ -1,6 +1,10 @@
 {
   "name": "binance-bot",
   "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kuandrei/binance-bot.git"
+  },
   "description": "",
   "main": "app/server.js",
   "scripts": {
