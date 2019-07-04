@@ -86,9 +86,9 @@ async function calculateSymbolTakeProfitPrice(symbol) {
     const lastMacd3m = indicatorData1m.MACD[indicatorData1m.MACD.length - 1];
     const lastSmaValue3m = indicatorData3m.SMA[indicatorData3m.SMA.length - 1];
     const highestSmaValue = R.max(
-        R.reduce(R.max, Infinity, indicatorData1m.SMA),
-        R.reduce(R.max, Infinity, indicatorData3m.SMA),
-        R.reduce(R.max, Infinity, indicatorData5m.SMA)
+        R.reduce(R.max, 0, indicatorData1m.SMA),
+        R.reduce(R.max, 0, indicatorData3m.SMA),
+        R.reduce(R.max, 0, indicatorData5m.SMA)
     );
 
     if (lastMacd3m.MACD < 0)
