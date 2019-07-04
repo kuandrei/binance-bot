@@ -2,7 +2,7 @@ require('chai').should();
 
 const dbHelper = require('../../app/helpers/db');
 
-describe.only('test db helpers', function () {
+describe('test db helpers', function () {
 
     it('test getTradingSymbols function - should return symbols array', async function () {
         const symbols = await dbHelper.getTradingSymbols();
