@@ -62,6 +62,23 @@ const findOpenStopLossOrder = async (symbol, marketPrice) => {
     return await async.map(results, async o => await Order.findByPk(o.id));
 };
 
+const findOpenTakeProfitOrder = async (symbol, marketPrice) => {
+    const results = await sequelize.query(`
+        SELECT Orders.id
+        FROM Orders
+        WHERE Orders.status='NEW'
+        AND Orders.side='BUY'
+        AND Orders.type='TAKE_PROFIT_LIMIT'
+        AND Orders.symbol=:symbol
+        AND Orders.price > :marketPrice
+    `, {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: {symbol, marketPrice}
+    });
+
+    return await async.map(results, async o => await Order.findByPk(o.id));
+};
+
 const getMinProfitPrice = async (clientId, symbol) => {
     const result = await sequelize.query(`
         SELECT MIN(minProfitPrice) AS minProfitPrice
@@ -118,6 +135,7 @@ module.exports = {
     getTradingSymbols,
     findNewProfitDeals,
     findOpenStopLossOrder,
+    findOpenTakeProfitOrder,
     getMinProfitPrice,
     getNumberOfOpenAlgoOrders,
     getExchangeInfoMap
