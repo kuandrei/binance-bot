@@ -136,11 +136,7 @@ describe('test add stop loss order worker', function () {
 
         const results = await workerFunctions.addStopLossOrder({
             deal: deal.toJSON(),
-            symbol: 'BTCUSDT',
-            stopLossPrice: 8224.559,
-            tradePair: {
-                id: 123
-            }
+            stopLossPrice: 8224.559
         });
         results.should.contain.keys('binanceOrder', 'order');
 
