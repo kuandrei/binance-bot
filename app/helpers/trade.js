@@ -57,7 +57,7 @@ async function calculateSymbolTakeProfitPrice(symbol) {
         return Promise.all(
             symbol.map(async s => ({
                 symbol: s,
-                stopLossPrice: await calculateSymbolTakeProfitPrice(s)
+                takeProfitPrice: await calculateSymbolTakeProfitPrice(s)
             }))
         );
     }

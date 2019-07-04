@@ -23,7 +23,7 @@ describe('test trade helpers', function () {
     it('test calculateSymbolTakeProfitPrice function with multiple symbols - should return list prices', async function () {
         const results = await tradeHelper.calculateSymbolTakeProfitPrice(['BTCUSDT', 'BNBUSDT']);
         results.should.be.an('array');
-        results[0].should.include.keys('symbol', 'stopLossPrice');
+        results[0].should.include.keys('symbol', 'takeProfitPrice');
     });
 
 });
