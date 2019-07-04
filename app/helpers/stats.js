@@ -21,6 +21,8 @@ async function tradePairInfo(tradePair, symbolInfo) {
         marketPrice: symbolInfo.marketPrice
     };
     return {
+        symbol: tradePair.symbol,
+        marketPrice: symbolInfo.marketPrice,
         balances: await getBalances(ctx),
         newDeals: await countDeals('New')(ctx),
         openDeals: await countDeals('Open')(ctx),

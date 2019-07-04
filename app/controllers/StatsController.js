@@ -24,16 +24,18 @@ module.exports = {
                     });
                     symbolInfoCache[tradePair.symbol] = symbolInfo;
                     return R.pick([
-                        'clientId',
                         'symbol',
                         'marketPrice',
-                        'minProfitPrice',
                         'newDeals',
                         'openDeals',
                         'openDealsBelowMarketPrice',
                         'openDealsAboveMarketPrice',
-                        'openDealsInRange',
-                        'openDealsInProfit'
+                        'openDealsInProfit',
+                        'openDealsInRange_1',
+                        'openDealsInRange_2',
+                        'openDealsInRange_3',
+                        'openDealsInRange_4',
+                        'openDealsInRange_5',
                     ], await statsHelpers.tradePairInfo(tradePair, symbolInfo));
                 }));
             res.json({
