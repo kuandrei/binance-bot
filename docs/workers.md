@@ -8,7 +8,7 @@ open-new-deal                |           | Done   | Opens new deal for given tra
 check-open-deals             | * * * * * | Done   | Monitors status of open deals, if become profitable - adds appropriate task
 add-stop-loss-order          |           | Done   | Adds stop loss order for given deal (only for uptrend deals)
 add-take-profit-order        |           | Done   | Adds take profit order for given deal (only for downtrend deals) 
-check-open-orders            | * * * * * | Todo   | Checks if open orders filled 
+check-open-orders            | * * * * * | Done   | Checks if open orders filled 
 replace-stop-loss-order      |           | Todo   | Replaces stop loss order with new one (higher price)
 replace-take-profit-order    |           | Todo   | Replaces take profit order with new one (lower price)
 add-sell-market-price-order  |           | Todo   | Adds sell order in market price
