@@ -7,21 +7,15 @@ const {
     Sequelize
 } = require('./../models');
 
-const getActiveSymbols = async () => {
-    console.log('getActiveSymbols deprecated');
-    const results = await sequelize.query(`
-        SELECT DISTINCT symbol 
-        FROM Deals 
-        WHERE Deals.status IN ('OPEN', 'NEW');
-    `, {type: sequelize.QueryTypes.SELECT});
-    return results.map(item => item.symbol);
-};
-
 const getTradingSymbols = async () => {
     const results = await sequelize.query(`
         SELECT DISTINCT symbol 
         FROM Deals 
-        WHERE Deals.status IN ('OPEN', 'NEW');
+        WHERE Deals.status IN ('OPEN', 'NEW')
+        UNION DISTINCT
+        SELECT DISTINCT symbol 
+        FROM TradePairs 
+        WHERE TradePairs.status='ACTIVE'  
     `, {type: sequelize.QueryTypes.SELECT});
     return results.map(item => item.symbol);
 };
@@ -131,7 +125,6 @@ const getExchangeInfoMap = async symbols => {
 };
 
 module.exports = {
-    getActiveSymbols,
     getTradingSymbols,
     findNewProfitDeals,
     findOpenStopLossOrder,
