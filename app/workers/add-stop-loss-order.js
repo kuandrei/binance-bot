@@ -3,12 +3,6 @@ const errorHandler = require('../helpers/error-handler');
 const binanceHelpers = require('../helpers/binance');
 const {Order, ExchangeInfo} = require('../models');
 
-/**
- * 1. find all active symbols
- * 2. get market price for each symbol
- * 3. find all new profit deals
- * 4. add STOP_LOSS orders
- */
 async function addStopLossOrder({deal, stopLossPrice}) {
 
     try {
