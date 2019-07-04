@@ -1,6 +1,6 @@
 const debug = require('debug')('bnb:workers:analyze-trade-pair');
 const errorHandler = require('./../helpers/error-handler');
-const {symbolInfo} = require('./../models');
+const {symbolInfo, Sequelize} = require('./../models');
 
 
 module.exports = async () => {
@@ -10,7 +10,7 @@ module.exports = async () => {
         await symbolInfo.destroy({
             where: {
                 createdAt: {
-                    lt:  new Date(new Date().getTime() - (24 * 60 * 60 * 1000))
+                    [Sequelize.Op.lt]: new Date(new Date().getTime() - (24 * 60 * 60 * 1000))
                 }
             }
         })
