@@ -1,9 +1,9 @@
 require('chai').should();
 
 const {Deal} = require('../../app/models');
-const workerFunctions = require('./../../app/workers/add-stop-loss-orders');
+const workerFunctions = require('../../app/workers/old-add-stop-loss-orders');
 
-describe('Add stop loss worker', function () {
+describe.skip('Add stop loss worker', function () {
 
     it('prepareData for BTCUSDT deal', async function () {
         const result = await workerFunctions.prepareData({

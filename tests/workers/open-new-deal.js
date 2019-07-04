@@ -3,9 +3,9 @@ require('chai').should();
 const {ExchangeInfo} = require('../../app/models');
 const workerFunctions = require('./../../app/workers/open-new-deal');
 
-describe('Test open-new-deal worker', function () {
+describe('test open-new-deal worker', function () {
 
-    describe('Bullish deal tests', function () {
+    describe('test UPTREND deals', function () {
 
         it('test prepareDealData (BNBUSDT/BASE_ASSET/dealQty:2/minProfitRate:0.3%)', async function () {
             const exchangeInfo = await ExchangeInfo.findOne({where: {symbol: 'BNBUSDT'}});
@@ -18,7 +18,7 @@ describe('Test open-new-deal worker', function () {
                     minProfitRate: 0.003,
                     profitIn: 'BASE_ASSET'
                 },
-                type: 'BULLISH',
+                type: 'UPTREND',
                 exchangeInfo,
                 algorithm: 'MACD-SLC(5m)'
             });
@@ -33,7 +33,7 @@ describe('Test open-new-deal worker', function () {
             ]);
             result.clientId.should.equal(1);
             result.symbol.should.equal('BNBUSDT');
-            result.type.should.equal('BULLISH');
+            result.type.should.equal('UPTREND');
             result.buyQty.should.equal(2.01);
             result.sellQty.should.equal(2);
             result.openPrice.should.equal(37.5147);
@@ -53,7 +53,7 @@ describe('Test open-new-deal worker', function () {
                     minProfitRate: 0.005,
                     profitIn: 'BASE_ASSET'
                 },
-                type: 'BULLISH',
+                type: 'UPTREND',
                 exchangeInfo,
                 algorithm: 'MACD-SLC(5m)'
             });
@@ -69,7 +69,7 @@ describe('Test open-new-deal worker', function () {
             ]);
             result.clientId.should.equal(1);
             result.symbol.should.equal('BTCUSDT');
-            result.type.should.equal('BULLISH');
+            result.type.should.equal('UPTREND');
             result.buyQty.should.equal(0.01005);
             result.sellQty.should.equal(0.01);
             result.openPrice.should.equal(10986.82);
@@ -89,7 +89,7 @@ describe('Test open-new-deal worker', function () {
                     minProfitRate: 0.003,
                     profitIn: 'QUOTE_ASSET'
                 },
-                type: 'BULLISH',
+                type: 'UPTREND',
                 exchangeInfo,
                 algorithm: 'MACD-SLC(5m)'
             });
@@ -105,7 +105,7 @@ describe('Test open-new-deal worker', function () {
             ]);
             result.clientId.should.equal(1);
             result.symbol.should.equal('BNBUSDT');
-            result.type.should.equal('BULLISH');
+            result.type.should.equal('UPTREND');
             result.buyQty.should.equal(2);
             result.sellQty.should.equal(2);
             result.openPrice.should.equal(37.5147);
@@ -126,7 +126,7 @@ describe('Test open-new-deal worker', function () {
                     minProfitRate: 0.003,
                     profitIn: 'BASE_ASSET'
                 },
-                type: 'BULLISH',
+                type: 'UPTREND',
                 exchangeInfo,
                 algorithm: 'MACD-SLC(5m)'
             });
@@ -157,7 +157,7 @@ describe('Test open-new-deal worker', function () {
                     minProfitRate: 0.005,
                     profitIn: 'BASE_ASSET'
                 },
-                type: 'BULLISH',
+                type: 'UPTREND',
                 exchangeInfo,
                 algorithm: 'MACD-SLC(5m)'
             });
@@ -203,7 +203,7 @@ describe('Test open-new-deal worker', function () {
                         minProfitRate: 0.003,
                         profitIn: 'BASE_ASSET'
                     },
-                    type: 'BULLISH',
+                    type: 'UPTREND',
                     algorithm: 'MACD-SLC(15m)'
                 }
             });
@@ -213,7 +213,7 @@ describe('Test open-new-deal worker', function () {
             const dealJSON = results.deal.toJSON();
             dealJSON.clientId.should.equal(1);
             dealJSON.symbol.should.equal('BNBUSDT');
-            dealJSON.type.should.equal('BULLISH');
+            dealJSON.type.should.equal('UPTREND');
             dealJSON.buyQty.should.equal(2.01);
             dealJSON.sellQty.should.equal(2);
             dealJSON.openPrice.should.equal(37.5147);
@@ -242,7 +242,7 @@ describe('Test open-new-deal worker', function () {
 
     });
 
-    describe('Bearish deal test', function () {
+    describe('test DOWNTREND deals', function () {
 
         it('test prepareDealData (BNBUSDT/BASE_ASSET/dealQty:2/minProfitRate:0.3%)', async function () {
             const exchangeInfo = await ExchangeInfo.findOne({where: {symbol: 'BNBUSDT'}});
@@ -255,7 +255,7 @@ describe('Test open-new-deal worker', function () {
                     minProfitRate: 0.003,
                     profitIn: 'BASE_ASSET'
                 },
-                type: 'BEARISH',
+                type: 'DOWNTREND',
                 exchangeInfo,
                 algorithm: 'MACD-SLC(5m)'
             });
@@ -271,7 +271,7 @@ describe('Test open-new-deal worker', function () {
             ]);
             result.clientId.should.equal(1);
             result.symbol.should.equal('BNBUSDT');
-            result.type.should.equal('BEARISH');
+            result.type.should.equal('DOWNTREND');
             result.buyQty.should.equal(2.01);
             result.sellQty.should.equal(2);
             result.openPrice.should.equal(37.5147);
@@ -291,7 +291,7 @@ describe('Test open-new-deal worker', function () {
                     minProfitRate: 0.005,
                     profitIn: 'BASE_ASSET'
                 },
-                type: 'BEARISH',
+                type: 'DOWNTREND',
                 exchangeInfo,
                 algorithm: 'MACD-SLC(5m)'
             });
@@ -307,7 +307,7 @@ describe('Test open-new-deal worker', function () {
             ]);
             result.clientId.should.equal(1);
             result.symbol.should.equal('BTCUSDT');
-            result.type.should.equal('BEARISH');
+            result.type.should.equal('DOWNTREND');
             result.buyQty.should.equal(0.01005);
             result.sellQty.should.equal(0.01);
             result.openPrice.should.equal(10986.82);
@@ -327,7 +327,7 @@ describe('Test open-new-deal worker', function () {
                     minProfitRate: 0.003,
                     profitIn: 'QUOTE_ASSET'
                 },
-                type: 'BEARISH',
+                type: 'DOWNTREND',
                 exchangeInfo,
                 algorithm: 'MACD-SLC(5m)'
             });
@@ -343,7 +343,7 @@ describe('Test open-new-deal worker', function () {
             ]);
             result.clientId.should.equal(1);
             result.symbol.should.equal('BNBUSDT');
-            result.type.should.equal('BEARISH');
+            result.type.should.equal('DOWNTREND');
             result.buyQty.should.equal(2);
             result.sellQty.should.equal(2);
             result.openPrice.should.equal(37.5147);
@@ -364,7 +364,7 @@ describe('Test open-new-deal worker', function () {
                     minProfitRate: 0.003,
                     profitIn: 'BASE_ASSET'
                 },
-                type: 'BEARISH',
+                type: 'DOWNTREND',
                 exchangeInfo,
                 algorithm: 'MACD-SLC(5m)'
             });
@@ -395,7 +395,7 @@ describe('Test open-new-deal worker', function () {
                     minProfitRate: 0.005,
                     profitIn: 'BASE_ASSET'
                 },
-                type: 'BEARISH',
+                type: 'DOWNTREND',
                 exchangeInfo,
                 algorithm: 'MACD-SLC(5m)'
             });
@@ -441,7 +441,7 @@ describe('Test open-new-deal worker', function () {
                         minProfitRate: 0.003,
                         profitIn: 'BASE_ASSET'
                     },
-                    type: 'BEARISH',
+                    type: 'DOWNTREND',
                     algorithm: 'MACD-SLC(15m)'
                 }
             });
@@ -451,7 +451,7 @@ describe('Test open-new-deal worker', function () {
             const dealJSON = results.deal.toJSON();
             dealJSON.clientId.should.equal(1);
             dealJSON.symbol.should.equal('BNBUSDT');
-            dealJSON.type.should.equal('BEARISH');
+            dealJSON.type.should.equal('DOWNTREND');
             dealJSON.buyQty.should.equal(2.01);
             dealJSON.sellQty.should.equal(2);
             dealJSON.openPrice.should.equal(37.5147);

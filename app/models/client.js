@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
         Client.hasMany(models.Order, {as: 'orders', foreignKey: 'clientId'});
         Client.hasMany(models.TradePair, {as: 'trade-pairs', foreignKey: 'clientId'});
         Client.hasMany(models.Deal, {as: 'deals', foreignKey: 'clientId'});
+        Client.hasMany(models.TradeRule, {as: 'rules', foreignKey: 'clientId'});
     };
     return Client;
 };

@@ -7,7 +7,7 @@
 
 ## Calculation rules
 
-### Bullish trend
+### UPTREND trend
 
 1. Profit in **BASE_ASSET**
  
@@ -26,7 +26,7 @@ PRICE_FILTER.tickSize = 0.0001 // tickSizePrecision: 10000
 ```json
 {
   "symbol": "BNBUSDT",
-  "type": "BULLISH",
+  "type": "UPTREND",
   "buyQty": 2.01, 
   "sellQty": 2,
   "openPrice": 37.5147,
@@ -57,7 +57,7 @@ PRICE_FILTER.tickSize = 0.0001 // tickSizePrecision: 10000
 ```json
 {
   "symbol": "BNBUSDT",
-  "type": "BULLISH",
+  "type": "UPTREND",
   "buyQty": 2,    
   "sellQty": 2,
   "openPrice": 37.5147,
@@ -71,7 +71,7 @@ openPrice: marketPrice<br>
 minProfitPrice: Math.ceil((37.5147 + 37.5147 * 0.003) * 10000) / 10000<br>
 *Math.ceil((deal.openPrice + deal.openPrice * tradePair.minProfitRate) * tickSizePrecision) / tickSizePrecision*
 
-### Bearish trend
+### DOWNTREND trend
 
 1. Profit in **BASE_ASSET**
  
@@ -90,7 +90,7 @@ PRICE_FILTER.tickSize = 0.0001 // tickSizePrecision: 10000
 ```json
 {
   "symbol": "BNBUSDT",
-  "type": "BEARISH",
+  "type": "DOWNTREND",
   "buyQty": 2.01, 
   "sellQty": 2,
   "openPrice": 37.5147,
@@ -121,7 +121,7 @@ PRICE_FILTER.tickSize = 0.0001 // tickSizePrecision: 10000
 ```json
 {
   "symbol": "BNBUSDT",
-  "type": "BEARISH",
+  "type": "DOWNTREND",
   "buyQty": 2,    
   "sellQty": 2,
   "openPrice": 37.5147,

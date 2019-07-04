@@ -1,0 +1,130 @@
+{
+  "patterns": [
+    {
+      "data": {
+        "MACD": {
+          "SLC": false,
+          "PATTERN": "N,N,N,N,N"
+        },
+        "CandlestickPattern": {
+          "doji": true,
+          "hammer": false,
+          "hangingMan": false,
+          "tweezerTop": false,
+          "eveningStar": false,
+          "morningStar": false,
+          "piercingLine": false,
+          "shootingStar": false,
+          "abandonedBaby": false,
+          "bearishHarami": false,
+          "bullishHarami": false,
+          "dragonFlyDoji": false,
+          "tweezerBottom": false,
+          "darkCloudCover": false,
+          "graveStoneDoji": false,
+          "bearishMarubozu": false,
+          "bullishMarubozu": true,
+          "eveningDojiStar": false,
+          "morningDojiStar": false,
+          "threeBlackCrows": false,
+          "downsideTasukiGap": false,
+          "hammerUnconfirmed": false,
+          "bearishHaramiCross": false,
+          "bearishSpinningTop": false,
+          "bullishHaramiCross": false,
+          "bullishSpinningTop": false,
+          "threeWhiteSoldiers": false,
+          "hangingManUnconfirmed": false,
+          "bearishEngulfingPattern": false,
+          "bullishEngulfingPattern": false,
+          "shootingStarUnconfirmed": false
+        }
+      },
+      "interval": "1m"
+    },
+    {
+      "data": {
+        "MACD": {
+          "SLC": false,
+          "PATTERN": "P,P,P,N,N"
+        },
+        "CandlestickPattern": {
+          "doji": true,
+          "hammer": false,
+          "hangingMan": false,
+          "tweezerTop": false,
+          "eveningStar": false,
+          "morningStar": false,
+          "piercingLine": false,
+          "shootingStar": false,
+          "abandonedBaby": false,
+          "bearishHarami": false,
+          "bullishHarami": true,
+          "dragonFlyDoji": false,
+          "tweezerBottom": false,
+          "darkCloudCover": false,
+          "graveStoneDoji": false,
+          "bearishMarubozu": true,
+          "bullishMarubozu": false,
+          "eveningDojiStar": false,
+          "morningDojiStar": false,
+          "threeBlackCrows": false,
+          "downsideTasukiGap": false,
+          "hammerUnconfirmed": false,
+          "bearishHaramiCross": false,
+          "bearishSpinningTop": true,
+          "bullishHaramiCross": true,
+          "bullishSpinningTop": true,
+          "threeWhiteSoldiers": false,
+          "hangingManUnconfirmed": true,
+          "bearishEngulfingPattern": false,
+          "bullishEngulfingPattern": false,
+          "shootingStarUnconfirmed": true
+        }
+      },
+      "interval": "3m"
+    },
+    {
+      "data": {
+        "MACD": {
+          "SLC": false,
+          "PATTERN": "P,P,P,N,N"
+        },
+        "CandlestickPattern": {
+          "doji": true,
+          "hammer": false,
+          "hangingMan": false,
+          "tweezerTop": false,
+          "eveningStar": false,
+          "morningStar": false,
+          "piercingLine": false,
+          "shootingStar": false,
+          "abandonedBaby": false,
+          "bearishHarami": false,
+          "bullishHarami": false,
+          "dragonFlyDoji": false,
+          "tweezerBottom": false,
+          "darkCloudCover": false,
+          "graveStoneDoji": false,
+          "bearishMarubozu": true,
+          "bullishMarubozu": false,
+          "eveningDojiStar": false,
+          "morningDojiStar": false,
+          "threeBlackCrows": false,
+          "downsideTasukiGap": false,
+          "hammerUnconfirmed": true,
+          "bearishHaramiCross": false,
+          "bearishSpinningTop": false,
+          "bullishHaramiCross": false,
+          "bullishSpinningTop": true,
+          "threeWhiteSoldiers": false,
+          "hangingManUnconfirmed": false,
+          "bearishEngulfingPattern": false,
+          "bullishEngulfingPattern": false,
+          "shootingStarUnconfirmed": false
+        }
+      },
+      "interval": "5m"
+    }
+  ]
+}

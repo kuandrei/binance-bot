@@ -3,7 +3,7 @@ require('chai').should();
 const {Deal, Order} = require('../../app/models');
 const workerFunctions = require('./../../app/workers/check-stop-loss-orders');
 
-describe('Check stop loss worker', function () {
+describe.skip('Check stop loss worker', function () {
 
     it('placeNewStopLossOrder', async function () {
         const maxPrecision = Math.pow(10, 8);

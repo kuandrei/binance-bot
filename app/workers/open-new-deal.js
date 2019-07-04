@@ -58,7 +58,7 @@ async function worker(task) {
  * @param marketPrice
  * @param tradePair
  * @param exchangeInfo
- * @param type (BULLISH|BEARISH)
+ * @param type (UPTREND|DOWNTREND)
  * @param algorithm
  * @return {{clientId: number, symbol: (string|string), openPrice: number, quantity: number, minProfitPrice: *, status: string, algorithm: *}}
  */
@@ -79,7 +79,7 @@ function prepareDealData({marketPrice, tradePair, type, exchangeInfo, algorithm}
         case 'BASE_ASSET':
             buyQty = Math.ceil((tradePair.dealQty + tradePair.dealQty * tradePair.minProfitRate) * stepSizePrecision) / stepSizePrecision;
             sellQty = tradePair.dealQty;
-            if (type === 'BULLISH')
+            if (type === 'UPTREND')
                 minProfitPrice = Math.ceil(marketPrice * buyQty / sellQty * tickSizePrecision) / tickSizePrecision;
             else
                 minProfitPrice = Math.ceil(marketPrice * sellQty / buyQty * tickSizePrecision) / tickSizePrecision;
@@ -87,7 +87,7 @@ function prepareDealData({marketPrice, tradePair, type, exchangeInfo, algorithm}
         case 'QUOTE_ASSET':
             buyQty = tradePair.dealQty;
             sellQty = tradePair.dealQty;
-            if (type === 'BULLISH')
+            if (type === 'UPTREND')
                 minProfitPrice = Math.ceil((marketPrice + marketPrice * tradePair.minProfitRate) * tickSizePrecision) / tickSizePrecision;
             else
                 minProfitPrice = Math.ceil(marketPrice / (1 + tradePair.minProfitRate) * tickSizePrecision) / tickSizePrecision;
@@ -110,16 +110,16 @@ function prepareDealData({marketPrice, tradePair, type, exchangeInfo, algorithm}
 function prepareBinanceOrderData({deal}) {
     return {
         symbol: deal.symbol,
-        side: deal.type === 'BULLISH' ? 'BUY' : 'SELL',
+        side: deal.type === 'UPTREND' ? 'BUY' : 'SELL',
         type: 'LIMIT',
-        quantity: deal.type === 'BULLISH' ? deal.buyQty : deal.sellQty,
+        quantity: deal.type === 'UPTREND' ? deal.buyQty : deal.sellQty,
         price: deal.openPrice
     };
 }
 
 function prepareOrderData({deal, exchangeInfo}) {
     const precision = Math.pow(10, 8);
-    if (deal.type === 'BULLISH') {
+    if (deal.type === 'UPTREND') {
         return {
             clientId: deal.clientId,
             symbol: deal.symbol,

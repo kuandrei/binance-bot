@@ -5,6 +5,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.STRING(16)
         },
+        tradeOn: {
+            allowNull: false,
+            type: DataTypes.ENUM('UPTREND', 'DOWNTREND'),
+            defaultValue: 'UPTREND'
+        },
         status: {
             allowNull: false,
             type: DataTypes.ENUM('ACTIVE', 'INACTIVE'),
@@ -22,6 +27,9 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.ENUM('BASE_ASSET', 'QUOTE_ASSET'),
             defaultValue: 'BASE_ASSET'
+        },
+        tradeStatus: {
+            type: DataTypes.STRING(512)
         }
     }, {});
     TradePair.associate = function ({Client}) {

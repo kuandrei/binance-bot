@@ -1,8 +1,8 @@
 require('chai').should();
 
-const workerFunctions = require('./../../app/workers/open-deal');
+const workerFunctions = require('../../app/workers/old-open-deal');
 
-describe('Open deal worker', function () {
+describe.skip('Open deal worker', function () {
 
     it('prepareDealData', async function () {
         const result = workerFunctions.prepareDealData({

@@ -7,8 +7,8 @@ module.exports = (sequelize, DataTypes) => {
         },
         type: {
             allowNull: false,
-            type: DataTypes.ENUM('BULLISH', 'BEARISH'),
-            defaultValue: 'BULLISH'
+            type: DataTypes.ENUM('UPTREND', 'DOWNTREND'),
+            defaultValue: 'UPTREND'
         },
         buyQty: {
             allowNull: false,

@@ -1,141 +1,428 @@
-require('chai').should();
+const should = require('chai').should();
 
-const stateHelpers = require('./../../app/helpers/state');
 const workerFunctions = require('./../../app/workers/analyze-trade-pair');
 const {TradePair} = require('../../app/models');
+const symbolInfo = require('./symbol-info.json');
 
-describe('Analyze-trade-pair worker', function () {
+describe('test analyze-trade-pair worker', function () {
 
-    describe('checkRestrictions', function () {
+    describe('test checkBalance function (UPTREND use cases)', function () {
 
-        it('10 open deals below market price, 0 in profit - should return false', async function () {
-            const state = {
+        it('test use case: (BTCUSDT/BUY:0.005BTC/PRICE:10000/BALANCE:100USDT)  - should return true', async function () {
+            const ctx = {
+                tradePair: {
+                    symbol: 'BTCUSDT',
+                    dealQty: 0.005,
+                    minProfitRate: 0.003,
+                    tradeOn: 'UPTREND',
+                    profitIn: 'BASE_ASSET',
+                },
+                tradePairInfo: {
+                    balances: {
+                        BTC: {
+                            free: 0.00
+                        },
+                        USDT: {
+                            free: 100
+                        }
+                    }
+                },
+                exchangeInfo: {
+                    baseAsset: 'BTC',
+                    quoteAsset: 'USDT'
+                },
+                symbolInfo: {
+                    marketPrice: 10000
+                }
+            };
+            const result = await workerFunctions.checkBalance(ctx);
+            result.should.be.a('boolean');
+            result.should.equal(true);
+        });
+
+        it('test use case: (BTCUSDT/BUY:0.005BTC/PRICE:10000/BALANCE:10USDT) - should return false', async function () {
+            const ctx = {
+                tradePair: {
+                    symbol: 'BTCUSDT',
+                    dealQty: 0.005,
+                    minProfitRate: 0.003,
+                    tradeOn: 'UPTREND',
+                    profitIn: 'BASE_ASSET',
+                },
+                tradePairInfo: {
+                    balances: {
+                        BTC: {
+                            free: 0.00
+                        },
+                        USDT: {
+                            free: 10
+                        }
+                    }
+                },
+                exchangeInfo: {
+                    baseAsset: 'BTC',
+                    quoteAsset: 'USDT'
+                },
+                symbolInfo: {
+                    marketPrice: 10000
+                }
+            };
+            const result = await workerFunctions.checkBalance(ctx);
+            result.should.be.a('boolean');
+            result.should.equal(false);
+        });
+
+        it('test use case: (BTCUSDT/BUY:0.005BTC/PRICE:10000/BALANCE:50USDT/BASE_ASSET) - should return false', async function () {
+            const ctx = {
+                tradePair: {
+                    symbol: 'BTCUSDT',
+                    dealQty: 0.005,
+                    minProfitRate: 0.003,
+                    tradeOn: 'UPTREND',
+                    profitIn: 'BASE_ASSET',
+                },
+                tradePairInfo: {
+                    balances: {
+                        BTC: {
+                            free: 0.00
+                        },
+                        USDT: {
+                            free: 50
+                        }
+                    }
+                },
+                exchangeInfo: {
+                    baseAsset: 'BTC',
+                    quoteAsset: 'USDT'
+                },
+                symbolInfo: {
+                    marketPrice: 10000
+                }
+            };
+            const result = await workerFunctions.checkBalance(ctx);
+            result.should.be.a('boolean');
+            result.should.equal(false);
+        });
+
+        it('test use case: (BTCUSDT/BUY:0.005BTC/PRICE:10000/BALANCE:50.01USDT/QUOTE_ASSET) - should return true', async function () {
+            const ctx = {
+                tradePair: {
+                    symbol: 'BTCUSDT',
+                    dealQty: 0.005,
+                    minProfitRate: 0.003,
+                    tradeOn: 'UPTREND',
+                    profitIn: 'QUOTE_ASSET',
+                },
+                tradePairInfo: {
+                    balances: {
+                        BTC: {
+                            free: 0.00
+                        },
+                        USDT: {
+                            free: 50.01
+                        }
+                    }
+                },
+                exchangeInfo: {
+                    baseAsset: 'BTC',
+                    quoteAsset: 'USDT'
+                },
+                symbolInfo: {
+                    marketPrice: 10000
+                }
+            };
+            const result = await workerFunctions.checkBalance(ctx);
+            result.should.be.a('boolean');
+            result.should.equal(true);
+        });
+
+    });
+
+    describe('test checkBalance function (DOWNTREND use cases)', function () {
+
+        it('test use case: (BTCUSDT/SELL:0.005BTC/PRICE:10000/BALANCE:0.5BTC)  - should return true', async function () {
+            const ctx = {
+                tradePair: {
+                    symbol: 'BTCUSDT',
+                    dealQty: 0.005,
+                    minProfitRate: 0.003,
+                    tradeOn: 'DOWNTREND',
+                    profitIn: 'BASE_ASSET',
+                },
+                tradePairInfo: {
+                    balances: {
+                        BTC: {
+                            free: 0.5
+                        },
+                        USDT: {
+                            free: 0
+                        }
+                    }
+                },
+                exchangeInfo: {
+                    baseAsset: 'BTC',
+                    quoteAsset: 'USDT'
+                },
+                symbolInfo: {
+                    marketPrice: 10000
+                }
+            };
+            const result = await workerFunctions.checkBalance(ctx);
+            result.should.be.a('boolean');
+            result.should.equal(true);
+        });
+
+        it('test use case: (BTCUSDT/SELL:0.005BTC/PRICE:10000/BALANCE:0.001BTC) - should return false', async function () {
+            const ctx = {
+                tradePair: {
+                    symbol: 'BTCUSDT',
+                    dealQty: 0.005,
+                    minProfitRate: 0.003,
+                    tradeOn: 'DOWNTREND',
+                    profitIn: 'BASE_ASSET',
+                },
+                tradePairInfo: {
+                    balances: {
+                        BTC: {
+                            free: 0.001
+                        },
+                        USDT: {
+                            free: 0
+                        }
+                    }
+                },
+                exchangeInfo: {
+                    baseAsset: 'BTC',
+                    quoteAsset: 'USDT'
+                },
+                symbolInfo: {
+                    marketPrice: 10000
+                }
+            };
+            const result = await workerFunctions.checkBalance(ctx);
+            result.should.be.a('boolean');
+            result.should.equal(false);
+        });
+
+        it('test use case: (BTCUSDT/SELL:0.005BTC/PRICE:10000/BALANCE:0.005BTC/BASE_ASSET) - should return true', async function () {
+            const ctx = {
+                tradePair: {
+                    symbol: 'BTCUSDT',
+                    dealQty: 0.005,
+                    minProfitRate: 0.003,
+                    tradeOn: 'DOWNTREND',
+                    profitIn: 'BASE_ASSET',
+                },
+                tradePairInfo: {
+                    balances: {
+                        BTC: {
+                            free: 0.005
+                        },
+                        USDT: {
+                            free: 0
+                        }
+                    }
+                },
+                exchangeInfo: {
+                    baseAsset: 'BTC',
+                    quoteAsset: 'USDT'
+                },
+                symbolInfo: {
+                    marketPrice: 10000
+                }
+            };
+            const result = await workerFunctions.checkBalance(ctx);
+            result.should.be.a('boolean');
+            result.should.equal(true);
+        });
+
+        it('test use case: (BTCUSDT/SELL:0.005BTC/PRICE:10000/BALANCE:0.005BTC/QUOTE_ASSET) - should return true', async function () {
+            const ctx = {
+                tradePair: {
+                    symbol: 'BTCUSDT',
+                    dealQty: 0.005,
+                    minProfitRate: 0.003,
+                    tradeOn: 'DOWNTREND',
+                    profitIn: 'QUOTE_ASSET',
+                },
+                tradePairInfo: {
+                    balances: {
+                        BTC: {
+                            free: 0.005
+                        },
+                        USDT: {
+                            free: 0
+                        }
+                    }
+                },
+                exchangeInfo: {
+                    baseAsset: 'BTC',
+                    quoteAsset: 'USDT'
+                },
+                symbolInfo: {
+                    marketPrice: 10000
+                }
+            };
+            const result = await workerFunctions.checkBalance(ctx);
+            result.should.be.a('boolean');
+            result.should.equal(true);
+        });
+
+    });
+
+    describe('test checkRestrictions function', function () {
+
+        const restrictions = [{
+            name: 'Max 3 open deals',
+            filter: {
+                openDeals: {
+                    gte: 3
+                }
+            }
+        }];
+
+        it('test restriction match', async function () {
+            const tradePairInfo = {
                 newDeals: 0,
                 openDeals: 50,
                 openDealsBelowMarketPrice: 10,
                 openDealsAboveMarketPrice: 0,
                 openDealsInProfit: 0
             };
-            const result = await workerFunctions.checkRestrictions(state);
-            result.should.be.a('boolean');
-            result.should.equal(false);
+            const result = await workerFunctions.checkRestrictions({tradePairInfo, restrictions});
+            result.should.deep.equal({
+                name: 'Max 3 open deals',
+                filter: {
+                    openDeals: {
+                        gte: 3
+                    }
+                }
+            });
         });
 
-        it('12 open deals below market price, 2 profitable - should return true', async function () {
-            const state = {
+        it('test restriction not matched', async function () {
+            const tradePairInfo = {
                 newDeals: 0,
-                openDeals: 12,
+                openDeals: 2,
                 openDealsBelowMarketPrice: 10,
-                openDealsAboveMarketPrice: 2,
-                openDealsInProfit: 2
-            };
-            const result = await workerFunctions.checkRestrictions(state);
-            result.should.be.a('boolean');
-            result.should.equal(false);
-        });
-
-        it('max 3 open deals in 0.1% range - should return false', async function () {
-            const state = {
-                newDeals: 0,
-                openDeals: 50,
-                openDealsBelowMarketPrice: 0,
                 openDealsAboveMarketPrice: 0,
-                openDealsInProfit: 0,
-                openDealsInRange: {
-                    '0.1%': 3
-                }
+                openDealsInProfit: 0
             };
-            const result = await workerFunctions.checkRestrictions(state);
-            result.should.be.a('boolean');
-            result.should.equal(false);
-        });
-
-        it('max 5 open deals in 0.2% range - should return false', async function () {
-            const state = {
-                newDeals: 0,
-                openDeals: 50,
-                openDealsBelowMarketPrice: 0,
-                openDealsAboveMarketPrice: 0,
-                openDealsInProfit: 0,
-                openDealsInRange: {
-                    '0.2%': 5
-                }
-            };
-            const result = await workerFunctions.checkRestrictions(state);
-            result.should.be.a('boolean');
-            result.should.equal(false);
-        });
-
-        it('max 7 open deals in 0.3% range - should return false', async function () {
-            const state = {
-                newDeals: 0,
-                openDeals: 50,
-                openDealsBelowMarketPrice: 0,
-                openDealsAboveMarketPrice: 0,
-                openDealsInProfit: 0,
-                openDealsInRange: {
-                    '0.3%': 7
-                }
-            };
-            const result = await workerFunctions.checkRestrictions(state);
-            result.should.be.a('boolean');
-            result.should.equal(false);
-        });
-
-        it('max 9 open deals in 0.4% range - should return false', async function () {
-            const state = {
-                newDeals: 0,
-                openDeals: 50,
-                openDealsBelowMarketPrice: 0,
-                openDealsAboveMarketPrice: 0,
-                openDealsInProfit: 0,
-                openDealsInRange: {
-                    '0.4%': 9
-                }
-            };
-            const result = await workerFunctions.checkRestrictions(state);
-            result.should.be.a('boolean');
-            result.should.equal(false);
-        });
-
-        it('max 10 open deals in 0.5% range - should return false', async function () {
-            const state = {
-                newDeals: 0,
-                openDeals: 50,
-                openDealsBelowMarketPrice: 0,
-                openDealsAboveMarketPrice: 0,
-                openDealsInProfit: 0,
-                openDealsInRange: {
-                    '0.5%': 10
-                }
-            };
-            const result = await workerFunctions.checkRestrictions(state);
-            result.should.be.a('boolean');
-            result.should.equal(false);
+            const result = await workerFunctions.checkRestrictions({tradePairInfo, restrictions});
+            should.not.exist(result);
         });
 
     });
 
-    describe('shouldOpenDeal', function () {
+    describe('test checkRules function', function () {
 
-        it('sanity - check no errors', async function () {
-            const tradePair = await TradePair.findOne();
-            const state = await stateHelpers.tradePairState(tradePair);
-            const result = workerFunctions.shouldOpenDeal(state);
+        it('test rule with one condition matched', async function () {
+            const rules = [{
+                name: '3m doji',
+                conditionMatch: 'ALL',
+                type: 'BUY',
+                conditions: [{
+                    interval: '3m',
+                    indicator: 'CandlestickPattern',
+                    filter: {
+                        doji: true
+                    }
+                }]
+            }];
+            const result = await workerFunctions.checkRules({symbolInfo, rules});
             result.should.be.an('object');
-            result.should.contain.keys('openDeal');
-            result.openDeal.should.be.a('boolean');
+            result.should.contain.keys('name', 'type');
+            result.name.should.equal('3m doji');
+            result.type.should.equal('BUY');
         });
 
-        it('MACD cross line (pattern1) - should return the algorithm name', async function () {
-            const state = require('./states/MACD-CROSS-LINE-patter1.json');
-            const result = workerFunctions.shouldOpenDeal(state);
+        it('test rule with 2 conditions matched (conditionMatch:ALL)', async function () {
+            const rules = [{
+                name: '5m unconfirmed hammer + MACD pattern',
+                conditionMatch: 'ALL',
+                type: 'SELL',
+                conditions: [{
+                    interval: '5m',
+                    indicator: 'CandlestickPattern',
+                    filter: {
+                        hammerUnconfirmed: true
+                    }
+                }, {
+                    interval: '5m',
+                    indicator: 'MACD',
+                    filter: {
+                        PATTERN: {like: '%,N,N'}
+                    }
+                }]
+            }];
+            const result = await workerFunctions.checkRules({symbolInfo, rules});
             result.should.be.an('object');
-            result.should.contain.keys('openDeal', 'algorithm');
-            result.openDeal.should.equal(true);
-            result.algorithm.should.equal('MACD-SLC/PATTERN:1m (*,*,*,*,P), 3m (N,N,N,N,P), 5m (N,N,N,N,N)');
+            result.should.contain.keys('name', 'type');
+            result.name.should.equal('5m unconfirmed hammer + MACD pattern');
+            result.type.should.equal('SELL');
         });
 
+        it('test rule with 2 conditions matched (conditionMatch:ANY)', async function () {
+            const rules = [{
+                name: '3m, 5m MACD patterns',
+                conditionMatch: 'ANY',
+                type: 'SELL',
+                conditions: [{
+                    interval: '3m',
+                    indicator: 'MACD',
+                    filter: {
+                        PATTERN: {like: 'N,N,N,N,N'}
+                    }
+                }, {
+                    interval: '5m',
+                    indicator: 'MACD',
+                    filter: {
+                        PATTERN: {like: '%,N,N'}
+                    }
+                }]
+            }];
+            const result = await workerFunctions.checkRules({symbolInfo, rules});
+            result.should.be.an('object');
+            result.should.contain.keys('name', 'type');
+            result.name.should.equal('3m, 5m MACD patterns');
+            result.type.should.equal('SELL');
+        });
+
+        it('test no rules matched', async function () {
+            const rules = [{
+                name: '3m, 5m MACD patterns',
+                conditionMatch: 'ALL',
+                type: 'SELL',
+                conditions: [{
+                    interval: '3m',
+                    indicator: 'MACD',
+                    filter: {
+                        PATTERN: {like: 'N,N,N,N,N'}
+                    }
+                }, {
+                    interval: '5m',
+                    indicator: 'MACD',
+                    filter: {
+                        PATTERN: {like: '%,N,N'}
+                    }
+                }]
+            }];
+            const result = await workerFunctions.checkRules({symbolInfo, rules});
+            should.not.exist(result);
+        });
+
+    });
+
+    it('test e2e flow - should return tradeInfo model', async function () {
+        const tradePair = await TradePair.findOne();
+        const result = (await workerFunctions.worker({
+            data: tradePair.toJSON()
+        })).toJSON();
+        result.should.be.an('object');
+        result.should.contain.keys([
+            'id',
+            'tradeStatus'
+        ]);
     });
 
 });

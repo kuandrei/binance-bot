@@ -1,21 +1,22 @@
 const Queue = require('bull');
 
 const init = () => {
+
     /**
-     * Update exchange info cron - should run once a day at 2:00 AM
+     * Adds analyze-trade-pair task for every active/trading trade pair
      */
-    const updateExchangeInfoQueue = new Queue('update-exchange-info', 'redis://redis:6379');
-    updateExchangeInfoQueue.add({}, {
+    const addTradePairsForAnalysisQueue = new Queue('add-trade-pairs-for-analysis', 'redis://redis:6379');
+    addTradePairsForAnalysisQueue.add({}, {
         repeat: {
-            cron: '0 2 * * *'
+            cron: '* * * * *'
         },
         removeOnComplete: true
     });
     /**
-     * Init trade queue - should run once a minute
+     * Adds prepare-symbol-info task for every active/trading symbol
      */
-    const initTradeQueue = new Queue('init-trade', 'redis://redis:6379');
-    initTradeQueue.add({}, {
+    const addSymbolsForAnalysisQueue = new Queue('add-symbols-for-analysis', 'redis://redis:6379');
+    addSymbolsForAnalysisQueue.add({}, {
         repeat: {
             cron: '* * * * *'
         },
@@ -31,25 +32,47 @@ const init = () => {
         },
         removeOnComplete: true
     });
+    //
+    // /**
+    //  * Add STOP_LOSS orders queue - should run once a minute
+    //  */
+    // const addStopLossOrdersQueue = new Queue('add-stop-loss-orders', 'redis://redis:6379');
+    // addStopLossOrdersQueue.add({}, {
+    //     repeat: {
+    //         cron: '* * * * *'
+    //     },
+    //     removeOnComplete: true
+    // });
+    //
+    // /**
+    //  * Check STOP_LOSS orders queue - should run once a minute
+    //  */
+    // const checkStopLossOrdersQueue = new Queue('check-stop-loss-orders', 'redis://redis:6379');
+    // checkStopLossOrdersQueue.add({}, {
+    //     repeat: {
+    //         cron: '* * * * *'
+    //     },
+    //     removeOnComplete: true
+    // });
 
     /**
-     * Add STOP_LOSS orders queue - should run once a minute
+     * Update exchange info cron - runs once a day at 2:00 AM
      */
-    const addStopLossOrdersQueue = new Queue('add-stop-loss-orders', 'redis://redis:6379');
-    addStopLossOrdersQueue.add({}, {
+    const updateExchangeInfoQueue = new Queue('update-exchange-info', 'redis://redis:6379');
+    updateExchangeInfoQueue.add({}, {
         repeat: {
-            cron: '* * * * *'
+            cron: '0 2 * * *'
         },
         removeOnComplete: true
     });
 
     /**
-     * Check STOP_LOSS orders queue - should run once a minute
+     * System maintenance cron - runs once a day at 3:00 AM
      */
-    const checkStopLossOrdersQueue = new Queue('check-stop-loss-orders', 'redis://redis:6379');
-    checkStopLossOrdersQueue.add({}, {
+    const maintenanceQueue = new Queue('maintenance', 'redis://redis:6379');
+    maintenanceQueue.add({}, {
         repeat: {
-            cron: '* * * * *'
+            cron: '0 3 * * *'
         },
         removeOnComplete: true
     });
