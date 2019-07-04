@@ -12,6 +12,29 @@ const init = () => {
         },
         removeOnComplete: true
     });
+
+    /**
+     * Check open deals queue
+     */
+    const checkOpenDealsQueue = new Queue('check-open-deals', 'redis://redis:6379');
+    checkOpenDealsQueue.add({}, {
+        repeat: {
+            cron: '* * * * *'
+        },
+        removeOnComplete: true
+    });
+
+    /**
+     * Check open orders queue
+     */
+    const checkOpenOrdersQueue = new Queue('check-open-orders', 'redis://redis:6379');
+    checkOpenOrdersQueue.add({}, {
+        repeat: {
+            cron: '* * * * *'
+        },
+        removeOnComplete: true
+    });
+
     /**
      * Adds prepare-symbol-info task for every active/trading symbol
      */
@@ -22,41 +45,9 @@ const init = () => {
         },
         removeOnComplete: true
     });
-    /**
-     * Check open orders queue - should run once a minute
-     */
-    const checkOpenOrdersQueue = new Queue('check-open-orders', 'redis://redis:6379');
-    checkOpenOrdersQueue.add({}, {
-        repeat: {
-            cron: '* * * * *'
-        },
-        removeOnComplete: true
-    });
-    //
-    // /**
-    //  * Add STOP_LOSS orders queue - should run once a minute
-    //  */
-    // const addStopLossOrdersQueue = new Queue('add-stop-loss-orders', 'redis://redis:6379');
-    // addStopLossOrdersQueue.add({}, {
-    //     repeat: {
-    //         cron: '* * * * *'
-    //     },
-    //     removeOnComplete: true
-    // });
-    //
-    // /**
-    //  * Check STOP_LOSS orders queue - should run once a minute
-    //  */
-    // const checkStopLossOrdersQueue = new Queue('check-stop-loss-orders', 'redis://redis:6379');
-    // checkStopLossOrdersQueue.add({}, {
-    //     repeat: {
-    //         cron: '* * * * *'
-    //     },
-    //     removeOnComplete: true
-    // });
 
     /**
-     * Update exchange info cron - runs once a day at 2:00 AM
+     * Update exchange info cron
      */
     const updateExchangeInfoQueue = new Queue('update-exchange-info', 'redis://redis:6379');
     updateExchangeInfoQueue.add({}, {
@@ -67,7 +58,7 @@ const init = () => {
     });
 
     /**
-     * System maintenance cron - runs once a day at 3:00 AM
+     * System maintenance cron
      */
     const maintenanceQueue = new Queue('maintenance', 'redis://redis:6379');
     maintenanceQueue.add({}, {
