@@ -36,11 +36,17 @@ const init = () => {
     const addTakeProfitOrderQueue = new Queue('add-take-profit-order', 'redis://redis:6379');
     addTakeProfitOrderQueue.process(__dirname + '/add-take-profit-order.js');
 
-    // /**
-    //  * @todo add description
-    //  */
-    // const checkStopLossOrdersQueue = new Queue('check-stop-loss-orders', 'redis://redis:6379');
-    // checkStopLossOrdersQueue.process(__dirname + '/check-stop-loss-orders.js');
+    /**
+     * Replaces stop loss order with new one (higher price)
+     */
+    const replaceStopLossOrderQueue = new Queue('replace-stop-loss-order', 'redis://redis:6379');
+    replaceStopLossOrderQueue.process(__dirname + '/replace-stop-loss-order.js');
+
+    /**
+     * Replaces take profit order with new one (lower price)
+     */
+    const replaceTakeProfitOrderQueue = new Queue('replace-take-profit-order', 'redis://redis:6379');
+    replaceTakeProfitOrderQueue.process(__dirname + '/replace-take-profit-order.js');
 
     /**
      * Adds prepare-symbol-info task for every active/trading symbol

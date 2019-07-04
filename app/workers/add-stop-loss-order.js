@@ -1,4 +1,4 @@
-const debug = require('debug')('bnb:workers:add-stop-loss-orders');
+const debug = require('debug')('bnb:workers:add-stop-loss-order');
 const errorHandler = require('../helpers/error-handler');
 const binanceHelpers = require('../helpers/binance');
 const {Order, ExchangeInfo} = require('../models');

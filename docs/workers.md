@@ -9,8 +9,8 @@ check-open-deals             | * * * * * | Done   | Monitors status of open deal
 add-stop-loss-order          |           | Done   | Adds stop loss order for given deal (only for uptrend deals)
 add-take-profit-order        |           | Done   | Adds take profit order for given deal (only for downtrend deals) 
 check-open-orders            | * * * * * | Done   | Checks if open orders filled 
-replace-stop-loss-order      |           | Todo   | Replaces stop loss order with new one (higher price)
-replace-take-profit-order    |           | Todo   | Replaces take profit order with new one (lower price)
+replace-stop-loss-order      |           | Done   | Replaces stop loss order with new one (higher price) (NO AUTOMATIC TESTS)
+replace-take-profit-order    |           | Done   | Replaces take profit order with new one (lower price) (NO AUTOMATIC TESTS)
 add-sell-market-price-order  |           | Todo   | Adds sell order in market price
 add-buy-market-price-order   |           | Todo   | Adds buy order in market price
 add-symbols-for-analysis     | * * * * * | Done   | Adds prepare-symbol-info task for every active/trading symbol  
