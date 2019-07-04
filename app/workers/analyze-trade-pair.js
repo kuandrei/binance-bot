@@ -83,7 +83,8 @@ async function worker(task) {
             rules: await TradeRule.findAll({
                 where: {
                     clientId: tradePair.clientId,
-                    type: tradePair.tradeOn === 'UPTREND' ? 'BUY' : 'SELL'
+                    type: tradePair.tradeOn === 'UPTREND' ? 'BUY' : 'SELL',
+                    status: 'ACTIVE'
                 },
                 include: 'conditions'
             })
@@ -111,7 +112,8 @@ async function worker(task) {
                 marketPrice: symbolInfo.marketPrice,
                 tradePair: tradePair.toJSON(),
                 type: tradePair.tradeOn,
-                algorithm: rule.name
+                algorithm: rule.name,
+                // algorithm: `RULE#${rule.id}/SYMBOL-INFO#${symbolInfo.id}/${rule.name}`
             });
 
             tradePair.tradeStatus = `${rule.type} - (ID:${rule.id}/NAME:${rule.name}/SYMBOL_INFO:${symbolInfo.id})`;
