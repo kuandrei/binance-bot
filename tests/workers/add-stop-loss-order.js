@@ -5,7 +5,7 @@ const workerFunctions = require('../../app/workers/add-stop-loss-order');
 
 describe('test add stop loss order worker', function () {
 
-    it('prepareData for BTCUSDT deal', async function () {
+    it('test prepareData function for BTCUSDT - should return binanceOrderData and orderData', async function () {
         const deal = {
             id: 100,
             clientId: 1,
@@ -62,7 +62,7 @@ describe('test add stop loss order worker', function () {
         result.orderData.debitCurrency.should.equal('BTC');
     });
 
-    it('prepareSellOrderData for BNBBTC deal', async function () {
+    it('test prepareData function for BNBBTC - should return binanceOrderData and orderData', async function () {
         const deal = {
             id: 100,
             clientId: 1,
@@ -119,7 +119,7 @@ describe('test add stop loss order worker', function () {
         result.orderData.debitCurrency.should.equal('BNB');
     });
 
-    it('addStopLossOrder (e2e)', async function () {
+    it('test e2e flow - should return created order', async function () {
 
         const deal = await Deal.create({
             clientId: 1,
