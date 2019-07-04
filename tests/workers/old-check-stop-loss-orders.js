@@ -1,7 +1,7 @@
 require('chai').should();
 
 const {Deal, Order} = require('../../app/models');
-const workerFunctions = require('./../../app/workers/check-stop-loss-orders');
+const workerFunctions = require('../../app/workers/old-check-stop-loss-orders');
 
 describe.skip('Check stop loss worker', function () {
 
