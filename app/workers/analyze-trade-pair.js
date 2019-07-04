@@ -53,13 +53,13 @@ async function worker(task) {
         });
 
         if (!symbolInfo) {
-            debug('NO SYMBOL INFO FOUND');
+            debug(`NO SYMBOL INFO FOUND (${tradePair.symbol})`);
             return;
         }
 
         // check the symbolInfo are not outdated (max 5 minutes)
         if (process.env.NODE_ENV !== 'test' && symbolInfo.createdAt < new Date(new Date().getTime() - (5 * 60 * 1000))) {
-            debug(`SYMBOL INFO IS OUTDATED`);
+            debug(`SYMBOL INFO IS OUTDATED (${tradePair.symbol})`);
             return;
         }
 
