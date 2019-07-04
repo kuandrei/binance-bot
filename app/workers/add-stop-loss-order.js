@@ -1,9 +1,7 @@
-const async = require('async');
 const debug = require('debug')('bnb:workers:add-stop-loss-orders');
 const errorHandler = require('../helpers/error-handler');
-const dbHelpers = require('../helpers/db');
 const binanceHelpers = require('../helpers/binance');
-const {Client, Order, CurrencyPair} = require('../models');
+const {Order, ExchangeInfo} = require('../models');
 
 /**
  * 1. find all active symbols
@@ -11,37 +9,19 @@ const {Client, Order, CurrencyPair} = require('../models');
  * 3. find all new profit deals
  * 4. add STOP_LOSS orders
  */
-async function main() {
-
-    const symbols = await dbHelpers.getActiveSymbols();
-    const symbolsWithMarketPrice = await binanceHelpers.symbolMarketPrice(symbols);
-
-    async.eachSeries(symbolsWithMarketPrice, async item => {
-        //subtract 0.05 % from marketPrice to lower the chance the stop loss order will be triggered just after was added
-        const priceToCompareTo = item.marketPrice - item.marketPrice * 0.0005;
-        const deals = await dbHelpers.findNewProfitDeals(item.symbol, priceToCompareTo);
-        async.eachSeries(deals, async deal => {
-            await addStopLossOrder({deal, symbol: item.symbol, stopLossPrice: priceToCompareTo})
-        })
-    });
-}
-
-/**
- *
- * @param ctx - {deal, symbol, marketPrice}
- * @return {Promise.<void>}
- */
-async function addStopLossOrder(ctx) {
+async function addStopLossOrder({deal, stopLossPrice}) {
 
     try {
+        // @todo - ensure the same deal not added twice to queue
+
         const {
             binanceOrderData,
             orderData
-        } = await prepareData(ctx);
+        } = await prepareData({deal, stopLossPrice});
 
-        debug(`ADD STOP_LOSS_LIMIT ORDER (DEAL#${ctx.deal.id}/${orderData.symbol}/QTY:${orderData.quantity}/PRICE:${binanceOrderData.price})`);
+        debug(`ADD STOP_LOSS_LIMIT ORDER (DEAL#${deal.id}/${deal.symbol}/QTY:${deal.sellQty}/PRICE:${binanceOrderData.price})`);
 
-        const binanceOrder = await binanceHelpers.order(ctx.deal.clientId, binanceOrderData);
+        const binanceOrder = await binanceHelpers.order(deal.clientId, binanceOrderData);
 
         orderData.binanceOrderId = binanceOrder.orderId;
         const order = await Order.create(orderData);
@@ -51,49 +31,46 @@ async function addStopLossOrder(ctx) {
             order
         };
     } catch (err) {
-        errorHandler(err, ctx);
+        errorHandler(err, {deal, stopLossPrice});
         debug(`ERROR: ${err.message}`);
     }
 }
 
-async function prepareData({deal, symbol, stopLossPrice}) {
+async function prepareData({deal, stopLossPrice}) {
 
     // prepare context
-    const client = await Client.findByPk(deal.clientId);
-    client.commission = parseFloat(client.commission);
-    const currencyPair = await CurrencyPair.findOne({
-        where: {symbol}
+    const exchangeInfo = await ExchangeInfo.findOne({
+        where: {symbol: deal.symbol}
     });
+    let tickSizePrecision = 1;
+    const priceFilter = exchangeInfo.filters.find(filter => filter.filterType === 'PRICE_FILTER');
+    if (priceFilter && priceFilter.tickSize !== 0)
+        tickSizePrecision = 1 / priceFilter.tickSize;
     const maxPrecision = Math.pow(10, 8);
-    const precision = Math.pow(10, currencyPair.secondCurrencyPrecision);
-    const quantity = parseFloat(deal.quantity);
-    const price = Math.round(stopLossPrice * precision) / precision;
+    const price = Math.ceil(stopLossPrice * tickSizePrecision) / tickSizePrecision;
 
-    // place STOP_LOSS_LIMIT order in binance
     const binanceOrderData = {
-        symbol: symbol,
+        symbol: deal.symbol,
         side: 'SELL',
         type: 'STOP_LOSS_LIMIT',
-        quantity: quantity,
+        quantity: deal.sellQty,
         price: price,
         stopPrice: price
     };
 
-    // @todo - convert to BNB if feeCurrency is not BNB
-
     const orderData = {
         clientId: deal.clientId,
         dealId: deal.id,
-        symbol: symbol,
+        symbol: deal.symbol,
         side: 'SELL',
         type: 'STOP_LOSS_LIMIT',
         status: 'NEW',
         price,
-        quantity,
-        credit: Math.round(price * quantity * maxPrecision) / maxPrecision,
-        creditCurrency: currencyPair.secondCurrency,
-        debit: quantity,
-        debitCurrency: currencyPair.firstCurrency
+        quantity: deal.sellQty,
+        credit: Math.round(price * deal.sellQty * maxPrecision) / maxPrecision,
+        creditCurrency: exchangeInfo.quoteAsset,
+        debit: deal.sellQty,
+        debitCurrency: exchangeInfo.baseAsset
     };
 
     return {
@@ -103,10 +80,9 @@ async function prepareData({deal, symbol, stopLossPrice}) {
 }
 
 if (process.env.NODE_ENV !== 'test') {
-    module.exports = main;
+    module.exports = addStopLossOrder;
 } else {
     module.exports = {
-        main,
         addStopLossOrder,
         prepareData
     }
