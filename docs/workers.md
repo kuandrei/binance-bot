@@ -82,7 +82,7 @@ analyze-trade-pair             | Done        | Checks if the new deal should be 
 open-new-deal                  | Done        | Opens new deal for given trade pair. Sets new buy/sell order (depends on deal type)
 check-open-deals               | Done        | (cron) Monitors status of open deals, if become profitable - adds appropriate task
 add-stop-loss-order            | Done        | Adds stop loss order for given deal (only for uptrend deals)
-add-take-profit-order          | Todo        | Adds take profit order for given deal (only for downtrend deals) 
+add-take-profit-order          | Done        | Adds take profit order for given deal (only for downtrend deals) 
 replace-stop-loss-order        | Todo        | Replaces stop loss order with new one (higher price)
 replace-take-profit-order      | Todo        | Replaces take profit order with new one (lower price)
 check-open-orders              | Todo        | (cron) Checks if open orders filled 

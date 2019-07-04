@@ -30,6 +30,11 @@ const init = () => {
      */
     const addStopLossOrderQueue = new Queue('add-stop-loss-order', 'redis://redis:6379');
     addStopLossOrderQueue.process(__dirname + '/add-stop-loss-order.js');
+    /**
+     * Adds take profit order for given deal (only for downtrend deals)
+     */
+    const addTakeProfitOrderQueue = new Queue('add-take-profit-order', 'redis://redis:6379');
+    addTakeProfitOrderQueue.process(__dirname + '/add-take-profit-order.js');
 
     // /**
     //  * @todo add description

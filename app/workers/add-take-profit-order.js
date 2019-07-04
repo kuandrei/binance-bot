@@ -1,15 +1,9 @@
-const debug = require('debug')('bnb:workers:add-stop-loss-orders');
+const debug = require('debug')('bnb:workers:add-take-profit-order');
 const errorHandler = require('../helpers/error-handler');
 const binanceHelpers = require('../helpers/binance');
 const {Order, ExchangeInfo} = require('../models');
 
-/**
- * 1. find all active symbols
- * 2. get market price for each symbol
- * 3. find all new profit deals
- * 4. add STOP_LOSS orders
- */
-async function addStopLossOrder({deal, stopLossPrice}) {
+async function addTakeProfitOrder({deal, takeProfitPrice}) {
 
     try {
         // @todo - ensure the same deal not added twice to queue
@@ -17,9 +11,9 @@ async function addStopLossOrder({deal, stopLossPrice}) {
         const {
             binanceOrderData,
             orderData
-        } = await prepareData({deal, stopLossPrice});
+        } = await prepareData({deal, takeProfitPrice});
 
-        debug(`ADD STOP_LOSS_LIMIT ORDER (DEAL#${deal.id}/${deal.symbol}/QTY:${deal.sellQty}/PRICE:${binanceOrderData.price})`);
+        debug(`ADD TAKE_PROFIT_LIMIT ORDER (DEAL#${deal.id}/${deal.symbol}/QTY:${deal.buyQty}/PRICE:${binanceOrderData.price})`);
 
         const binanceOrder = await binanceHelpers.order(deal.clientId, binanceOrderData);
 
@@ -31,12 +25,12 @@ async function addStopLossOrder({deal, stopLossPrice}) {
             order
         };
     } catch (err) {
-        errorHandler(err, {deal, stopLossPrice});
+        errorHandler(err, {deal, takeProfitPrice});
         debug(`ERROR: ${err.message}`);
     }
 }
 
-async function prepareData({deal, stopLossPrice}) {
+async function prepareData({deal, takeProfitPrice}) {
 
     // prepare context
     const exchangeInfo = await ExchangeInfo.findOne({
@@ -47,13 +41,13 @@ async function prepareData({deal, stopLossPrice}) {
     if (priceFilter && priceFilter.tickSize !== 0)
         tickSizePrecision = 1 / priceFilter.tickSize;
     const maxPrecision = Math.pow(10, 8);
-    const price = Math.ceil(stopLossPrice * tickSizePrecision) / tickSizePrecision;
+    const price = Math.ceil(takeProfitPrice * tickSizePrecision) / tickSizePrecision;
 
     const binanceOrderData = {
         symbol: deal.symbol,
-        side: 'SELL',
-        type: 'STOP_LOSS_LIMIT',
-        quantity: deal.sellQty,
+        side: 'BUY',
+        type: 'TAKE_PROFIT_LIMIT',
+        quantity: deal.buyQty,
         price: price,
         stopPrice: price
     };
@@ -62,15 +56,15 @@ async function prepareData({deal, stopLossPrice}) {
         clientId: deal.clientId,
         dealId: deal.id,
         symbol: deal.symbol,
-        side: 'SELL',
-        type: 'STOP_LOSS_LIMIT',
+        side: 'BUY',
+        type: 'TAKE_PROFIT_LIMIT',
         status: 'NEW',
         price,
-        quantity: deal.sellQty,
-        credit: Math.round(price * deal.sellQty * maxPrecision) / maxPrecision,
-        creditCurrency: exchangeInfo.quoteAsset,
-        debit: deal.sellQty,
-        debitCurrency: exchangeInfo.baseAsset
+        quantity: deal.buyQty,
+        credit: deal.buyQty,
+        creditCurrency: exchangeInfo.baseAsset,
+        debit: Math.round(price * deal.buyQty * maxPrecision) / maxPrecision,
+        debitCurrency: exchangeInfo.quoteAsset
     };
 
     return {
@@ -80,10 +74,10 @@ async function prepareData({deal, stopLossPrice}) {
 }
 
 if (process.env.NODE_ENV !== 'test') {
-    module.exports = addStopLossOrder;
+    module.exports = addTakeProfitOrder;
 } else {
     module.exports = {
-        addStopLossOrder,
+        addTakeProfitOrder,
         prepareData
     }
 }
