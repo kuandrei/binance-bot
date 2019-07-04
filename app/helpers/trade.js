@@ -12,17 +12,21 @@ async function calculateSymbolStopLossPrice(symbol) {
     }
 
     let stopLossPrice, tickSizePrecision = 1;
-    const exchangeInfo = (await ExchangeInfo.findOne({
+    const exchangeInfo = await ExchangeInfo.findOne({
         where: {symbol}
-    })).toJSON();
-    const symbolInfo = (await SymbolInfo.findOne({
+    });
+    if (!exchangeInfo)
+        throw new Error(`no exchange info data found for ${symbol}`);
+    const symbolInfo = await SymbolInfo.findOne({
         where: {
             symbol
         },
         order: [
             ['createdAt', 'DESC']
         ]
-    })).toJSON();
+    });
+    if (!symbolInfo)
+        throw new Error(`no symbol info data found for ${symbol}`);
 
     const priceFilter = exchangeInfo.filters.find(filter => filter.filterType === 'PRICE_FILTER');
     if (priceFilter && priceFilter.tickSize !== 0)
