@@ -3,9 +3,9 @@ require('chai').should();
 const {ExchangeInfo} = require('../../app/models');
 const exchangeInfoWorker = require('../../app/workers/update-exchange-info');
 
-describe('Update exchange info worker', function () {
+describe('test update exchange info worker', function () {
 
-    it('Run worker on empty database and check that was filled out', async function () {
+    it('should fill out the exchange info table', async function () {
         // truncate db
         await ExchangeInfo.destroy({truncate: true});
         // run worker

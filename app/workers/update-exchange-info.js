@@ -21,10 +21,11 @@ const numericKeys = [
  * @return {Promise.<void>}
  */
 async function main() {
-    debug('UPDATE EXCHANGE INFO CRON STARTED');
+
     try {
+
+        debug('UPDATE EXCHANGE INFO');
         const info = JSON.parse(await request.get('https://www.binance.com/api/v1/exchangeInfo'));
-        await ExchangeInfo.destroy({truncate: true});
         const symbols = info.symbols.map(symbolData => {
             symbolData.filters.map(filter => {
                 numericKeys.forEach(key => {
@@ -34,7 +35,9 @@ async function main() {
             });
             return symbolData;
         });
+        await ExchangeInfo.destroy({truncate: true});
         await ExchangeInfo.bulkCreate(symbols);
+
     } catch (err) {
         errorHandler(err);
         debug(`ERROR: ${err.message}`);

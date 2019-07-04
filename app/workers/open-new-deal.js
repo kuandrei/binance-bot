@@ -5,11 +5,11 @@ const errorHandler = require('../helpers/error-handler');
 
 /**
  *
- * @param task (task.data contains {tradePair, algorithm, marketPrice})
+ * @param task (task.data contains {tradePair, type, algorithm, marketPrice})
  * @return {Promise.<{binanceOrder: *, order: *, deal: *}>}
  */
 async function worker(task) {
-    const {tradePair, algorithm, marketPrice} = task.data;
+    const {tradePair, type, algorithm, marketPrice} = task.data;
 
     // 0. prepare context
     // 1. validate balance
@@ -25,19 +25,12 @@ async function worker(task) {
         const exchangeInfo = await ExchangeInfo.findOne({
             where: {symbol: tradePair.symbol}
         });
-        dealData = prepareDealData({marketPrice, tradePair, exchangeInfo, algorithm});
+        dealData = prepareDealData({marketPrice, tradePair, type, exchangeInfo, algorithm});
         binanceOrderData = prepareBinanceOrderData({deal: dealData});
         orderData = prepareOrderData({deal: dealData, exchangeInfo});
 
-        // validate balance
-        // const dealCurrency = exchangeInfo.quoteAsset;
-        // if (ctx.balances[dealCurrency].free < binanceOrderData.price * binanceOrderData.quantity) {
-        //     //debug('NOT ENOUGH FUNDS FOR OPENING NEW DEAL (TRADE-PAIR#${ctx.tradePair.id})');
-        //     return;
-        // }
-
         // open/create new deal
-        debug(`ADD NEW DEAL (CLIENT ID#${tradePair.clientId}/SYMBOL:${tradePair.symbol}/QTY:${dealData.buyQty}/PRICE:${marketPrice}/PROFIT:${dealData.minProfitPrice})`);
+        debug(`ADD NEW ${type} DEAL (CLIENT#${tradePair.clientId}/${tradePair.symbol}/BUY:${dealData.buyQty}/SELL:${dealData.sellQty}/PRICE:${marketPrice}/PROFIT:${dealData.minProfitPrice})`);
         const deal = await Deal.create(dealData);
 
         // debug(`place binance buy order: ${buyQty} ${ctx.currencyPair.firstCurrency} for ${dealPrice} ${ctx.currencyPair.secondCurrency} (trade-pair#${ctx.tradePair.id})`);
@@ -65,10 +58,11 @@ async function worker(task) {
  * @param marketPrice
  * @param tradePair
  * @param exchangeInfo
+ * @param type (UPTREND|DOWNTREND)
  * @param algorithm
  * @return {{clientId: number, symbol: (string|string), openPrice: number, quantity: number, minProfitPrice: *, status: string, algorithm: *}}
  */
-function prepareDealData({marketPrice, tradePair, exchangeInfo, algorithm}) {
+function prepareDealData({marketPrice, tradePair, type, exchangeInfo, algorithm}) {
 
     let buyQty, sellQty, minProfitPrice;
     let stepSizePrecision = 1, tickSizePrecision = 1;
@@ -81,23 +75,29 @@ function prepareDealData({marketPrice, tradePair, exchangeInfo, algorithm}) {
     if (lotSizeFilter && lotSizeFilter.stepSize !== 0)
         stepSizePrecision = 1 / lotSizeFilter.stepSize;
 
-
     switch (tradePair.profitIn) {
         case 'BASE_ASSET':
             buyQty = Math.ceil((tradePair.dealQty + tradePair.dealQty * tradePair.minProfitRate) * stepSizePrecision) / stepSizePrecision;
             sellQty = tradePair.dealQty;
-            minProfitPrice = Math.ceil(marketPrice * buyQty / sellQty * tickSizePrecision) / tickSizePrecision;
+            if (type === 'UPTREND')
+                minProfitPrice = Math.ceil(marketPrice * buyQty / sellQty * tickSizePrecision) / tickSizePrecision;
+            else
+                minProfitPrice = Math.ceil(marketPrice * sellQty / buyQty * tickSizePrecision) / tickSizePrecision;
             break;
         case 'QUOTE_ASSET':
             buyQty = tradePair.dealQty;
             sellQty = tradePair.dealQty;
-            minProfitPrice = Math.ceil((marketPrice + marketPrice * tradePair.minProfitRate) * tickSizePrecision) / tickSizePrecision;
+            if (type === 'UPTREND')
+                minProfitPrice = Math.ceil((marketPrice + marketPrice * tradePair.minProfitRate) * tickSizePrecision) / tickSizePrecision;
+            else
+                minProfitPrice = Math.ceil(marketPrice / (1 + tradePair.minProfitRate) * tickSizePrecision) / tickSizePrecision;
             break;
     }
 
     return {
         clientId: tradePair.clientId,
         symbol: tradePair.symbol,
+        type,
         buyQty,
         sellQty,
         openPrice: marketPrice,
@@ -110,28 +110,44 @@ function prepareDealData({marketPrice, tradePair, exchangeInfo, algorithm}) {
 function prepareBinanceOrderData({deal}) {
     return {
         symbol: deal.symbol,
-        side: 'BUY',
+        side: deal.type === 'UPTREND' ? 'BUY' : 'SELL',
         type: 'LIMIT',
-        quantity: deal.buyQty,
+        quantity: deal.type === 'UPTREND' ? deal.buyQty : deal.sellQty,
         price: deal.openPrice
     };
 }
 
 function prepareOrderData({deal, exchangeInfo}) {
     const precision = Math.pow(10, 8);
-    return {
-        clientId: deal.clientId,
-        symbol: deal.symbol,
-        side: 'BUY',
-        type: 'LIMIT',
-        status: 'NEW',
-        price: deal.openPrice,
-        quantity: deal.buyQty,
-        credit: deal.buyQty,
-        creditCurrency: exchangeInfo.baseAsset,
-        debit: Math.round(deal.openPrice * deal.buyQty * precision) / precision,
-        debitCurrency: exchangeInfo.quoteAsset,
-    };
+    if (deal.type === 'UPTREND') {
+        return {
+            clientId: deal.clientId,
+            symbol: deal.symbol,
+            side: 'BUY',
+            type: 'LIMIT',
+            status: 'NEW',
+            price: deal.openPrice,
+            quantity: deal.buyQty,
+            credit: deal.buyQty,
+            creditCurrency: exchangeInfo.baseAsset,
+            debit: Math.round(deal.openPrice * deal.buyQty * precision) / precision,
+            debitCurrency: exchangeInfo.quoteAsset,
+        };
+    } else {
+        return {
+            clientId: deal.clientId,
+            symbol: deal.symbol,
+            side: 'SELL',
+            type: 'LIMIT',
+            status: 'NEW',
+            price: deal.openPrice,
+            quantity: deal.sellQty,
+            credit: Math.round(deal.openPrice * deal.sellQty * precision) / precision,
+            creditCurrency: exchangeInfo.quoteAsset,
+            debit: deal.sellQty,
+            debitCurrency: exchangeInfo.baseAsset,
+        };
+    }
 }
 
 if (process.env.NODE_ENV !== 'test') {

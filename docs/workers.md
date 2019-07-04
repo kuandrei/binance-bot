@@ -1,5 +1,23 @@
 # Workers
 
+Name                         | Cron      | Status | Description
+---------------------------- | --------- | ------ | -------------------------------------------------------------------------------------
+add-trade-pairs-for-analysis | * * * * * | Done   | Adds analyze-trade-pair task for every active/trading trade pair
+analyze-trade-pair           |           | Done   | Checks if the new deal should be opened for given trade pair
+open-new-deal                |           | Done   | Opens new deal for given trade pair. Sets new buy/sell order (depends on deal type)
+check-open-deals             | * * * * * | Done   | Monitors status of open deals, if become profitable - adds appropriate task
+add-stop-loss-order          |           | Done   | Adds stop loss order for given deal (only for uptrend deals)
+add-take-profit-order        |           | Done   | Adds take profit order for given deal (only for downtrend deals) 
+check-open-orders            | * * * * * | Done   | Checks if open orders filled 
+replace-stop-loss-order      |           | Done   | Replaces stop loss order with new one (higher price) (NO AUTOMATIC TESTS)
+replace-take-profit-order    |           | Done   | Replaces take profit order with new one (lower price) (NO AUTOMATIC TESTS)
+add-sell-market-price-order  |           | Todo   | Adds sell order in market price
+add-buy-market-price-order   |           | Todo   | Adds buy order in market price
+add-symbols-for-analysis     | * * * * * | Done   | Adds prepare-symbol-info task for every active/trading symbol  
+prepare-symbol-info          |           | Done   | Prepares symbol info (market price, technical indicators etc) 
+update-exchange-info         | 0 2 * * * | Done   | Syncs local exchange info with Binance
+maintenance                  | 0 3 * * * | Done   | System garbage collector
+
 
 ---
 
@@ -69,3 +87,7 @@ Flow:
 - For each such order
 - Cancels previous order
 - Places new one
+
+
+
+ 

@@ -1,30 +1,125 @@
+const md5 = require('md5');
 const debug = require('debug')('bnb:workers:analyze-trade-pair');
-const stateHelpers = require('./../helpers/state');
+const statsHelpers = require('./../helpers/stats');
+const applyFilter = require('loopback-filters');
 const Queue = require('bull');
-const openDealQueue = new Queue('open-deal', 'redis://redis:6379');
+const openNewDealQueue = new Queue('open-new-deal', 'redis://redis:6379');
 const errorHandler = require('../helpers/error-handler');
+const {
+    TradePair,
+    TradeRule,
+    TradeRestriction,
+    SymbolInfo,
+    ExchangeInfo
+} = require('./../models');
 
 /**
+ * flow:
+ *
+ * 1. load symbol info
+ * 2. load trade pair info
+ * 3. load exchange info
+ * 4. check balance
+ * 5. check restrictions
+ * 6. check triggers
+ * 7. add open-new-deal task
  *
  * @param task
  */
-async function main(task) {
+async function worker(task) {
 
     try {
-        const tradePair = task.data;
+        const taskData = task.data;
+        const tradePair = await TradePair.findByPk(taskData.id);
 
-        const state = await stateHelpers.tradePairState(tradePair);
-
-        const passed = checkRestrictions(state);
-        if (!passed)
+        const hashOnInsert = md5(JSON.stringify(taskData));
+        const currentHash = md5(JSON.stringify(tradePair.toJSON()));
+        if (hashOnInsert !== currentHash) {
+            // something changed, the trade pair on insert is differ from what we have in db
+            debug(`TRADE PAIR CHANGED, SKIP`);
             return;
-
-        const result = shouldOpenDeal(state);
-
-        if (result.openDeal === true) {
-            state.algorithm = result.algorithm;
-            openDealQueue.add(state);
         }
+        // @todo - ensure the same trade pair not being processed twice
+
+
+        // load symbol info
+        const symbolInfo = await SymbolInfo.findOne({
+            where: {
+                symbol: tradePair.symbol
+            },
+            order: [
+                ['createdAt', 'DESC']
+            ]
+        });
+
+        if (!symbolInfo) {
+            debug('NO SYMBOL INFO FOUND');
+            return;
+        }
+
+        // check the symbolInfo are not outdated (max 5 minutes)
+        if (process.env.NODE_ENV !== 'test' && symbolInfo.createdAt < new Date(new Date().getTime() - (5 * 60 * 1000))) {
+            debug(`SYMBOL INFO IS OUTDATED`);
+            return;
+        }
+
+        // load trade pair info
+        const tradePairInfo = await statsHelpers.tradePairInfo(tradePair, symbolInfo);
+
+        // load exchange info
+        const exchangeInfo = (await ExchangeInfo.findOne({
+            where: {symbol: tradePair.symbol}
+        })).toJSON();
+
+
+        const ctx = {
+            tradePair,
+            tradePairInfo,
+            exchangeInfo,
+            symbolInfo,
+            restrictions: await TradeRestriction.findAll({
+                where: {clientId: tradePair.clientId}
+            }),
+            rules: await TradeRule.findAll({
+                where: {
+                    clientId: tradePair.clientId,
+                    type: tradePair.tradeOn === 'UPTREND' ? 'BUY' : 'SELL'
+                },
+                include: 'conditions'
+            })
+        };
+
+        // check balance
+        if (!checkBalance(ctx)) {
+            tradePair.tradeStatus = 'NOT ENOUGH FUNDS';
+            return await tradePair.save();
+        }
+
+        // check restrictions
+        const restriction = checkRestrictions(ctx);
+        if (restriction) {
+            tradePair.tradeStatus = `RESTRICTION: ${restriction.name}`;
+            return await tradePair.save();
+        }
+
+        // check trade rules
+        const rule = checkRules(ctx);
+        if (rule) {
+
+            // open deal here
+            await openNewDealQueue.add({
+                marketPrice: symbolInfo.marketPrice,
+                tradePair: tradePair.toJSON(),
+                type: tradePair.tradeOn,
+                algorithm: rule.name
+            });
+
+            tradePair.tradeStatus = `${rule.type} - (ID:${rule.id}/NAME:${rule.name}/SYMBOL_INFO:${symbolInfo.id})`;
+            return await tradePair.save();
+        }
+
+        tradePair.tradeStatus = 'NOTHING MATCHED';
+        return await tradePair.save();
 
     } catch (err) {
         errorHandler(err, task.data);
@@ -33,96 +128,72 @@ async function main(task) {
 
 }
 
-/**
- * Returns true if no restriction found
- *
- * @param state
- * @return {boolean}
- */
-function checkRestrictions(state) {
-    // restrictions:
-    // 1. maximum 10 loss orders (below market price - deals in profit)
-    const lossOrders = state.openDealsBelowMarketPrice - state.openDealsInProfit;
-    if (lossOrders >= 5)
-        return false;
+function checkBalance({tradePair, tradePairInfo, exchangeInfo, symbolInfo}) {
+    let dealCurrency, dealAmount;
 
-    const rangeRestrictions = [
-        {range: '0.1%', maxDealsInRange: 3},
-        {range: '0.2%', maxDealsInRange: 5},
-        {range: '0.3%', maxDealsInRange: 7},
-        {range: '0.4%', maxDealsInRange: 9},
-        {range: '0.5%', maxDealsInRange: 10},
-        // {range: '0.6%', maxDealsInRange: 10},
-        // {range: '0.7%', maxDealsInRange: 10},
-        // {range: '0.8%', maxDealsInRange: 10},
-        // {range: '0.9%', maxDealsInRange: 10},
-        // {range: '1.0%', maxDealsInRange: 10},
-    ];
-
-    if (rangeRestrictions.find(restriction => {
-        return state.openDealsInRange[restriction.range] >= restriction.maxDealsInRange;
-    })) {
-        return false;
+    if (tradePair.tradeOn === 'UPTREND') {
+        // dealCurrency: quoteAsset
+        // amount:
+        // 1. (profit in BASE_ASSET ) - (dealQty + dealQty * minProfitRate) * marketPrice
+        // 2. (profit in QUOTE_ASSET) - dealQty * marketPrice
+        dealCurrency = exchangeInfo.quoteAsset;
+        dealAmount = tradePair.profitIn === 'BASE_ASSET' ?
+            (tradePair.dealQty + tradePair.dealQty * tradePair.minProfitRate) * symbolInfo.marketPrice :
+            tradePair.dealQty * symbolInfo.marketPrice;
+    } else {
+        // dealCurrency: baseAsset
+        // amount:
+        // 1. (profit in BASE_ASSET ) - dealQty
+        // 2. (profit in QUOTE_ASSET) - (dealQty + dealQty * minProfitRate)
+        dealCurrency = exchangeInfo.baseAsset;
+        dealAmount = tradePair.dealQty;
     }
 
-    // more restrictions here
-
-    return true;
+    const balance = tradePairInfo.balances[dealCurrency].free;
+    return balance >= dealAmount;
 }
 
-/**
- * @todo implement
- * Algorithm 1
- * Start trade if prev MACD indicator negative and the new one is positive
- */
-function shouldOpenDeal(state) {
+function checkRestrictions({tradePairInfo, restrictions}) {
 
-    // algorithms
+    return restrictions.find(restriction => {
+        // apply filter
+        let filter = {where: restriction.filter};
+        const results = applyFilter([tradePairInfo], filter);
+        // matched?
+        return results.length > 0;
+    });
+}
 
-    // MACD signal line crossover
-    // -------------------------------------------------
-    // patterns: (N - negative, P - positive, * - any)
-    // 1m (*,*,*,*,P), 3m (N,N,N,N,P), 5m (N,N,N,N,N)
-    // 1m (*,*,*,*,P), 3m (N,N,N,P,P), 5m (N,N,N,N,N)
-    // 1m (*,*,*,*,P), 3m (N,N,N,P,P), 5m (N,N,N,N,P)
-    // 1m (*,*,*,*,P), 3m (N,N,P,P,P), 5m (N,N,N,N,P)
-    // 1m (*,*,*,*,P), 3m (N,N,P,P,P), 5m (N,N,N,P,P)
-    // 1m (*,*,*,*,P), 3m (N,P,P,P,P), 5m (N,N,N,P,P)
-    // 1m (*,*,*,*,P), 3m (N,P,P,P,P), 5m (N,N,P,P,P)
+function checkRules({symbolInfo, rules}) {
 
-    const patterns = [
-        {'3m': 'N,N,N,N,P', '5m': 'N,N,N,N,N', label: '1m (*,*,*,*,P), 3m (N,N,N,N,P), 5m (N,N,N,N,N)'},
-        {'3m': 'N,N,N,P,P', '5m': 'N,N,N,N,N', label: '1m (*,*,*,*,P), 3m (N,N,N,P,P), 5m (N,N,N,N,N)'},
-        {'3m': 'N,N,N,P,P', '5m': 'N,N,N,N,P', label: '1m (*,*,*,*,P), 3m (N,N,N,P,P), 5m (N,N,N,N,P)'},
-        {'3m': 'N,N,P,P,P', '5m': 'N,N,N,N,P', label: '1m (*,*,*,*,P), 3m (N,N,P,P,P), 5m (N,N,N,N,P)'},
-        {'3m': 'N,N,P,P,P', '5m': 'N,N,N,P,P', label: '1m (*,*,*,*,P), 3m (N,N,P,P,P), 5m (N,N,N,P,P)'},
-        {'3m': 'N,P,P,P,P', '5m': 'N,N,N,P,P', label: '1m (*,*,*,*,P), 3m (N,P,P,P,P), 5m (N,N,N,P,P)'},
-        {'3m': 'N,P,P,P,P', '5m': 'N,N,P,P,P', label: '1m (*,*,*,*,P), 3m (N,P,P,P,P), 5m (N,N,P,P,P)'}
-    ];
-
-    const lastMACD_1m = state.indicators['1m'].MACD.pop().MACD;
-    if (lastMACD_1m > 0) {
-        const last5MACD_3m_pattern = state.indicators['3m'].MACD.slice(-5).map(item => item.MACD > 0 ? 'P' : 'N').join(',');
-        const last5MACD_5m_pattern = state.indicators['5m'].MACD.slice(-5).map(item => item.MACD > 0 ? 'P' : 'N').join(',');
-        const pattern = patterns.find(p => p['3m'] === last5MACD_3m_pattern && p['5m'] === last5MACD_5m_pattern);
-
-        if (pattern) {
-            return {
-                openDeal: true,
-                algorithm: `MACD-SLC/PATTERN:${pattern.label}`
-            };
+    return rules.find(rule => {
+        let matched;
+        if (rule.conditionMatch === 'ANY') {
+            matched = rule.conditions.some(condition => {
+                const patterns = symbolInfo.patterns.find(patterns => patterns.interval === condition.interval).data;
+                const data = patterns[condition.indicator];
+                const filter = {where: condition.filter};
+                return applyFilter([data], filter).length > 0;
+            });
+        } else {
+            matched = rule.conditions.every(condition => {
+                const patterns = symbolInfo.patterns.find(patterns => patterns.interval === condition.interval).data;
+                const data = patterns[condition.indicator];
+                const filter = {where: condition.filter};
+                return applyFilter([data], filter).length > 0;
+            });
         }
-    }
-
-    return {openDeal: false};
+        return matched;
+    });
 }
 
 if (process.env.NODE_ENV !== 'test') {
-    module.exports = main;
+    module.exports = worker;
 } else {
     module.exports = {
-        main,
+        worker,
+        checkBalance,
         checkRestrictions,
-        shouldOpenDeal
+        checkRules
     }
 }

@@ -1,13 +1,14 @@
 const R = require('ramda');
-const stateHelpers = require('./../helpers/state');
-const {TradePair} = require('./../models');
+const statsHelpers = require('./../helpers/stats');
+const {TradePair, SymbolInfo} = require('./../models');
 
 module.exports = {
 
     index: async (req, res, next) => {
         try {
+            const symbolInfoCache = {};
             const clientId = parseInt(req.query.clientId) || 1; // take from request
-            const performanceStats = await stateHelpers.performanceStats(clientId);
+            const performanceStats = await statsHelpers.performanceStats(clientId);
             const tradePairs = await TradePair.findAll({
                 where: {
                     status: 'ACTIVE',
@@ -16,6 +17,12 @@ module.exports = {
             });
             const info = await Promise.all(
                 tradePairs.map(async tradePair => {
+                    const symbolInfo = symbolInfoCache[tradePair.symbol] || await SymbolInfo.findOne({
+                        where: {
+                            symbol: tradePair.symbol
+                        }
+                    });
+                    symbolInfoCache[tradePair.symbol] = symbolInfo;
                     return R.pick([
                         'clientId',
                         'symbol',
@@ -27,7 +34,7 @@ module.exports = {
                         'openDealsAboveMarketPrice',
                         'openDealsInRange',
                         'openDealsInProfit'
-                    ], await stateHelpers.tradePairState(tradePair));
+                    ], await statsHelpers.tradePairInfo(tradePair, symbolInfo));
                 }));
             res.json({
                 performance: performanceStats,
@@ -42,7 +49,7 @@ module.exports = {
     performance: async (req, res, next) => {
         try {
             const clientId = parseInt(req.query.clientId) || 1;
-            res.json(await stateHelpers.performanceStats(clientId));
+            res.json(await statsHelpers.performanceStats(clientId));
         } catch (err) {
             next(err);
         }

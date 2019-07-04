@@ -1,21 +1,21 @@
 require('chai').should();
 
 const {Deal} = require('../../app/models');
-const workerFunctions = require('./../../app/workers/add-stop-loss-orders');
+const workerFunctions = require('../../app/workers/add-stop-loss-order');
 
-describe('Add stop loss worker', function () {
+describe('test add stop loss order worker', function () {
 
-    it('prepareData for BTCUSDT deal', async function () {
-        const result = await workerFunctions.prepareData({
-            deal: {
-                id: 100,
-                clientId: 1,
-                symbol: 'BTCUSDT',
-                openPrice: 8119.00,
-                quantity: 0.002,
-                minProfitPrice: 8224.541
-            },
+    it('test prepareData function for BTCUSDT - should return binanceOrderData and orderData', async function () {
+        const deal = {
+            id: 100,
+            clientId: 1,
             symbol: 'BTCUSDT',
+            openPrice: 8119.00,
+            sellQty: 0.002,
+            minProfitPrice: 8224.541
+        };
+        const result = await workerFunctions.prepareData({
+            deal,
             stopLossPrice: 8224.559
         });
 
@@ -48,19 +48,31 @@ describe('Add stop loss worker', function () {
             'debit',
             'debitCurrency'
         ]);
+        result.orderData.clientId.should.equal(deal.clientId);
+        result.orderData.dealId.should.equal(deal.id);
+        result.orderData.symbol.should.equal(deal.symbol);
+        result.orderData.side.should.equal('SELL');
+        result.orderData.type.should.equal('STOP_LOSS_LIMIT');
+        result.orderData.status.should.equal('NEW');
+        result.orderData.price.should.equal(8224.56);
+        result.orderData.quantity.should.equal(0.002);
+        result.orderData.credit.should.equal(16.44912);
+        result.orderData.creditCurrency.should.equal('USDT');
+        result.orderData.debit.should.equal(0.002);
+        result.orderData.debitCurrency.should.equal('BTC');
     });
 
-    it('prepareSellOrderData for BNBBTC deal', async function () {
-        const result = await workerFunctions.prepareData({
-            deal: {
-                id: 100,
-                clientId: 1,
-                symbol: 'BNBBTC',
-                openPrice: 0.00179710,
-                quantity: 1,
-                minProfitPrice: 0.00182400
-            },
+    it('test prepareData function for BNBBTC - should return binanceOrderData and orderData', async function () {
+        const deal = {
+            id: 100,
+            clientId: 1,
             symbol: 'BNBBTC',
+            openPrice: 0.00179710,
+            sellQty: 1,
+            minProfitPrice: 0.00182400
+        };
+        const result = await workerFunctions.prepareData({
+            deal,
             stopLossPrice: 0.00182400
         });
         result.should.contain.keys('binanceOrderData', 'orderData');
@@ -107,13 +119,15 @@ describe('Add stop loss worker', function () {
         result.orderData.debitCurrency.should.equal('BNB');
     });
 
-    it('addStopLossOrder (e2e)', async function () {
+    it('test e2e flow - should return created order', async function () {
 
         const deal = await Deal.create({
             clientId: 1,
             symbol: 'BTCUSDT',
+            type: 'UPTREND',
+            buyQty: 0.00206,
+            sellQty: 0.002,
             openPrice: 7921.17,
-            quantity: 0.002,
             minProfitPrice: 8158.80510000,
             status: 'OPEN',
             createdAt: new Date(),
@@ -122,11 +136,7 @@ describe('Add stop loss worker', function () {
 
         const results = await workerFunctions.addStopLossOrder({
             deal: deal.toJSON(),
-            symbol: 'BTCUSDT',
-            stopLossPrice: 8224.559,
-            tradePair: {
-                id: 123
-            }
+            stopLossPrice: 8224.559
         });
         results.should.contain.keys('binanceOrder', 'order');
 

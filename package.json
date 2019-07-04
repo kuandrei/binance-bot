@@ -26,6 +26,8 @@
     "cookie-parser": "^1.4.4",
     "debug": "^4.1.1",
     "express": "^4.17.1",
+    "loopback-filters": "^1.0.0",
+    "md5": "^2.2.1",
     "mysql2": "^1.6.5",
     "ramda": "^0.26.1",
     "request": "^2.88.0",

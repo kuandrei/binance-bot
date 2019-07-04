@@ -1,28 +1,31 @@
 const Queue = require('bull');
 
 const init = () => {
+
     /**
-     * Update exchange info cron - should run once a day at 2:00 AM
+     * Adds analyze-trade-pair task for every active/trading trade pair
      */
-    const updateExchangeInfoQueue = new Queue('update-exchange-info', 'redis://redis:6379');
-    updateExchangeInfoQueue.add({}, {
-        repeat: {
-            cron: '0 2 * * *'
-        },
-        removeOnComplete: true
-    });
-    /**
-     * Init trade queue - should run once a minute
-     */
-    const initTradeQueue = new Queue('init-trade', 'redis://redis:6379');
-    initTradeQueue.add({}, {
+    const addTradePairsForAnalysisQueue = new Queue('add-trade-pairs-for-analysis', 'redis://redis:6379');
+    addTradePairsForAnalysisQueue.add({}, {
         repeat: {
             cron: '* * * * *'
         },
         removeOnComplete: true
     });
+
     /**
-     * Check open orders queue - should run once a minute
+     * Check open deals queue
+     */
+    const checkOpenDealsQueue = new Queue('check-open-deals', 'redis://redis:6379');
+    checkOpenDealsQueue.add({}, {
+        repeat: {
+            cron: '* * * * *'
+        },
+        removeOnComplete: true
+    });
+
+    /**
+     * Check open orders queue
      */
     const checkOpenOrdersQueue = new Queue('check-open-orders', 'redis://redis:6379');
     checkOpenOrdersQueue.add({}, {
@@ -33,10 +36,10 @@ const init = () => {
     });
 
     /**
-     * Add STOP_LOSS orders queue - should run once a minute
+     * Adds prepare-symbol-info task for every active/trading symbol
      */
-    const addStopLossOrdersQueue = new Queue('add-stop-loss-orders', 'redis://redis:6379');
-    addStopLossOrdersQueue.add({}, {
+    const addSymbolsForAnalysisQueue = new Queue('add-symbols-for-analysis', 'redis://redis:6379');
+    addSymbolsForAnalysisQueue.add({}, {
         repeat: {
             cron: '* * * * *'
         },
@@ -44,12 +47,23 @@ const init = () => {
     });
 
     /**
-     * Check STOP_LOSS orders queue - should run once a minute
+     * Update exchange info cron
      */
-    const checkStopLossOrdersQueue = new Queue('check-stop-loss-orders', 'redis://redis:6379');
-    checkStopLossOrdersQueue.add({}, {
+    const updateExchangeInfoQueue = new Queue('update-exchange-info', 'redis://redis:6379');
+    updateExchangeInfoQueue.add({}, {
         repeat: {
-            cron: '* * * * *'
+            cron: '0 2 * * *'
+        },
+        removeOnComplete: true
+    });
+
+    /**
+     * System maintenance cron
+     */
+    const maintenanceQueue = new Queue('maintenance', 'redis://redis:6379');
+    maintenanceQueue.add({}, {
+        repeat: {
+            cron: '0 3 * * *'
         },
         removeOnComplete: true
     });
