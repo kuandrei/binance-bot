@@ -10,7 +10,7 @@ module.exports = async () => {
         await symbolInfo.destroy({
             where: {
                 createdAt: {
-                    [Sequelize.Op.lt]: new Date(new Date().getTime() - (24 * 60 * 60 * 1000))
+                    [Sequelize.Op.lt]: new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000))
                 }
             }
         })
