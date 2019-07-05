@@ -22,7 +22,7 @@ services:
     hostname: redis
   bot:
     hostname: bot
-    build: .
+    image: kuandrei/binance-bot:latest
     ports:
       - "80:80"
     command: sh -c 'NODE_ENV=production DEBUG=bnb:* pm2-runtime start app/server.js'
