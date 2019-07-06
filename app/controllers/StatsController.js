@@ -26,6 +26,8 @@ module.exports = {
                     return R.pick([
                         'symbol',
                         'marketPrice',
+                        'stopLossPrice',
+                        'takeProfitPrice',
                         'newDeals',
                         'openDeals',
                         'openDealsBelowMarketPrice',

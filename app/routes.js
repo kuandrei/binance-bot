@@ -1,4 +1,8 @@
-const {IndexController, StatsController} = require('./controllers');
+const {
+    IndexController,
+    StatsController,
+    PatternsController
+} = require('./controllers');
 
 module.exports = app => {
 
@@ -7,5 +11,6 @@ module.exports = app => {
     app.get('/stats', StatsController.index);
     app.get('/stats/performance', StatsController.performance);
 
+    app.get('/patterns/find', PatternsController.find);
 
 };

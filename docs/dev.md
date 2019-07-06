@@ -17,3 +17,13 @@
 **Run specific seed**
 
 `$> node_modules/.bin/sequelize db:seed --seed [seed_name]`
+
+## SQLs
+
+**Sync symbol info**
+
+``
+truncate table dev_binance_bot.SymbolInfo;
+insert into dev_binance_bot.SymbolInfo
+select * from binance_bot.SymbolInfo;
+``

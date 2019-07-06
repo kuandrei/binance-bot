@@ -1,4 +1,5 @@
-const binanceHelpers = require('./../helpers/binance');
+const binanceHelper = require('./../helpers/binance');
+const tradeHelper = require('./../helpers/trade');
 const R = require('ramda');
 
 const {
@@ -23,6 +24,8 @@ async function tradePairInfo(tradePair, symbolInfo) {
     return {
         symbol: tradePair.symbol,
         marketPrice: symbolInfo.marketPrice,
+        stopLossPrice: await tradeHelper.calculateSymbolStopLossPrice(tradePair.symbol),
+        takeProfitPrice: await tradeHelper.calculateSymbolTakeProfitPrice(tradePair.symbol),
         balances: await getBalances(ctx),
         newDeals: await countDeals('New')(ctx),
         openDeals: await countDeals('Open')(ctx),
@@ -142,7 +145,7 @@ async function getBalances({clientId, symbol}) {
     const exchangeInfo = await ExchangeInfo.findOne({
         where: {symbol}
     });
-    const balances = (await binanceHelpers.getClientBalances(clientId)).filter(item => {
+    const balances = (await binanceHelper.getClientBalances(clientId)).filter(item => {
         return item.asset === exchangeInfo.baseAsset || item.asset === exchangeInfo.quoteAsset;
     });
     const result = {};
