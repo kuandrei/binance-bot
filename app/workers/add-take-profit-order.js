@@ -17,7 +17,9 @@ async function addTakeProfitOrder(task) {
         debug(`ADD TAKE_PROFIT_LIMIT ORDER (DEAL#${deal.id}/${deal.symbol}/QTY:${deal.buyQty}/PRICE:${binanceOrderData.price})`);
 
         const binanceOrder = await binanceHelpers.order(deal.clientId, binanceOrderData);
-
+        console.log('-----------------------------');
+        console.dir({binanceOrderData, binanceOrder}, {colors: true, depth: 5});
+        console.log('-----------------------------');
         orderData.binanceOrderId = binanceOrder.orderId;
         const order = await Order.create(orderData);
 
@@ -26,7 +28,7 @@ async function addTakeProfitOrder(task) {
             order
         };
     } catch (err) {
-        errorHandler(err, {deal, takeProfitPrice});
+        errorHandler(err, task.data);
         debug(`ERROR: ${err.message}`);
     }
 }

@@ -26,7 +26,7 @@ async function addStopLossOrder(task) {
             order
         };
     } catch (err) {
-        errorHandler(err, {deal, stopLossPrice});
+        errorHandler(err, task.data);
         debug(`ERROR: ${err.message}`);
     }
 }
