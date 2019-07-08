@@ -20,7 +20,10 @@ module.exports = {
                     const symbolInfo = symbolInfoCache[tradePair.symbol] || await SymbolInfo.findOne({
                         where: {
                             symbol: tradePair.symbol
-                        }
+                        },
+                        order: [
+                            ['createdAt', 'DESC']
+                        ]
                     });
                     symbolInfoCache[tradePair.symbol] = symbolInfo;
                     return R.pick([
