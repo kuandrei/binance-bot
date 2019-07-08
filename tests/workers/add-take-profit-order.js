@@ -80,8 +80,10 @@ describe('test add take profit order worker', function () {
         });
 
         const results = await workerFunctions.addTakeProfitOrder({
-            deal: deal.toJSON(),
-            takeProfitPrice: 37.2011
+            data: {
+                deal: deal.toJSON(),
+                takeProfitPrice: 37.2011
+            }
         });
         results.should.contain.keys('binanceOrder', 'order');
 

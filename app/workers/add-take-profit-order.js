@@ -3,9 +3,10 @@ const errorHandler = require('../helpers/error-handler');
 const binanceHelpers = require('../helpers/binance');
 const {Order, ExchangeInfo} = require('../models');
 
-async function addTakeProfitOrder({deal, takeProfitPrice}) {
+async function addTakeProfitOrder(task) {
 
     try {
+        const {deal, takeProfitPrice} = task.data;
         // @todo - ensure the same deal not added twice to queue
 
         const {

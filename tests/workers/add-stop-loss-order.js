@@ -135,8 +135,10 @@ describe('test add stop loss order worker', function () {
         });
 
         const results = await workerFunctions.addStopLossOrder({
-            deal: deal.toJSON(),
-            stopLossPrice: 8224.559
+            data: {
+                deal: deal.toJSON(),
+                stopLossPrice: 8224.559
+            }
         });
         results.should.contain.keys('binanceOrder', 'order');
 
