@@ -14,103 +14,71 @@
 
 - [Problem while installing Virtualbox](https://askubuntu.com/questions/841898/problem-while-installing-virtualbox)
 
+## Minikube Setup Commands
 
-## KUBECTL COMMANDS
+- Linux: curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+- MacOS: curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/darwin/amd64/kubectl
+- Windows: curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/windows/amd64/kubectl.exe
+- chmod +x ./kubectl
+- sudo mv ./kubectl /usr/local/bin/kubectl
+- kubectl version
+- Linux: curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.23.0/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+- macOS: curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.23.0/minikube-darwin-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+- minikube start
+- kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
+- kubectl expose deployment hello-minikube --type=NodePort
+- kubectl get pod
+- curl $(minikube service hello-minikube --url)
+- kubectl delete deployment hello-minikube
+- minikube stop
+
+
+## Basic Kubectl Commands
+
+- kubectl get pods
+- kubectl get pods [pod name]
+- kubectl expose <type name> <identifier/name> [—port=external port] [—target-port=container-port [—type=service-type]
+- kubectl port-forward <pod name> [LOCAL_PORT:]REMOTE_PORT]
+- kubectl attach <pod name> -c <container>
+- kubectl exec [-it] <pod name> [-c CONTAINER] — COMMAND [args…]
+- kubectl label [—overwrite] <type> KEY_1=VAL_1 ….
+- kubectl run <name> —image=image
+- kubectl scale --replicas=replicas <pod name>
+
 
 [kubectl reference](https://kubernetes.io/docs/reference/)
+
 [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
-### KUBECTL GET PODS
 
-`$ kubectl get pods [pod name]`
-`$ kubectl get pod [pod name]`
+## Creating a Secret with a Docker Config
 
-- Lists all pods in all namespaces
-- Provides the pod name, how many instances of the pod are running & ready, its status, how many times they have restarted, and their age.
+[reference](https://kubernetes.io/docs/concepts/containers/images/#creating-a-secret-with-a-docker-config)
 
+`
+$ kubectl create secret docker-registry $SECRETNAME \
+    --docker-username=$USERNAME \
+    --docker-password=$PW \
+    --docker-email=$EMAIL
+`
 
-### KUBECTL DESCRIBE POD
+After that add to deployment.yaml:
 
-`$ kubectl describe pods [pod name]`
-`$ kubectl describe pod [pod name]`
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp
+    image: $IMAGE
+  imagePullSecrets:
+  - name: $SECRETNAME
+```
 
-Describes detailed information about all pods or a specific pod (optional pod name argument)
-
-### KUBECTL EXPOSE PORT
-
-`$ kubectl expose <type name> <identifier/name> [--port=external port] [--target-port=container-port] [--type=service-type]`
-
-Exposes a port (TCP or UDP) for a given deployment, pod, or other resource.
-
-*Examples*
-
-Expose specific service port
-`$ kubectl expose deployment binance-bot --port=80 --type=NodePort`
-
-Expose all pods with name binance-bot through LoadBalancer via port 80 as  binance-bot-lb
-`$ kubectl expose deployment binance-bot --port=80 --target-port=80 --type=LoadBalancer --name binance-bot-lb`
-
-### KUBECTL PORT-FORWARD
-
-`$ kubectl port-forward <pod name> [LOCAL_PORT:REMOTE_PORT]`
-
-Forwards one or more local ports to a pod
-
-*Example*
-
-`$ kubectl port-forward <pod name> binance-bot 80:8080`
-
-### KUBECTL ATTACH
-
-`$ kubectl attach <pod name> -c <container name>`
-
-Attaches to a process that is already running inside an existing container (displays logs)
-
-*Example*
-
-`$ kubectl port-forward <pod name> binance-bot 80:8080`
-
-### KUBECTL EXEC
-
-`$ kubectl exec [-it] <pod name> [-c CONTAINER] <command> [args ...]`
-
-- Executes a command in a container
-- -i option will pass stdin to the container
-- -t option will specify stdin as TTY
-
-*Example*
-
-`$ kubectl exec -ti binance-bot bash`
-
-### KUBECTL LABEL PODS
-
-`$ kubectl label [--owerrite] <type> KEY_1=VAL_1 KEY_2=VAL_2 ...` 
-
-Updates the labels on a resource
-
-*Example*
-
-`$ kubectl label pods binance-bot healthy=false`
-
-### KUBECTL RUN
-
-`$ kubectl run <name> --image=image`  
-
-Run a particular image on the cluster
-
-*Example*
-
-`$ kubectl run binance-bot --image=kuandrei/binance-bot --port=80`
-
-### KUBECTL SCALE
-
-`$ kubectl scale --replicas=replicas <pod name>`  
-
-Scales the particular resource
-
-*Example*
-
-`$ kubectl scale --replicas=4 deployment/tomcat-deployment`
 
 ## Deploying the Dashboard UI
 
