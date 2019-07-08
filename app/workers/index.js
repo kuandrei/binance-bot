@@ -23,8 +23,8 @@ const init = () => {
     /**
      * Checks the status of open (NEW) orders
      */
-    const checkOpenOrdersQueue = new Queue('check-open-orders', 'redis://redis:6379');
-    checkOpenOrdersQueue.process(__dirname + '/check-open-orders.js');
+    const checkOpenDealsQueue = new Queue('check-open-deals', 'redis://redis:6379');
+    checkOpenDealsQueue.process(__dirname + '/check-open-deals.js');
     /**
      * Adds stop loss order for given deal (only for uptrend deals)
      */
@@ -35,7 +35,11 @@ const init = () => {
      */
     const addTakeProfitOrderQueue = new Queue('add-take-profit-order', 'redis://redis:6379');
     addTakeProfitOrderQueue.process(__dirname + '/add-take-profit-order.js');
-
+    /**
+     * Checks the status of open (NEW) orders
+     */
+    const checkOpenOrdersQueue = new Queue('check-open-orders', 'redis://redis:6379');
+    checkOpenOrdersQueue.process(__dirname + '/check-open-orders.js');
     /**
      * Replaces stop loss order with new one (higher price)
      */
