@@ -24,7 +24,7 @@ const findNewProfitDeals = (type) => async (symbol, price) => {
     const results = await sequelize.query(`
         SELECT Deals.id
         FROM Deals
-        LEFT JOIN Orders ON Orders.dealId=Deals.id
+        LEFT JOIN Orders ON Orders.dealId=Deals.id AND Orders.status IN ('NEW', 'PARTIALLY_FILLED')
         WHERE Deals.status='OPEN'
         AND Deals.symbol=:symbol
         AND Deals.type=:type
