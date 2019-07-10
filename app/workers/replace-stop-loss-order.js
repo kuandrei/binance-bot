@@ -15,7 +15,7 @@ async function replaceStopLossOrder(task) {
         const {order, stopLossPrice} = task.data;
         await binanceHelpers.cancelOrder(order.clientId, order.symbol, order.binanceOrderId);
         
-        const o = await TradePair.findByPk(order.id);
+        const o = await Order.findByPk(order.id);
         o.status = 'CANCELED';
         await o.save();
 
@@ -29,7 +29,7 @@ async function replaceStopLossOrder(task) {
 
 
     } catch (err) {
-        rrorHandler(err, task.data);
+        errorHandler(err, task.data);
         debug(`ERROR: ${err.message}`);
     }
 
