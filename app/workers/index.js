@@ -21,7 +21,7 @@ const init = () => {
     const openNewDealQueue = new Queue('open-new-deal', 'redis://redis:6379');
     openNewDealQueue.process(__dirname + '/open-new-deal.js');
     /**
-     * Checks the status of open (NEW) orders
+     * Monitors status of open deals, if become profitable - adds appropriate task
      */
     const checkOpenDealsQueue = new Queue('check-open-deals', 'redis://redis:6379');
     checkOpenDealsQueue.process(__dirname + '/check-open-deals.js');
