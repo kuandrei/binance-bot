@@ -89,20 +89,21 @@ async function checkOrderIsFilled(order) {
             debug(`CHANGE ORDER#${order.id} STATUS FROM '${order.status}' TO '${binanceOrder.status} (DEAL#${order.dealId}/${order.symbol})'`);
             order.status = binanceOrder.status;
             order.closedAt = new Date();
-            await order.save();
-
+            
             if (order.status === 'FILLED') {
                 // change deal from NEW to OPEN
                 if (deal.status === 'NEW') {
                     deal.status = 'OPEN';
-                    deal.save();
+                    await deal.save();
                 } else if (deal.status === 'OPEN' && order.side === 'SELL') {
                     deal.status = 'CLOSED';
                     deal.closePrice = order.price;
-                    deal.save();
+                    await deal.save();
                     debug(`CHANGE DEAL #${deal.id} STATUS FROM 'OPEN' TO 'CLOSED' (${deal.symbol})'`);
                 }
             }
+
+            await order.save();
         }
     } catch (err) {
         errorHandler(err, {
@@ -110,11 +111,14 @@ async function checkOrderIsFilled(order) {
             deal: deal.toJSON()
         });
 
-        order.status = 'ERROR';
-        order.error = err;
-        await order.save();
+        if (err.code && err.code === -1021)
+            return;
 
         deal.status = 'ERROR';
         deal.save();
+
+        order.status = 'ERROR';
+        order.error = err;
+        await order.save();
     }
 }
