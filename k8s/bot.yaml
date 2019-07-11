@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: binance-bot
+  labels:
+    app: binance-bot
+spec:
+  containers:
+  - name: bot
+    image: kuandrei/binance-bot:latest
+    ports:
+    - containerPort: 80
+    env:
+    - name: NODE_ENV
+      value: "production"
+    - name: DEBUG
+      value: "bnb:*"
+    command: ["/bin/sh"]
+#    args: ["-c", "NODE_ENV=production DEBUG=bnb:* pm2-runtime start app/server.jsg"]
+    args: ["-c", "tail -f /dev/null"]
+  - name: redis
+    image: redis
+    ports:
+    - containerPort: 6379
+  imagePullSecrets:
+  - name: kuandrei-reg

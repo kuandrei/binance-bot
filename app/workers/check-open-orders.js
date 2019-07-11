@@ -7,14 +7,13 @@ const errorHandler = require('../helpers/error-handler');
 
 const Queue = require('bull');
 const replaceStopLossOrderQueue = new Queue('replace-stop-loss-order', 'redis://redis:6379');
-const replaceTakeProfitOrderQueue = new Queue('replace-take-profit-order', 'redis://redis:6379');
 
 /**
  * Checks open order statuses and updates their status
  */
 module.exports = async () => {
 
-    let orders, symbols, symbolsStopLossPrice, symbolsTakeProfitPrice;
+    let orders, symbols, symbolsStopLossPrice;
     try {
 
         // 1 Check status of all open orders
@@ -34,12 +33,12 @@ module.exports = async () => {
         orders = await Order.findAll(filter);
         await Promise.all(orders.map(checkOrderIsFilled));
 
-        // 2 Check status of open STOP LOSS orders
+        // 2 Check status of open UPTREND STOP LOSS orders
         symbols = await dbHelper.getTradingSymbols();
-        symbolsStopLossPrice = await tradeHelper.calculateSymbolStopLossPrice(symbols);
+        symbolsStopLossPrice = await tradeHelper.calculateSymbolStopLossPrice('UPTREND', symbols);
         await Promise.all(
             symbolsStopLossPrice.map(async ({symbol, stopLossPrice}) => {
-                orders = await dbHelper.findOpenStopLossOrder(symbol, stopLossPrice);
+                orders = await dbHelper.findOpenStopLossOrder('UPTREND', symbol, stopLossPrice);
                 await Promise.all(
                     orders.map(async order => {
                         await replaceStopLossOrderQueue.add({
@@ -51,23 +50,22 @@ module.exports = async () => {
             })
         );
 
-        // 3 Check status of open TAKE PROFIT orders
+        // 3 Check status of open DOWNTREND STOP LOSS orders
         symbols = await dbHelper.getTradingSymbols();
-        symbolsTakeProfitPrice = await tradeHelper.calculateSymbolTakeProfitPrice(symbols);
+        symbolsStopLossPrice = await tradeHelper.calculateSymbolStopLossPrice('DOWNTREND', symbols);
         await Promise.all(
-            symbolsTakeProfitPrice.map(async ({symbol, takeProfitPrice}) => {
-                orders = await dbHelper.findOpenTakeProfitOrder(symbol, takeProfitPrice);
+            symbolsStopLossPrice.map(async ({symbol, stopLossPrice}) => {
+                orders = await dbHelper.findOpenStopLossOrder('DOWNTREND', symbol, stopLossPrice);
                 await Promise.all(
                     orders.map(async order => {
-                        await replaceTakeProfitOrderQueue.add({
-                            takeProfitPrice,
+                        await replaceStopLossOrderQueue.add({
+                            stopLossPrice,
                             order: order.toJSON()
                         });
                     })
                 );
             })
         );
-
 
     } catch (err) {
         errorHandler(err);

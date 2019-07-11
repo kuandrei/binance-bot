@@ -20,17 +20,18 @@ const getTradingSymbols = async () => {
     return results.map(item => item.symbol);
 };
 
-const findNewProfitDeals = (type) => async (symbol, price) => {
+const findNewProfitDeals = async (type, symbol, price) => {
+    // find all active deals without "live" close order (sell for uptrend deals and buy for downtrend deals)
     const results = await sequelize.query(`
         SELECT Deals.id
         FROM Deals
-        LEFT JOIN Orders ON Orders.dealId=Deals.id AND Orders.status IN ('NEW', 'PARTIALLY_FILLED')
+        LEFT JOIN Orders ON Orders.dealId=Deals.id AND Orders.side='${type === 'UPTREND' ? 'SELL' : 'BUY'}'
+        AND Orders.status IN ('NEW', 'PARTIALLY_FILLED', 'FILLED')
         WHERE Deals.status='OPEN'
         AND Deals.symbol=:symbol
         AND Deals.type=:type
         AND Deals.minProfitPrice ${type === 'UPTREND' ? '<' : '>'} :price
-        GROUP BY Deals.id
-        HAVING COUNT(1) = 1;
+        AND Orders.id IS NULL;
     `, {
         type: sequelize.QueryTypes.SELECT,
         replacements: {symbol, type, price}
@@ -39,15 +40,15 @@ const findNewProfitDeals = (type) => async (symbol, price) => {
     return await async.map(results, async d => await Deal.findByPk(d.id));
 };
 
-const findOpenStopLossOrder = async (symbol, marketPrice) => {
+const findOpenStopLossOrder = async (type, symbol, marketPrice) => {
     const results = await sequelize.query(`
         SELECT Orders.id
         FROM Orders
         WHERE Orders.status='NEW'
-        AND Orders.side='SELL'
+        AND Orders.side='${type === 'UPTREND' ? 'SELL' : 'BUY'}'
         AND Orders.type='STOP_LOSS_LIMIT'
         AND Orders.symbol=:symbol
-        AND Orders.price < :marketPrice
+        AND Orders.price${type === 'UPTREND' ? '<' : '>'}:marketPrice
     `, {
         type: sequelize.QueryTypes.SELECT,
         replacements: {symbol, marketPrice}

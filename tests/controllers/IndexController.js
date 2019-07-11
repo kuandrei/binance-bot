@@ -9,9 +9,9 @@ before(function (done) {
     server.once('started', done);
 });
 
-describe('Index Controller', function () {
+describe('test Index Controller', function () {
 
-    it('(GET /status) - check test endpoint', function (done) {
+    it('test (GET /status) action - check test endpoint', function (done) {
 
         request(server)
             .get('/status')

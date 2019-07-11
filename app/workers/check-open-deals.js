@@ -36,7 +36,6 @@ const binanceHelpers = require('../helpers/binance');
 
 const Queue = require('bull');
 const addStopLossOrderQueue = new Queue('add-stop-loss-order', 'redis://redis:6379');
-const addTakeProfitOrderQueue = new Queue('add-take-profit-order', 'redis://redis:6379');
 const addSellMarketPriceOrderQueue = new Queue('add-sell-market-price-order', 'redis://redis:6379');
 const addBuyMarketPriceOrderQueue = new Queue('add-buy-market-price-order', 'redis://redis:6379');
 
@@ -63,7 +62,7 @@ async function worker() {
 
             // subtract 0.05 % from marketPrice to lower the chance the stop loss order will be triggered just after was added
             price = marketPrice - marketPrice * 0.0005;
-            deals = await dbHelpers.findNewProfitDeals('UPTREND')(symbol, price);
+            deals = await dbHelpers.findNewProfitDeals('UPTREND', symbol, price);
             await async.eachSeries(deals, async deal => {
                 const numOfAlgoOrders = await dbHelpers.getNumberOfOpenAlgoOrders(deal.clientId, symbol);
                 const maxNumAlgoOrders = exchangeInfoMap[symbol].filters.find(f => f.filterType === 'MAX_NUM_ALGO_ORDERS').maxNumAlgoOrders;
@@ -82,13 +81,13 @@ async function worker() {
 
             // add 0.05 % to marketPrice to lower the chance the stop loss order will be triggered just after was added
             price = marketPrice + marketPrice * 0.0005;
-            deals = await dbHelpers.findNewProfitDeals('DOWNTREND')(symbol, price);
+            deals = await dbHelpers.findNewProfitDeals('DOWNTREND', symbol, price);
             await async.eachSeries(deals, async deal => {
                 const numOfAlgoOrders = await dbHelpers.getNumberOfOpenAlgoOrders(deal.clientId, symbol);
                 const maxNumAlgoOrders = exchangeInfoMap[symbol].filters.find(f => f.filterType === 'MAX_NUM_ALGO_ORDERS').maxNumAlgoOrders;
                 if (numOfAlgoOrders < maxNumAlgoOrders)
-                    await addTakeProfitOrderQueue.add({
-                        takeProfitPrice: price,
+                    await addStopLossOrderQueue.add({
+                        stopLossPrice: price,
                         deal: deal.toJSON()
                     });
                 else

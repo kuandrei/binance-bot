@@ -5,6 +5,7 @@ const R = require('ramda');
 const {
     Sequelize,
     Deal,
+    Order,
     ExchangeInfo
 } = require('./../models');
 
@@ -24,8 +25,7 @@ async function tradePairInfo(tradePair, symbolInfo) {
     return {
         symbol: tradePair.symbol,
         marketPrice: symbolInfo.marketPrice,
-        stopLossPrice: await tradeHelper.calculateSymbolStopLossPrice(tradePair.symbol),
-        takeProfitPrice: await tradeHelper.calculateSymbolTakeProfitPrice(tradePair.symbol),
+        stopLossPrice: await tradeHelper.calculateSymbolStopLossPrice(tradePair.tradeOn, tradePair.symbol),
         balances: await getBalances(ctx),
         newDeals: await countDeals('New')(ctx),
         openDeals: await countDeals('Open')(ctx),
@@ -42,35 +42,32 @@ async function tradePairInfo(tradePair, symbolInfo) {
 }
 
 async function performanceStats(clientId) {
-    const closedDeals = await Deal.findAll({
+    const filledOrders = await Order.findAll({
         where: {
-            status: 'CLOSED',
+            status: 'FILLED',
             clientId
-        },
-        include: 'orders'
+        }
     });
     const performanceStats = {
         tradePairs: {},
         totals: {}
     };
 
-    closedDeals.forEach(deal => {
-        if (!performanceStats.tradePairs[deal.symbol]) {
-            performanceStats.tradePairs[deal.symbol] = {};
-            performanceStats.tradePairs[deal.symbol][deal.orders[0].creditCurrency] = 0;
-            performanceStats.tradePairs[deal.symbol][deal.orders[0].debitCurrency] = 0;
-            if (!performanceStats.totals[deal.orders[0].creditCurrency])
-                performanceStats.totals[deal.orders[0].creditCurrency] = 0;
-            if (!performanceStats.totals[deal.orders[0].debitCurrency])
-                performanceStats.totals[deal.orders[0].debitCurrency] = 0;
+    filledOrders.forEach(order => {
+        if (!performanceStats.tradePairs[order.symbol]) {
+            performanceStats.tradePairs[order.symbol] = {};
+            performanceStats.tradePairs[order.symbol][order.creditCurrency] = 0;
+            performanceStats.tradePairs[order.symbol][order.debitCurrency] = 0;
+            if (!performanceStats.totals[order.creditCurrency])
+                performanceStats.totals[order.creditCurrency] = 0;
+            if (!performanceStats.totals[order.debitCurrency])
+                performanceStats.totals[order.debitCurrency] = 0;
         }
-        const filledOrders = deal.orders.filter(o => o.status === 'FILLED');
-        filledOrders.forEach(order => {
-            performanceStats.tradePairs[deal.symbol][order.creditCurrency] += order.credit;
-            performanceStats.tradePairs[deal.symbol][order.debitCurrency] -= order.debit;
-            performanceStats.totals[order.creditCurrency] += order.credit;
-            performanceStats.totals[order.debitCurrency] -= order.debit;
-        });
+
+        performanceStats.tradePairs[order.symbol][order.creditCurrency] += order.credit;
+        performanceStats.tradePairs[order.symbol][order.debitCurrency] -= order.debit;
+        performanceStats.totals[order.creditCurrency] += order.credit;
+        performanceStats.totals[order.debitCurrency] -= order.debit;
     });
     // round
     const precision = Math.pow(10, 8);

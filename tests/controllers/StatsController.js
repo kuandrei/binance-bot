@@ -9,9 +9,9 @@ before(function (done) {
     server.once('started', done);
 });
 
-describe('Stats Controller', function () {
+describe('test Stats Controller', function () {
 
-    it('(GET /stats) - should return 200', function (done) {
+    it('test (GET /stats) action - should return 200', function (done) {
 
         request(server)
             .get('/stats?clientId=1')
@@ -34,7 +34,7 @@ describe('Stats Controller', function () {
 
     });
 
-    it('(GET /stats/performance) - should return 200', function (done) {
+    it('test (GET /stats/performance) action - should return 200', function (done) {
 
         request(server)
             .get('/stats/performance?clientId=1')

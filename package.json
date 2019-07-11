@@ -30,6 +30,8 @@
     "md5": "^2.2.1",
     "mysql2": "^1.6.5",
     "ramda": "^0.26.1",
+    "redis": "^2.8.0",
+    "redlock": "^4.0.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
     "sequelize": "^5.8.7",

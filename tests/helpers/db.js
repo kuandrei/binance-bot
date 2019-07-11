@@ -9,18 +9,18 @@ describe('test db helpers', function () {
         symbols.should.be.an('array');
     });
 
-    it('test findNewProfitDeals function - should return deals array', async function () {
-        const deals = await dbHelper.findNewProfitDeals('UPTREND')('BTCUSDT', 1000000);
+    it('test findNewProfitDeals function (UPTREND) - should return deals array', async function () {
+        const deals = await dbHelper.findNewProfitDeals('UPTREND', 'BTCUSDT', 1000000);
         deals.should.be.an('array');
     });
 
-    it('test findNewProfitDeals function - should return deals array', async function () {
-        const deals = await dbHelper.findNewProfitDeals('DOWNTREND')('BTCUSDT', 1);
+    it('test findNewProfitDeals function (DOWNTREND) - should return deals array', async function () {
+        const deals = await dbHelper.findNewProfitDeals('DOWNTREND', 'BTCUSDT', 1);
         deals.should.be.an('array');
     });
 
     it('test findOpenStopLossOrder function - should return deals array', async function () {
-        const orders = await dbHelper.findOpenStopLossOrder('BTCUSDT', 20000);
+        const orders = await dbHelper.findOpenStopLossOrder('UPTREND', 'BTCUSDT', 20000);
         orders.should.be.an('array');
     });
 
