@@ -40,10 +40,11 @@ async function calculateSymbolStopLossPrice(trend, symbol) {
     const lastSmaValue3m = indicatorData3m.SMA[indicatorData3m.SMA.length - 1];
 
     if (trend === 'UPTREND') {
+        // calculate lowest SMA value of last 10 minutes
         const lowestSmaValue = R.min(
-            R.reduce(R.min, Infinity, indicatorData1m.SMA),
-            R.reduce(R.min, Infinity, indicatorData3m.SMA),
-            R.reduce(R.min, Infinity, indicatorData5m.SMA)
+            R.reduce(R.min, Infinity, indicatorData1m.SMA.slice(-10)),
+            R.reduce(R.min, Infinity, indicatorData3m.SMA.slice(-3)),
+            R.reduce(R.min, Infinity, indicatorData5m.SMA.slice(-2))
         );
 
         if (lastMacd3m.MACD > 0)
@@ -53,10 +54,11 @@ async function calculateSymbolStopLossPrice(trend, symbol) {
 
         return Math.ceil(stopLossPrice * tickSizePrecision) / tickSizePrecision;
     } else {
+        // calculate highest SMA value of last 10 minutes
         const highestSmaValue = R.max(
-            R.reduce(R.max, 0, indicatorData1m.SMA),
-            R.reduce(R.max, 0, indicatorData3m.SMA),
-            R.reduce(R.max, 0, indicatorData5m.SMA)
+            R.reduce(R.max, 0, indicatorData1m.SMA.slice(-10)),
+            R.reduce(R.max, 0, indicatorData3m.SMA.slice(-3)),
+            R.reduce(R.max, 0, indicatorData5m.SMA.slice(-2))
         );
 
         if (lastMacd3m.MACD < 0)
