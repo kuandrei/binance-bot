@@ -6,6 +6,7 @@ const {symbolInfo, Sequelize} = require('./../models');
 module.exports = async () => {
 
     try {
+        debug('MAINTENANCE');
 
         await symbolInfo.destroy({
             where: {
