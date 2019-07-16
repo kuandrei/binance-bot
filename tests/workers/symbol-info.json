@@ -125,6 +125,16 @@
         }
       },
       "interval": "5m"
+    },
+    {
+      "data": {
+        "MACD": {
+          "SLC": true,
+          "SLC_TYPE": "BULLISH"
+        },
+        "RSI": 27.8
+      },
+      "interval": "1h"
     }
   ]
 }

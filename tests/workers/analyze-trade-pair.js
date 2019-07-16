@@ -411,6 +411,33 @@ describe('test analyze-trade-pair worker', function () {
             should.not.exist(result);
         });
 
+        it('test special cases 1h/MACD/SLC/BULLISH + 1h/RSI<30', async function () {
+            const rules = [{
+                name: '1h/MACD/SLC/BULLISH + 1h/RSI<30',
+                conditionMatch: 'ALL',
+                type: 'BUY',
+                conditions: [{
+                    interval: '1h',
+                    indicator: 'MACD',
+                    filter: {
+                        SLC: true,
+                        SLC_TYPE: 'BULLISH'
+                    }
+                }, {
+                    interval: '1h',
+                    indicator: 'RSI',
+                    filter: {
+                        lt: 30
+                    }
+                }]
+            }];
+            const result = await workerFunctions.checkRules({symbolInfo, rules});
+            result.should.be.an('object');
+            result.should.contain.keys('name', 'type');
+            result.name.should.equal('1h/MACD/SLC/BULLISH + 1h/RSI<30');
+            result.type.should.equal('BUY');
+        });
+
     });
 
     it('test e2e flow - should return tradeInfo model', async function () {

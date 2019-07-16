@@ -173,15 +173,27 @@ function checkRules({symbolInfo, rules}) {
         if (rule.conditionMatch === 'ANY') {
             matched = rule.conditions.some(condition => {
                 const patterns = symbolInfo.patterns.find(patterns => patterns.interval === condition.interval).data;
-                const data = patterns[condition.indicator];
-                const filter = {where: condition.filter};
+                let data = patterns[condition.indicator];
+                let filter = {where: condition.filter};
+                if (isNumeric(data) || isString(data)) {
+                    filter.where = {};
+                    filter.where[condition.indicator] = condition.filter;
+                    data = {};
+                    data[condition.indicator] = patterns[condition.indicator];
+                }
                 return applyFilter([data], filter).length > 0;
             });
         } else {
             matched = rule.conditions.every(condition => {
                 const patterns = symbolInfo.patterns.find(patterns => patterns.interval === condition.interval).data;
-                const data = patterns[condition.indicator];
-                const filter = {where: condition.filter};
+                let data = patterns[condition.indicator];
+                let filter = {where: condition.filter};
+                if (isNumeric(data) || isString(data)) {
+                    filter.where = {};
+                    filter.where[condition.indicator] = condition.filter;
+                    data = {};
+                    data[condition.indicator] = patterns[condition.indicator];
+                }
                 return applyFilter([data], filter).length > 0;
             });
         }
@@ -198,4 +210,12 @@ if (process.env.NODE_ENV !== 'test') {
         checkRestrictions,
         checkRules
     }
+}
+
+function isNumeric(variable) {
+    return typeof variable === 'number';
+}
+
+function isString(variable) {
+    return typeof variable === 'string';
 }
