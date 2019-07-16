@@ -27,3 +27,16 @@ truncate table dev_binance_bot.SymbolInfo;
 insert into dev_binance_bot.SymbolInfo
 select * from binance_bot.SymbolInfo;
 ``
+
+**Sync orders and deals**
+
+```sql
+truncate table dev_binance_bot.Orders;
+truncate table dev_binance_bot.Deals;
+
+insert into dev_binance_bot.Deals
+select * from binance_bot.Deals;
+
+insert into dev_binance_bot.Orders
+select * from binance_bot.Orders;
+```
