@@ -41,13 +41,21 @@ async function tradePairInfo(tradePair, symbolInfo) {
     };
 }
 
-async function performanceStats(clientId) {
-    const filledOrders = await Order.findAll({
+async function performanceStats(clientId, fromDate = null, toDate = null) {
+    const filter = {
         where: {
             status: 'FILLED',
             clientId
         }
-    });
+    };
+
+    if (fromDate) {
+        filter.where.createdAt = {
+            [Sequelize.Op.between]: [fromDate, toDate || new Date()]
+        };
+    }
+
+    const filledOrders = await Order.findAll(filter);
     const performanceStats = {
         tradePairs: {},
         totals: {}
