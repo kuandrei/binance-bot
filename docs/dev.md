@@ -25,7 +25,9 @@
 ``
 truncate table dev_binance_bot.SymbolInfo;
 insert into dev_binance_bot.SymbolInfo
-select * from binance_bot.SymbolInfo;
+select * from binance_bot.SymbolInfo
+order by id DESC
+limit 100;
 ``
 
 **Sync orders and deals**

@@ -28,14 +28,14 @@ describe('test technical indicators helpers', function () {
         result.indicators[0].should.include.keys(['interval', 'data']);
         result.indicators[0].interval.should.equal('1m');
         result.indicators[0].data.should.be.an('object');
-        result.indicators[0].data.should.include.keys(['MACD', 'SMA']);
+        result.indicators[0].data.should.include.keys(['MACD', 'SMA', 'RSI', 'BB']);
 
         result.patterns.should.be.an('array');
         result.patterns.length.should.be.gt(1);
         result.patterns[0].should.include.keys(['interval', 'data']);
         result.patterns[0].interval.should.equal('1m');
         result.patterns[0].data.should.be.an('object');
-        result.patterns[0].data.should.include.keys(['CandlestickPattern', 'MACD']);
+        result.patterns[0].data.should.include.keys(['CandlestickPattern', 'MACD', 'RSI', 'BB']);
         result.patterns[0].data.CandlestickPattern.should.include.keys([
             'doji',
             'hammer',

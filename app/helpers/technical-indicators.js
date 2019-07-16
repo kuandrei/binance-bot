@@ -2,7 +2,8 @@ const binanceHelpers = require('./../helpers/binance');
 const candlePatterns = require('./technical-indicators/candle-patterns');
 const technicalIndicators = require('./technical-indicators/indicators');
 
-const intervals = ['1m', '3m', '5m'];
+// '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M'
+const intervals = ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M'];
 
 async function calculateSymbolTechIndicators(symbol) {
 
@@ -30,7 +31,9 @@ async function calculateSymbolTechIndicators(symbol) {
             interval,
             data: {
                 CandlestickPattern: candlePatterns(candles[index]),
-                MACD: macd(indicators[index])
+                MACD: macd(indicators[index]),
+                RSI: rsi(indicators[index]),
+                BB: bb(indicators[index]),
             }
         }))
     };
@@ -51,4 +54,12 @@ function macd(indicators) {
         result.SLC_TYPE = lastElement.MACD > 0 ? 'BULLISH' : 'BEARISH';
 
     return result;
+}
+
+function rsi(indicators) {
+    return indicators.RSI.slice(-1).shift();
+}
+
+function bb(indicators) {
+    return indicators.BB.slice(-1).shift();
 }
