@@ -67,6 +67,11 @@ const init = () => {
      */
     const updateExchangeInfoQueue = new Queue('update-exchange-info', 'redis://redis:6379');
     updateExchangeInfoQueue.process(__dirname + '/update-exchange-info.js');
+    /**
+     * System garbage collector
+     */
+    const maintenanceQueue = new Queue('maintenance', 'redis://redis:6379');
+    maintenanceQueue.process(__dirname + '/maintenance.js');
 };
 
 module.exports = (app) => {
