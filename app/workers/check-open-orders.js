@@ -93,7 +93,12 @@ async function checkOrderIsFilled(order) {
                 if (deal.status === 'NEW') {
                     deal.status = 'OPEN';
                     await deal.save();
-                } else if (deal.status === 'OPEN' && order.side === 'SELL') {
+                } else if (deal.status === 'OPEN' && deal.type === 'UPTREND' && order.side === 'SELL') {
+                    deal.status = 'CLOSED';
+                    deal.closePrice = order.price;
+                    await deal.save();
+                    debug(`CHANGE DEAL #${deal.id} STATUS FROM 'OPEN' TO 'CLOSED' (${deal.symbol})'`);
+                } else if (deal.status === 'OPEN' && deal.type === 'DOWNTREND' && order.side === 'BUY') {
                     deal.status = 'CLOSED';
                     deal.closePrice = order.price;
                     await deal.save();
