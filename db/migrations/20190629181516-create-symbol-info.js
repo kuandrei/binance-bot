@@ -36,7 +36,8 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.DATE
             }
-        });
+        })
+            .then(() => queryInterface.addIndex('SymbolInfo', ['symbol', 'createdAt']));
     },
     down: (queryInterface) => {
         return queryInterface.dropTable('SymbolInfo');
