@@ -56,4 +56,25 @@ describe('test Stats Controller', function () {
 
     });
 
+    it('test (GET /stats/symbolInfo) action - should return 200', function (done) {
+
+        request(server)
+            .get('/stats/symbolInfo?symbol=XRPBTC')
+            .send()
+            .expect(200)
+            .end(function (err, res) {
+                if (err) {
+                    return done(err);
+                }
+
+                let response = {};
+                should.not.throw(function () {
+                    response = JSON.parse(res.text);
+                }, 'response is not a JSON');
+                response.should.be.an('object');
+                done();
+            });
+
+    });
+
 });

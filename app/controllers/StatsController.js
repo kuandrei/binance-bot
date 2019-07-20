@@ -60,5 +60,20 @@ module.exports = {
         } catch (err) {
             next(err);
         }
+    },
+
+    symbolInfo: async (req, res, next) => {
+        try {
+            const symbol = req.query.symbol;
+            if (!symbol)
+                return res.status(400).send('Symbol must be provided');
+            res.json(await SymbolInfo.findOne({
+                where: {
+                    symbol
+                }
+            }));
+        } catch (err) {
+            next(err);
+        }
     }
 };

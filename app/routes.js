@@ -10,6 +10,7 @@ module.exports = app => {
 
     app.get('/stats', StatsController.index);
     app.get('/stats/performance', StatsController.performance);
+    app.get('/stats/symbolInfo', StatsController.symbolInfo);
 
     app.get('/patterns/find', PatternsController.find);
 
