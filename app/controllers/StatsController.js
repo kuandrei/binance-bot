@@ -70,7 +70,10 @@ module.exports = {
             res.json(await SymbolInfo.findOne({
                 where: {
                     symbol
-                }
+                },
+                order: [
+                    ['createdAt', 'DESC']
+                ]
             }));
         } catch (err) {
             next(err);
