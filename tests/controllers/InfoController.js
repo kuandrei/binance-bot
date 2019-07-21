@@ -9,12 +9,12 @@ before(function (done) {
     server.once('started', done);
 });
 
-describe('test Stats Controller', function () {
+describe('test Info Controller', function () {
 
-    it('test (GET /stats) action - should return 200', function (done) {
+    it('test (GET /info/symbol) action - should return 200', function (done) {
 
         request(server)
-            .get('/stats?clientId=1')
+            .get('/info/symbol?symbol=XRPBTC')
             .send()
             .expect(200)
             .end(function (err, res) {
@@ -27,17 +27,15 @@ describe('test Stats Controller', function () {
                     response = JSON.parse(res.text);
                 }, 'response is not a JSON');
                 response.should.be.an('object');
-                response.should.include.keys('performance', 'info');
-
                 done();
             });
 
     });
 
-    it('test (GET /stats/performance) action - should return 200', function (done) {
+    it('test (GET /info/exchange) action - should return 200', function (done) {
 
         request(server)
-            .get('/stats/performance?clientId=1')
+            .get('/info/exchange?symbol=XRPBTC')
             .send()
             .expect(200)
             .end(function (err, res) {
@@ -50,7 +48,6 @@ describe('test Stats Controller', function () {
                     response = JSON.parse(res.text);
                 }, 'response is not a JSON');
                 response.should.be.an('object');
-
                 done();
             });
 
