@@ -6,6 +6,20 @@ const symbolInfo = require('./symbol-info.json');
 
 describe('test analyze-trade-pair worker', function () {
 
+    it('test retrieve rules', async function () {
+        const tradePair = await TradePair.findOne({
+            include: {
+                association: 'rules',
+                include: 'conditions',
+                where: {
+                    status: 'ACTIVE'
+                }
+            }
+        });
+        const rules = tradePair.rules.filter(r => r.type === (tradePair.tradeOn === 'UPTREND' ? 'BUY' : 'SELL'));
+        rules.should.be.an('array');
+    });
+
     describe('test checkBalance function (UPTREND use cases)', function () {
 
         it('test use case: (BTCUSDT/BUY:0.005BTC/PRICE:10000/BALANCE:100USDT)  - should return true', async function () {

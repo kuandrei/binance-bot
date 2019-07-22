@@ -19,9 +19,12 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 'ALL'
         }
     }, {});
-    TradeRule.associate = function ({Client, TradeRuleCondition}) {
-        TradeRule.belongsTo(Client, {as: 'client'});
-        TradeRule.hasMany(TradeRuleCondition, {as: 'conditions', foreignKey: 'tradeRuleId'});
+    TradeRule.associate = function (models) {
+        TradeRule.belongsTo(models.Client, {as: 'client'});
+        TradeRule.hasMany(models.TradeRuleCondition, {as: 'conditions', foreignKey: 'tradeRuleId'});
+        TradeRule.belongsToMany(models.TradePair, {
+            through: models.TradePairRule
+        });
     };
     return TradeRule;
 };

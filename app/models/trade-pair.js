@@ -32,8 +32,12 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(512)
         }
     }, {});
-    TradePair.associate = function ({Client}) {
+    TradePair.associate = function ({Client, TradeRule, TradePairRule}) {
         TradePair.belongsTo(Client, {as: 'client'});
+        TradePair.belongsToMany(TradeRule, {
+            as: 'rules',
+            through: TradePairRule
+        });
     };
     return TradePair;
 };

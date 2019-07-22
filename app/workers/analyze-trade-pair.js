@@ -1,13 +1,13 @@
-const md5 = require('md5');
 const debug = require('debug')('bnb:workers:analyze-trade-pair');
+const redlock = require('../helpers/redlock');
 const statsHelpers = require('./../helpers/stats');
 const applyFilter = require('loopback-filters');
 const Queue = require('bull');
 const openNewDealQueue = new Queue('open-new-deal', 'redis://redis:6379');
 const errorHandler = require('../helpers/error-handler');
+
 const {
     TradePair,
-    TradeRule,
     TradeRestriction,
     SymbolInfo,
     ExchangeInfo
@@ -27,20 +27,24 @@ const {
  * @param task
  */
 async function worker(task) {
+    const taskData = task.data;
+
+    const lock = await redlock.lock(`analyze-trade-pair:pair:${taskData.id}`, 15000/*15 sec*/);
 
     try {
-        const taskData = task.data;
-        const tradePair = await TradePair.findByPk(taskData.id);
 
-        const hashOnInsert = md5(JSON.stringify(taskData));
-        const currentHash = md5(JSON.stringify(tradePair.toJSON()));
-        if (hashOnInsert !== currentHash) {
-            // something changed, the trade pair on insert is differ from what we have in db
-            debug(`TRADE PAIR CHANGED, SKIP`);
-            return;
-        }
-        // @todo - ensure the same trade pair not being processed twice
-
+        const tradePair = await TradePair.findOne({
+            where: {
+                id: taskData.id
+            },
+            include: {
+                association: 'rules',
+                include: 'conditions',
+                where: {
+                    status: 'ACTIVE'
+                }
+            }
+        });
 
         // load symbol info
         const symbolInfo = await SymbolInfo.findOne({
@@ -54,13 +58,15 @@ async function worker(task) {
 
         if (!symbolInfo) {
             debug(`NO SYMBOL INFO FOUND (${tradePair.symbol})`);
-            return;
+            await lock.unlock();
+            return tradePair;
         }
 
         // check the symbolInfo is not outdated (max 5 minutes)
         if (process.env.NODE_ENV !== 'test' && symbolInfo.createdAt < new Date(new Date().getTime() - (5 * 60 * 1000))) {
             debug(`SYMBOL INFO IS OUTDATED (${tradePair.symbol})`);
-            return;
+            await lock.unlock();
+            return tradePair;
         }
 
         // load trade pair info
@@ -71,28 +77,24 @@ async function worker(task) {
             where: {symbol: tradePair.symbol}
         })).toJSON();
 
+        const rules = tradePair.rules.filter(r => r.type === (tradePair.tradeOn === 'UPTREND' ? 'BUY' : 'SELL'));
+        const restrictions = await TradeRestriction.findAll({
+            where: {clientId: tradePair.clientId}
+        });
 
         const ctx = {
             tradePair,
             tradePairInfo,
             exchangeInfo,
             symbolInfo,
-            restrictions: await TradeRestriction.findAll({
-                where: {clientId: tradePair.clientId}
-            }),
-            rules: await TradeRule.findAll({
-                where: {
-                    clientId: tradePair.clientId,
-                    type: tradePair.tradeOn === 'UPTREND' ? 'BUY' : 'SELL',
-                    status: 'ACTIVE'
-                },
-                include: 'conditions'
-            })
+            restrictions,
+            rules
         };
 
         // check balance
         if (!checkBalance(ctx)) {
             tradePair.tradeStatus = 'NOT ENOUGH FUNDS';
+            await lock.unlock();
             return await tradePair.save();
         }
 
@@ -100,6 +102,7 @@ async function worker(task) {
         const restriction = checkRestrictions(ctx);
         if (restriction) {
             tradePair.tradeStatus = `RESTRICTION: ${restriction.name}`;
+            await lock.unlock();
             return await tradePair.save();
         }
 
@@ -117,15 +120,18 @@ async function worker(task) {
             });
 
             tradePair.tradeStatus = `${rule.type} - (ID:${rule.id}/NAME:${rule.name}/SYMBOL_INFO:${symbolInfo.id})`;
+            await lock.unlock();
             return await tradePair.save();
         }
 
         tradePair.tradeStatus = 'NOTHING MATCHED';
+        await lock.unlock();
         return await tradePair.save();
 
     } catch (err) {
         errorHandler(err, task.data);
         debug(`ERROR: ${err.message}`);
+        return lock.unlock();
     }
 
 }
