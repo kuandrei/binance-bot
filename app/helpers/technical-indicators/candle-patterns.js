@@ -1,6 +1,9 @@
 const technicalIndicators = require('technicalindicators');
 
 module.exports = (candles) => {
+    // can happen for new listings
+    if (candles.length < 5)
+        return {};
     const input = {
         open: [],
         high: [],

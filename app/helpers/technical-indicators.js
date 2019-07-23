@@ -44,6 +44,9 @@ module.exports = {
 };
 
 function macd(indicators) {
+    // can happen for new listings
+    if (indicators.MACD.length < 2)
+        return {};
     const lastElement = indicators.MACD.slice(-1).shift();
     const beforeTheLast = indicators.MACD.slice(-2).shift();
     const result = {
